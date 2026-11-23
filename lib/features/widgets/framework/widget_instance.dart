@@ -1,29 +1,31 @@
 import 'package:uuid/uuid.dart';
-import '../framework/widget_definition.dart';
+
+import 'widget_definition.dart';
 
 /// A concrete instance of a widget on a dashboard.
 class WidgetInstance {
   final String id;
   final String widgetType;
   final WidgetSize size;
-  final WidgetConfig config;
-  final int gridPosition;
+  final Map<String, dynamic> config;
+  final Map<String, int> gridPosition;
 
   WidgetInstance({
     String? id,
     required this.widgetType,
     this.size = WidgetSize.medium,
-    WidgetConfig? config,
-    this.gridPosition = 0,
+    Map<String, dynamic>? config,
+    Map<String, int>? gridPosition,
   })  : id = id ?? const Uuid().v4(),
-        config = config ?? const WidgetConfig();
+        config = config ?? {},
+        gridPosition = gridPosition ?? {'row': 0, 'col': 0, 'rowSpan': 1, 'colSpan': 1};
 
   /// Clone this instance.
   WidgetInstance clone({
     String? newId,
     WidgetSize? newSize,
-    WidgetConfig? newConfig,
-    int? newGridPosition,
+    Map<String, dynamic>? newConfig,
+    Map<String, int>? newGridPosition,
   }) {
     return WidgetInstance(
       id: newId,
@@ -40,7 +42,7 @@ class WidgetInstance {
       'id': id,
       'widgetType': widgetType,
       'size': size.name,
-      'config': config.settings,
+      'config': config,
       'gridPosition': gridPosition,
     };
   }
@@ -54,8 +56,9 @@ class WidgetInstance {
         (s) => s.name == json['size'],
         orElse: () => WidgetSize.medium,
       ),
-      config: WidgetConfig(json['config'] as Map<String, dynamic>? ?? {}),
-      gridPosition: json['gridPosition'] as int? ?? 0,
+      config: json['config'] as Map<String, dynamic>? ?? {},
+      gridPosition: json['gridPosition'] as Map<String, int>? ??
+          {'row': 0, 'col': 0, 'rowSpan': 1, 'colSpan': 1},
     );
   }
 }

@@ -68,6 +68,22 @@ class WidgetData {
     if (expiresAt == null) return false;
     return DateTime.now().isAfter(expiresAt!);
   }
+
+  factory WidgetData.fromJson(Map<String, dynamic> json) {
+    return WidgetData(
+      schemaVersion: json['schemaVersion'] ?? 1,
+      data: json['data'] ?? {},
+      sources: List<Map<String, dynamic>>.from(
+        json['sources']?.map((s) => Map<String, dynamic>.from(s)) ?? [],
+      ),
+      generatedAt: json['generatedAt'] != null
+          ? DateTime.parse(json['generatedAt'])
+          : DateTime.now(),
+      expiresAt: json['expiresAt'] != null
+          ? DateTime.parse(json['expiresAt'])
+          : null,
+    );
+  }
 }
 
 /// Definition for a widget type.
@@ -86,6 +102,9 @@ abstract class WidgetDefinition {
 
   /// Icon for the widget.
   IconData get icon;
+
+  /// Theme color for the widget.
+  Color get color => Colors.blue;
 
   /// Default size for this widget.
   WidgetSize get defaultSize => WidgetSize.medium;

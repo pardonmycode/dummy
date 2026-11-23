@@ -4,6 +4,12 @@ import 'package:flutter/material.dart';
 class AppTheme {
   AppTheme._();
 
+  // Primary color
+  static const Color primary = Color(0xFF4361EE);
+  static const Color primaryVariant = Color(0xFF3A56D4);
+  static const Color secondary = Color(0xFF7209B7);
+  static const Color accent = Color(0xFFF72585);
+
   // Colors - Light
   static const Color lightPrimary = Color(0xFF4361EE);
   static const Color lightPrimaryVariant = Color(0xFF3A56D4);
@@ -82,6 +88,18 @@ class AppTheme {
     fontSize: 12,
     fontWeight: FontWeight.w600,
     letterSpacing: 0.5,
+    height: 1.2,
+  );
+
+  static const TextStyle labelMedium = TextStyle(
+    fontSize: 13,
+    fontWeight: FontWeight.w500,
+    height: 1.3,
+  );
+
+  static const TextStyle labelSmall = TextStyle(
+    fontSize: 11,
+    fontWeight: FontWeight.w500,
     height: 1.2,
   );
 

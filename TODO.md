@@ -33,13 +33,13 @@ Flutter-App  ->  Backend/API  ->  KI-Orchestrator  ->  Tools (Wetter, Karten, We
 
 ## Phase 0: Entscheidungen
 
-- [ ] Produktname festlegen
-- [ ] Zielplattformen für v1 festlegen (iOS, Android, Web)
+- [x] Produktname festlegen
+- [x] Zielplattformen für v1 festlegen (iOS, Android, Web)
 - [ ] MVP-Widgets final auswählen
 - [ ] Zielgruppe und wichtigste Nutzungsszenarien definieren
 - [ ] KI-Anbieter und Modelle pro Aufgabe festlegen
 - [ ] Backend-Stack festlegen (z. B. Supabase, Firebase oder eigene API)
-- [ ] State Management festlegen (Empfehlung: Riverpod)
+- [x] State Management festlegen (Empfehlung: Riverpod)
 - [ ] Kartenanbieter festlegen (Mapbox, Google Maps oder OpenStreetMap)
 - [ ] Geschäftsmodell festlegen (Free, Abo, KI-Credits)
 - [ ] Monatliches KI-Budget pro Nutzer festlegen
@@ -47,8 +47,8 @@ Flutter-App  ->  Backend/API  ->  KI-Orchestrator  ->  Tools (Wetter, Karten, We
 
 ## Phase 1: Projekt-Setup
 
-- [ ] Flutter SDK installieren (aktuell auf diesem Rechner nicht vorhanden)
-- [ ] Flutter-Projekt erstellen
+- [x] Flutter SDK installieren (aktuell auf diesem Rechner nicht vorhanden)
+- [x] Flutter-Projekt erstellen
 - [ ] Feature-first-Ordnerstruktur anlegen
 - [ ] Linting und Formatierung einrichten
 - [ ] Umgebungen dev, staging und prod anlegen
@@ -60,8 +60,8 @@ Flutter-App  ->  Backend/API  ->  KI-Orchestrator  ->  Tools (Wetter, Karten, We
 
 ## Phase 2: Design System
 
-- [ ] Farben, Typografie, Abstände und Radien als Tokens definieren
-- [ ] Light und Dark Theme bauen
+- [x] Farben, Typografie, Abstände und Radien als Tokens definieren
+- [x] Light und Dark Theme bauen
 - [ ] Basis-`WidgetCard` bauen
 - [ ] Skeleton-Loader bauen
 - [ ] Fehler- und Leer-Zustände bauen
@@ -90,9 +90,9 @@ Flutter-App  ->  Backend/API  ->  KI-Orchestrator  ->  Tools (Wetter, Karten, We
 
 ## Phase 4: Widget-Framework
 
-- [ ] Interface `AppWidgetDefinition` definieren
-- [ ] `WidgetRegistry` bauen
-- [ ] `WidgetInstance` mit ID, Typ, Größe und Konfiguration modellieren
+- [x] Interface `AppWidgetDefinition` definieren
+- [x] `WidgetRegistry` bauen
+- [x] `WidgetInstance` mit ID, Typ, Größe und Konfiguration modellieren
 - [ ] Generischen `WidgetDataProvider` bauen
 - [ ] Schema-Validierung im Client ergänzen
 - [ ] Schema-Versionen und Migrationen unterstützen
@@ -164,10 +164,10 @@ Flutter-App  ->  Backend/API  ->  KI-Orchestrator  ->  Tools (Wetter, Karten, We
 ## Phase 6: Kern-Widgets
 
 ### Wetter
-- [ ] Schema: Ort, aktuell, stündlich, 7 Tage, Warnungen
+- [x] Schema: Ort, aktuell, stündlich, 7 Tage, Warnungen
 - [ ] Wetterdaten über Wetter-API abrufen
 - [ ] KI-Zusammenfassung ("Nimm heute Abend eine Jacke mit")
-- [ ] Größen S (Temperatur), M (Stunden), L (7 Tage)
+- [x] Größen S (Temperatur), M (Stunden), L (7 Tage)
 - [ ] Mehrere Orte und aktueller Standort
 - [ ] Unwetterwarnungen als Push
 

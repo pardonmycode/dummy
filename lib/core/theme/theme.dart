@@ -41,6 +41,10 @@ class AppTheme {
   static const Color darkWarning = Color(0xFFFF9500);
   static const Color darkError = Color(0xFFFF3B30);
   static const Color darkInfo = Color(0xFF0A84FF);
+  static const Color success = Color(0xFF2ECC71);
+  static const Color info = Color(0xFF3498DB);
+  static const Color warning = Color(0xFFF39C12);
+  static const Color error = Color(0xFFE74C3C);
 
   // Typography
   static const TextStyle titleLarge = TextStyle(
@@ -120,27 +124,15 @@ class AppTheme {
 
   // Shadows
   static const List<BoxShadow> shadowSm = [
-    BoxShadow(
-      color: Color(0x0A000000),
-      offset: Offset(0, 1),
-      blurRadius: 2,
-    ),
+    BoxShadow(color: Color(0x0A000000), offset: Offset(0, 1), blurRadius: 2),
   ];
 
   static const List<BoxShadow> shadowMd = [
-    BoxShadow(
-      color: Color(0x10000000),
-      offset: Offset(0, 2),
-      blurRadius: 8,
-    ),
+    BoxShadow(color: Color(0x10000000), offset: Offset(0, 2), blurRadius: 8),
   ];
 
   static const List<BoxShadow> shadowLg = [
-    BoxShadow(
-      color: Color(0x14000000),
-      offset: Offset(0, 4),
-      blurRadius: 16,
-    ),
+    BoxShadow(color: Color(0x14000000), offset: Offset(0, 4), blurRadius: 16),
   ];
 
   /// Build light theme
@@ -168,7 +160,10 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: lightPrimary,
           foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(horizontal: spacingMd, vertical: spacingSm),
+          padding: const EdgeInsets.symmetric(
+            horizontal: spacingMd,
+            vertical: spacingSm,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusMd),
           ),
@@ -179,7 +174,10 @@ class AppTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: lightPrimary,
           side: BorderSide(color: lightPrimary),
-          padding: const EdgeInsets.symmetric(horizontal: spacingMd, vertical: spacingSm),
+          padding: const EdgeInsets.symmetric(
+            horizontal: spacingMd,
+            vertical: spacingSm,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusMd),
           ),
@@ -195,10 +193,7 @@ class AppTheme {
         ),
       ),
       iconTheme: IconThemeData(color: lightText, size: 20),
-      dividerTheme: DividerThemeData(
-        color: lightBorder,
-        thickness: 1,
-      ),
+      dividerTheme: DividerThemeData(color: lightBorder, thickness: 1),
       useMaterial3: true,
     );
   }
@@ -228,7 +223,10 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: darkPrimary,
           foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(horizontal: spacingMd, vertical: spacingSm),
+          padding: const EdgeInsets.symmetric(
+            horizontal: spacingMd,
+            vertical: spacingSm,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusMd),
           ),
@@ -239,7 +237,10 @@ class AppTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: darkPrimary,
           side: BorderSide(color: darkPrimary),
-          padding: const EdgeInsets.symmetric(horizontal: spacingMd, vertical: spacingSm),
+          padding: const EdgeInsets.symmetric(
+            horizontal: spacingMd,
+            vertical: spacingSm,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radiusMd),
           ),
@@ -255,10 +256,7 @@ class AppTheme {
         ),
       ),
       iconTheme: IconThemeData(color: darkText, size: 20),
-      dividerTheme: DividerThemeData(
-        color: darkBorder,
-        thickness: 1,
-      ),
+      dividerTheme: DividerThemeData(color: darkBorder, thickness: 1),
       useMaterial3: true,
     );
   }

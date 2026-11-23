@@ -1,0 +1,15 @@
+{
+  "app_name": "Widgetly",
+  "dashboard": "Dashboard",
+  "widgets": "Widgets",
+  "settings": "Einstellungen",
+  "add_widget": "Widget hinzufügen",
+  "edit_dashboard": "Dashboard bearbeiten",
+  "save": "Speichern",
+  "cancel": "Abbrechen",
+  "loading": "Lädt...",
+  "error": "Fehler",
+  "retry": "Erneut versuchen",
+  "refresh": "Aktualisieren",
+  "sources": "Quellen"
+}

@@ -29,9 +29,7 @@ class WidgetRegistry {
 
   /// Get widgets by category.
   List<WidgetDefinition> getByCategory(String category) {
-    return _widgets.values
-        .where((w) => w.category == category)
-        .toList();
+    return _widgets.values.where((w) => w.category == category).toList();
   }
 
   /// Get all categories.

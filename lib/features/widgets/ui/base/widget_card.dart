@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../../core/theme/theme.dart';
 import '../../framework/widget_definition.dart';
 
@@ -29,8 +30,9 @@ class WidgetCard extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
     final bg = isDark ? AppTheme.darkCard : AppTheme.lightCard;
     final border = isDark ? AppTheme.darkBorder : AppTheme.lightBorder;
-    final textColor = isDark ? AppTheme.darkText : AppTheme.lightText;
-    final subColor = isDark ? AppTheme.darkTextSecondary : AppTheme.lightTextSecondary;
+    final subColor = isDark
+        ? AppTheme.darkTextSecondary
+        : AppTheme.lightTextSecondary;
 
     return Container(
       decoration: BoxDecoration(
@@ -46,9 +48,7 @@ class WidgetCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(AppTheme.spacingSm),
             decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(color: border, width: 0.5),
-              ),
+              border: Border(bottom: BorderSide(color: border, width: 0.5)),
             ),
             child: Row(
               children: [
@@ -146,9 +146,7 @@ class WidgetCard extends StatelessWidget {
   }
 
   Widget _buildLoading() {
-    return const Center(
-      child: CircularProgressIndicator(strokeWidth: 2),
-    );
+    return const Center(child: CircularProgressIndicator(strokeWidth: 2));
   }
 
   Widget _buildError() {

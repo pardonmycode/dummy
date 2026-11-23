@@ -1,0 +1,51 @@
+{
+  "name": "weather",
+  "version": "1.0.0",
+  "title": "Wetter",
+  "description": "Aktuelles Wetter und Vorhersage für deinen Standort",
+  "icon": "cloud",
+  "sizes": ["small", "medium", "large"],
+  "schema": {
+    "type": "object",
+    "required": ["current", "hourly", "daily"],
+    "properties": {
+      "current": {
+        "type": "object",
+        "required": ["temp", "condition", "icon"],
+        "properties": {
+          "temp": {"type": "number"},
+          "condition": {"type": "string"},
+          "icon": {"type": "string"}
+        }
+      },
+      "hourly": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["time", "temp", "icon"],
+          "properties": {
+            "time": {"type": "string"},
+            "temp": {"type": "number"},
+            "icon": {"type": "string"}
+          }
+        }
+      },
+      "daily": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["date", "high", "low", "icon"],
+          "properties": {
+            "date": {"type": "string"},
+            "high": {"type": "number"},
+            "low": {"type": "number"},
+            "icon": {"type": "string"}
+          }
+        }
+      }
+    }
+  },
+  "aiPrompt": "Hole Wetterdaten für {location} und gib eine Zusammenfassung in Deutsch. Enthalte Temperatur, Wetterbedingungen und eine Empfehlung für Kleidung oder Aktivitäten.",
+  "refreshInterval": 900,
+  "cacheDuration": 1800
+}

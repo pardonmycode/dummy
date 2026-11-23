@@ -16,9 +16,10 @@ class WidgetInstance {
     this.size = WidgetSize.medium,
     Map<String, dynamic>? config,
     Map<String, int>? gridPosition,
-  })  : id = id ?? const Uuid().v4(),
-        config = config ?? {},
-        gridPosition = gridPosition ?? {'row': 0, 'col': 0, 'rowSpan': 1, 'colSpan': 1};
+  }) : id = id ?? const Uuid().v4(),
+       config = config ?? {},
+       gridPosition =
+           gridPosition ?? {'row': 0, 'col': 0, 'rowSpan': 1, 'colSpan': 1};
 
   /// Clone this instance.
   WidgetInstance clone({
@@ -57,7 +58,8 @@ class WidgetInstance {
         orElse: () => WidgetSize.medium,
       ),
       config: json['config'] as Map<String, dynamic>? ?? {},
-      gridPosition: json['gridPosition'] as Map<String, int>? ??
+      gridPosition:
+          json['gridPosition'] as Map<String, int>? ??
           {'row': 0, 'col': 0, 'rowSpan': 1, 'colSpan': 1},
     );
   }

@@ -33,53 +33,53 @@ Flutter-App  ->  Backend/API  ->  KI-Orchestrator  ->  Tools (Wetter, Karten, We
 
 ## Phase 0: Entscheidungen
 
-- [x] Produktname festlegen
+- [x] Produktname festlegen (Widgetly)
 - [x] Zielplattformen für v1 festlegen (iOS, Android, Web)
-- [ ] MVP-Widgets final auswählen
-- [ ] Zielgruppe und wichtigste Nutzungsszenarien definieren
-- [ ] KI-Anbieter und Modelle pro Aufgabe festlegen
-- [ ] Backend-Stack festlegen (z. B. Supabase, Firebase oder eigene API)
-- [x] State Management festlegen (Empfehlung: Riverpod)
-- [ ] Kartenanbieter festlegen (Mapbox, Google Maps oder OpenStreetMap)
-- [ ] Geschäftsmodell festlegen (Free, Abo, KI-Credits)
-- [ ] Monatliches KI-Budget pro Nutzer festlegen
+- [x] MVP-Widgets final auswählen (Wetter, Parties, Proteine, Kohlenhydrate, Schritte, Tagesbriefing)
+- [x] Zielgruppe und wichtigste Nutzungsszenarien definieren
+- [x] KI-Anbieter und Modelle pro Aufgabe festlegen (OpenAI GPT-4o/mini)
+- [x] Backend-Stack festlegen (FastAPI, PostgreSQL, Redis, Celery)
+- [x] State Management festlegen (Riverpod)
+- [x] Kartenanbieter festlegen (OpenStreetMap + Leaflet)
+- [x] Geschäftsmodell festlegen (Freemium)
+- [x] Monatliches KI-Budget pro Nutzer festlegen (500k Tokens Free)
 - [ ] Rechtliche Anforderungen klären (DSGVO, Gesundheitsdaten, Standortdaten, Scraping)
 
 ## Phase 1: Projekt-Setup
 
 - [x] Flutter SDK installieren (aktuell auf diesem Rechner nicht vorhanden)
 - [x] Flutter-Projekt erstellen
-- [ ] Feature-first-Ordnerstruktur anlegen
-- [ ] Linting und Formatierung einrichten
-- [ ] Umgebungen dev, staging und prod anlegen
-- [ ] Routing einrichten
-- [ ] Lokalisierung einrichten
-- [ ] Logging und Crash-Reporting einrichten
-- [ ] CI für Analyse, Tests und Builds einrichten
-- [ ] README mit Setup-Anleitung schreiben
+- [x] Feature-first-Ordnerstruktur anlegen
+- [x] Linting und Formatierung einrichten
+- [x] Umgebungen dev, staging und prod anlegen
+- [x] Routing einrichten
+- [x] Lokalisierung einrichten
+- [x] Logging und Crash-Reporting einrichten
+- [x] CI für Analyse, Tests und Builds einrichten
+- [x] README mit Setup-Anleitung schreiben
 
 ## Phase 2: Design System
 
 - [x] Farben, Typografie, Abstände und Radien als Tokens definieren
 - [x] Light und Dark Theme bauen
-- [ ] Basis-`WidgetCard` bauen
-- [ ] Skeleton-Loader bauen
-- [ ] Fehler- und Leer-Zustände bauen
-- [ ] Wiederverwendbare Charts bauen (Ring, Balken, Linie, Sparkline)
-- [ ] Listen, Chips, Buttons und Eingabefelder bauen
-- [ ] Quellen-Anzeige für KI-Daten bauen
+- [x] Basis-`WidgetCard` bauen
+- [x] Skeleton-Loader bauen
+- [x] Fehler- und Leer-Zustände bauen
+- [x] Wiederverwendbare Charts bauen (Ring, Balken, Linie, Sparkline)
+- [x] Listen, Chips, Buttons und Eingabefelder bauen
+- [x] Quellen-Anzeige für KI-Daten bauen
 - [ ] Widget-Galerie für die Entwicklung bauen
 
 ## Phase 3: Flexibles Dashboard
 
-- [ ] Grid-Layout für Smartphone, Tablet und Desktop bauen
-- [ ] Widgets per Drag & Drop verschieben
-- [ ] Widget-Größe ändern
-- [ ] Widget hinzufügen, duplizieren und entfernen
-- [ ] Bearbeitungsmodus bauen
+- [x] Grid-Layout für Smartphone, Tablet und Desktop bauen
+- [x] Widgets per Drag & Drop verschieben
+- [x] Widget-Größe ändern
+- [x] Widget hinzufügen, duplizieren und entfernen
+- [x] Bearbeitungsmodus bauen
 - [ ] Undo/Redo im Bearbeitungsmodus
 - [ ] Mehrere Dashboards (z. B. Morgens, Fitness, Wochenende)
-- [ ] Layout als JSON lokal speichern
+- [x] Layout als JSON lokal speichern
 - [ ] Layout geräteübergreifend synchronisieren
 - [ ] Layout-Vorlagen anbieten
 - [ ] Layouts teilen und importieren
@@ -93,11 +93,11 @@ Flutter-App  ->  Backend/API  ->  KI-Orchestrator  ->  Tools (Wetter, Karten, We
 - [x] Interface `AppWidgetDefinition` definieren
 - [x] `WidgetRegistry` bauen
 - [x] `WidgetInstance` mit ID, Typ, Größe und Konfiguration modellieren
-- [ ] Generischen `WidgetDataProvider` bauen
+- [x] Generischen `WidgetDataProvider` bauen
 - [ ] Schema-Validierung im Client ergänzen
 - [ ] Schema-Versionen und Migrationen unterstützen
 - [ ] Konfigurationsformular aus Schema generieren
-- [ ] Fehlergrenze pro Widget bauen, damit ein Fehler nicht das Dashboard zerstört
+- [x] Fehlergrenze pro Widget bauen, damit ein Fehler nicht das Dashboard zerstört
 - [ ] Lokalen Cache pro Widget-Instanz bauen
 - [ ] Pull-to-Refresh und manuellen Refresh bauen
 - [ ] Hintergrund-Refresh bauen
@@ -109,9 +109,9 @@ Flutter-App  ->  Backend/API  ->  KI-Orchestrator  ->  Tools (Wetter, Karten, We
 ### API und Daten
 - [ ] Authentifizierung bauen (E-Mail, Apple, Google)
 - [ ] Datenmodell für Nutzer, Dashboards, Widgets, Runs und Tracker-Einträge entwerfen
-- [ ] Endpoint `GET /widgets/{id}/data` bauen
-- [ ] Endpoint `POST /widgets/{id}/refresh` bauen
-- [ ] Endpoint für Widget-Aktionen bauen
+- [x] Endpoint `GET /widgets/{id}/data` bauen
+- [x] Endpoint `POST /widgets/{id}/refresh` bauen
+- [x] Endpoint für Widget-Aktionen bauen
 - [ ] Streaming-Status an die App senden (SSE oder WebSocket)
 - [ ] Job-Queue für KI-Läufe bauen
 - [ ] Scheduler für regelmäßige Updates bauen
@@ -165,15 +165,15 @@ Flutter-App  ->  Backend/API  ->  KI-Orchestrator  ->  Tools (Wetter, Karten, We
 
 ### Wetter
 - [x] Schema: Ort, aktuell, stündlich, 7 Tage, Warnungen
-- [ ] Wetterdaten über Wetter-API abrufen
-- [ ] KI-Zusammenfassung ("Nimm heute Abend eine Jacke mit")
+- [x] Wetterdaten über Wetter-API abrufen
+- [x] KI-Zusammenfassung ("Nimm heute Abend eine Jacke mit")
 - [x] Größen S (Temperatur), M (Stunden), L (7 Tage)
 - [ ] Mehrere Orte und aktueller Standort
 - [ ] Unwetterwarnungen als Push
 
 ### Parties in der Umgebung
-- [ ] Schema: Name, Location, Koordinaten, Start, Ende, Genre, Preis, Link, Quelle, Konfidenz
-- [ ] Karte mit Standort und Party-Pins bauen
+- [x] Schema: Name, Location, Koordinaten, Start, Ende, Genre, Preis, Link, Quelle, Konfidenz
+- [x] Karte mit Standort und Party-Pins bauen
 - [ ] Interner KI-Prompt aus Kartenausschnitt, Datum und Vorlieben
 - [ ] Event-Quellen recherchieren und rechtlich prüfen
 - [ ] Adressen per Geocoding verifizieren
@@ -200,15 +200,15 @@ Flutter-App  ->  Backend/API  ->  KI-Orchestrator  ->  Tools (Wetter, Karten, We
 - [ ] CSV-Export
 
 ### Einzelne Tracker (jeweils eigenes Widget)
-- [ ] Proteine
-- [ ] Kohlenhydrate
+- [x] Proteine
+- [x] Kohlenhydrate
 - [ ] Fett
 - [ ] Kalorien
 - [ ] Ballaststoffe
 - [ ] Zucker
-- [ ] Wasser
+- [x] Wasser
 - [ ] Koffein
-- [ ] Schritte
+- [x] Schritte
 - [ ] Aktive Minuten
 - [ ] Distanz
 - [ ] Schlaf

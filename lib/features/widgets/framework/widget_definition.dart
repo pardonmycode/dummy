@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 /// Widget size variants for responsive layouts.
 enum WidgetSize {
-  small,   // S: Compact, key info only
-  medium,  // M: Standard view
-  large,   // L: Expanded, detailed
+  small, // S: Compact, key info only
+  medium, // M: Standard view
+  large, // L: Expanded, detailed
 }
 
 /// Refresh interval for widget data.
@@ -21,23 +21,16 @@ enum RefreshInterval {
 
 /// Widget lifecycle state.
 enum WidgetDataState {
-  loading,    // Data is being fetched
-  ready,      // Data is available and fresh
-  stale,      // Data is available but may be outdated
-  error,      // Data fetch failed
-  empty,      // No data available
-  offline,    // No network, showing cached data
+  loading, // Data is being fetched
+  ready, // Data is available and fresh
+  stale, // Data is available but may be outdated
+  error, // Data fetch failed
+  empty, // No data available
+  offline, // No network, showing cached data
 }
 
 /// Standard actions a widget can perform.
-enum WidgetAction {
-  open,
-  share,
-  save,
-  refresh,
-  configure,
-  remove,
-}
+enum WidgetAction { open, share, save, refresh, configure, remove }
 
 /// Configuration for a widget instance.
 class WidgetConfig {
@@ -73,9 +66,15 @@ class WidgetData {
     return WidgetData(
       schemaVersion: json['schemaVersion'] ?? 1,
       data: json['data'] ?? {},
-      sources: List<Map<String, dynamic>>.from(
-        json['sources']?.map((s) => Map<String, dynamic>.from(s)) ?? [],
-      ),
+      sources:
+          (json['sources'] as List?)
+              ?.map(
+                (s) => s is Map
+                    ? Map<String, dynamic>.from(s)
+                    : {'name': s.toString()},
+              )
+              .toList() ??
+          [],
       generatedAt: json['generatedAt'] != null
           ? DateTime.parse(json['generatedAt'])
           : DateTime.now(),
@@ -110,11 +109,19 @@ abstract class WidgetDefinition {
   WidgetSize get defaultSize => WidgetSize.medium;
 
   /// Supported sizes.
-  Set<WidgetSize> get supportedSizes => {WidgetSize.small, WidgetSize.medium, WidgetSize.large};
+  Set<WidgetSize> get supportedSizes => {
+    WidgetSize.small,
+    WidgetSize.medium,
+    WidgetSize.large,
+  };
 
   /// Default refresh interval.
   RefreshInterval get defaultRefreshInterval => RefreshInterval.hours1;
 
   /// Build the widget UI from data and state.
-  Widget buildView(WidgetData? data, WidgetDataState state, WidgetConfig config);
+  Widget buildView(
+    WidgetData? data,
+    WidgetDataState state,
+    WidgetConfig config,
+  );
 }

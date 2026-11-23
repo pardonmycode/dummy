@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'dart:convert';
 
 import '../../../../core/theme/theme.dart';
 import '../../../widgets/framework/widget_definition.dart';
@@ -8,34 +11,41 @@ import '../../../widgets/framework/widget_registry.dart';
 import '../../../widgets/ui/base/widget_card.dart';
 import '../../../widgets/ui/types/weather/weather_widget.dart';
 import '../../../widgets/ui/types/protein/protein_tracker_widget.dart';
+import '../../../widgets/ui/types/parties/parties_widget.dart';
+import '../../../widgets/ui/types/carbs/carbs_tracker_widget.dart';
+import '../../../widgets/ui/types/water/water_tracker_widget.dart';
+import '../../../widgets/ui/types/steps/steps_tracker_widget.dart';
 
 // Providers
 final widgetRegistryProvider = Provider<WidgetRegistry>((ref) {
   final registry = WidgetRegistry();
   registry.register(WeatherWidget());
   registry.register(ProteinTrackerWidget());
+  registry.register(PartiesWidget());
+  registry.register(CarbsTrackerWidget());
+  registry.register(WaterTrackerWidget());
+  registry.register(StepsTrackerWidget());
   return registry;
 });
 
 final dashboardWidgetsProvider =
-    StateProvider<List<WidgetInstance>>((ref) => [
-          WidgetInstance(
-            widgetType: 'weather',
-            size: WidgetSize.medium,
-          ),
-          WidgetInstance(
-            widgetType: 'protein_tracker',
-            size: WidgetSize.medium,
-            config: {'goal': 150},
-          ),
-        ]);
+    StateNotifierProvider<DashboardWidgetsNotifier, List<WidgetInstance>>((
+      ref,
+    ) {
+      return DashboardWidgetsNotifier();
+    });
 
 final isEditingProvider = StateProvider<bool>((ref) => false);
 
 // Mock widget data provider
 class MockWidgetDataProvider {
   Future<Map<String, dynamic>> getData(
-      String widgetType, Map<String, dynamic>? config) async {
+    String widgetType,
+    Map<String, dynamic>? config,
+  ) async {
+    // Simulate network delay
+    await Future.delayed(const Duration(milliseconds: 200));
+
     if (widgetType == 'weather') {
       final location = config?['location'] ?? 'Berlin';
       return {
@@ -66,10 +76,9 @@ class MockWidgetDataProvider {
             {'day': 'So', 'high': 22, 'low': 13, 'condition': 'Wolken'},
           ],
           'warnings': [
-            {'level': 'info', 'message': 'UV-Index heute hoch (8)'}
+            {'level': 'info', 'message': 'UV-Index heute hoch (8)'},
           ],
-          'summary':
-              'Heute sonnig mit 22°C. Am Nachmittag Regen möglich. Nimm morgen einen Regenschirm mit.',
+          'summary': 'Heute sonnig mit 22°C. Am Nachmittag Regen möglich. Nimm morgen einen Regenschirm mit.',
         },
         'sources': ['OpenWeatherMap API'],
         'generatedAt': DateTime.now().toIso8601String(),
@@ -84,7 +93,11 @@ class MockWidgetDataProvider {
           'goal': goal,
           'consumed': 95,
           'meals': [
-            {'name': 'Frühstück: Eier & Avocado', 'protein': 25, 'time': '08:00'},
+            {
+              'name': 'Frühstück: Eier & Avocado',
+              'protein': 25,
+              'time': '08:00',
+            },
             {'name': 'Mittag: Hähnchen & Reis', 'protein': 40, 'time': '12:30'},
             {'name': 'Snack: Protein Shake', 'protein': 30, 'time': '15:00'},
           ],
@@ -98,74 +111,301 @@ class MockWidgetDataProvider {
   }
 }
 
-final mockDataProviderProvider =
-    Provider<MockWidgetDataProvider>((ref) => MockWidgetDataProvider());
+final mockDataProviderProvider = Provider<MockWidgetDataProvider>(
+  (ref) => MockWidgetDataProvider(),
+);
+
+/// State notifier for dashboard widgets with persistence
+class DashboardWidgetsNotifier extends StateNotifier<List<WidgetInstance>> {
+  DashboardWidgetsNotifier() : super(_defaultWidgets()) {
+    _loadWidgets();
+  }
+
+  static List<WidgetInstance> _defaultWidgets() {
+    return [
+      WidgetInstance(
+        widgetType: 'weather',
+        size: WidgetSize.medium,
+        config: {'location': 'Berlin'},
+      ),
+      WidgetInstance(
+        widgetType: 'protein_tracker',
+        size: WidgetSize.medium,
+        config: {'goal': 150},
+      ),
+    ];
+  }
+
+  void addWidget(String widgetType, {Map<String, dynamic>? config}) {
+    final widget = WidgetInstance(widgetType: widgetType, config: config ?? {});
+    state = [...state, widget];
+    _saveWidgets();
+  }
+
+  void removeWidget(String id) {
+    state = state.where((w) => w.id != id).toList();
+    _saveWidgets();
+  }
+
+  void duplicateWidget(String id) {
+    final original = state.firstWhere((w) => w.id == id);
+    final duplicate = original.clone();
+    final index = state.indexWhere((w) => w.id == id);
+    final widgets = List<WidgetInstance>.from(state);
+    widgets.insert(index + 1, duplicate);
+    state = widgets;
+    _saveWidgets();
+  }
+
+  void moveWidget(int oldIndex, int newIndex) {
+    final widgets = List<WidgetInstance>.from(state);
+    if (newIndex > oldIndex) {
+      newIndex--;
+    }
+    final item = widgets.removeAt(oldIndex);
+    widgets.insert(newIndex, item);
+    state = widgets;
+    _saveWidgets();
+  }
+
+  void resizeWidget(String id, WidgetSize newSize) {
+    state = state
+        .map((w) => w.id == id ? w.clone(newSize: newSize) : w)
+        .toList();
+    _saveWidgets();
+  }
+
+  Future<void> _loadWidgets() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final json = prefs.getString('dashboard_widgets');
+      if (json != null) {
+        final List<dynamic> data = jsonDecode(json);
+        state = data
+            .map(
+              (item) => WidgetInstance.fromJson(
+                Map<String, dynamic>.from(item as Map),
+              ),
+            )
+            .toList();
+      }
+    } catch (e) {
+      print('Failed to load widgets: $e');
+    }
+  }
+
+  Future<void> _saveWidgets() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final json = jsonEncode(state.map((w) => w.toJson()).toList());
+      await prefs.setString('dashboard_widgets', json);
+    } catch (e) {
+      print('Failed to save widgets: $e');
+    }
+  }
+}
+
+// Responsive grid configuration
+class ResponsiveGridConfig {
+  static int getColumns(double screenWidth) {
+    if (screenWidth < 600) return 1; // Phone portrait
+    if (screenWidth < 800) return 2; // Phone landscape / small tablet
+    if (screenWidth < 1200) return 3; // Tablet
+    return 4; // Desktop
+  }
+
+  static double getAspectRatio(WidgetSize size, double screenWidth) {
+    if (size == WidgetSize.small) return 1.0;
+    if (size == WidgetSize.medium) return 1.0;
+    if (size == WidgetSize.large) return 1.4;
+    return 1.0;
+  }
+}
 
 // Dashboard view
-class DashboardView extends StatelessWidget {
+class DashboardView extends ConsumerWidget {
   const DashboardView({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final bg = isDark ? AppTheme.darkBackground : AppTheme.lightBackground;
+    final widgets = ref.watch(dashboardWidgetsProvider);
+    final registry = ref.watch(widgetRegistryProvider);
+    final isEditing = ref.watch(isEditingProvider);
 
     return Scaffold(
       backgroundColor: bg,
       appBar: AppBar(
         title: const Text('Mein Dashboard'),
         actions: [
-          Consumer(builder: (context, ref, child) {
-            final isEditing = ref.watch(isEditingProvider);
-            return IconButton(
-              icon: Icon(isEditing ? Icons.check : Icons.edit),
-              onPressed: () => ref.read(isEditingProvider.notifier).state =
-                  !isEditing,
-              tooltip: isEditing ? 'Fertig' : 'Bearbeiten',
-            );
-          }),
-          Consumer(builder: (context, ref, child) {
-            return IconButton(
-              icon: const Icon(Icons.add),
-              onPressed: () => _showWidgetCatalog(context, ref),
-              tooltip: 'Widget hinzufügen',
-            );
-          }),
+          IconButton(
+            icon: Icon(isEditing ? Icons.check : Icons.edit),
+            onPressed: () =>
+                ref.read(isEditingProvider.notifier).update((s) => !s),
+            tooltip: isEditing ? 'Fertig' : 'Bearbeiten',
+          ),
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () => _showWidgetCatalog(context, ref),
+            tooltip: 'Widget hinzufügen',
+          ),
         ],
       ),
-      body: Consumer(
-        builder: (context, ref, child) {
-          final widgets = ref.watch(dashboardWidgetsProvider);
-          final registry = ref.watch(widgetRegistryProvider);
-
-          return GridView.builder(
-            padding: const EdgeInsets.all(AppTheme.spacingSm),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 1.0,
-              crossAxisSpacing: AppTheme.spacingSm,
-              mainAxisSpacing: AppTheme.spacingSm,
-            ),
-            itemCount: widgets.length,
-            itemBuilder: (context, index) {
-              final instance = widgets[index];
-              final definition = registry.get(instance.widgetType);
-
-              if (definition == null) {
-                return _buildPlaceholder(instance.widgetType);
-              }
-
-              return _buildWidgetCard(context, ref, instance, definition);
-            },
-          );
+      body: RefreshIndicator(
+        onRefresh: () async {
+          // Refresh all widgets (simulated)
+          await Future.delayed(const Duration(seconds: 1));
         },
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return isEditing
+                ? _buildEditingView(context, ref, widgets, registry)
+                : _buildView(
+                    context,
+                    ref,
+                    widgets,
+                    registry,
+                    constraints.maxWidth,
+                  );
+          },
+        ),
       ),
     );
   }
 
-  Widget _buildWidgetCard(BuildContext context, WidgetRef ref,
-      WidgetInstance instance, WidgetDefinition definition) {
+  Widget _buildView(
+    BuildContext context,
+    WidgetRef ref,
+    List<WidgetInstance> widgets,
+    WidgetRegistry registry,
+    double screenWidth,
+  ) {
+    final columns = ResponsiveGridConfig.getColumns(screenWidth);
+
+    return GridView.builder(
+      padding: const EdgeInsets.all(AppTheme.spacingSm),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: columns,
+        crossAxisSpacing: AppTheme.spacingSm,
+        mainAxisSpacing: AppTheme.spacingSm,
+        childAspectRatio: ResponsiveGridConfig.getAspectRatio(
+          widgets.isNotEmpty ? widgets.first.size : WidgetSize.medium,
+          screenWidth,
+        ),
+      ),
+      itemCount: widgets.length,
+      itemBuilder: (context, index) {
+        final instance = widgets[index];
+        final definition = registry.get(instance.widgetType);
+
+        if (definition == null) {
+          return _buildPlaceholder(instance.widgetType);
+        }
+
+        return _buildWidgetCard(context, ref, instance, definition);
+      },
+    );
+  }
+
+  Widget _buildEditingView(
+    BuildContext context,
+    WidgetRef ref,
+    List<WidgetInstance> widgets,
+    WidgetRegistry registry,
+  ) {
+    return ReorderableListView(
+      padding: const EdgeInsets.all(AppTheme.spacingSm),
+      onReorder: (oldIndex, newIndex) {
+        ref
+            .read(dashboardWidgetsProvider.notifier)
+            .moveWidget(oldIndex, newIndex);
+      },
+      children: widgets.map((instance) {
+        final definition = registry.get(instance.widgetType);
+        return Card(
+          key: Key(instance.id),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                if (definition != null)
+                  Icon(definition.icon, color: definition.color),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (definition != null)
+                        Text(definition.name, style: AppTheme.titleSmall),
+                      if (definition != null)
+                        Text(definition.description, style: AppTheme.bodySmall),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.drag_handle,
+                    color: AppTheme.lightTextSecondary,
+                  ),
+                  onPressed: null,
+                ),
+                PopupMenuButton<WidgetSize>(
+                  icon: Icon(
+                    Icons.format_size,
+                    color: AppTheme.lightTextSecondary,
+                  ),
+                  onSelected: (size) {
+                    ref
+                        .read(dashboardWidgetsProvider.notifier)
+                        .resizeWidget(instance.id, size);
+                  },
+                  itemBuilder: (context) => [
+                    const PopupMenuItem(
+                      value: WidgetSize.small,
+                      child: Text('Klein'),
+                    ),
+                    const PopupMenuItem(
+                      value: WidgetSize.medium,
+                      child: Text('Mittel'),
+                    ),
+                    const PopupMenuItem(
+                      value: WidgetSize.large,
+                      child: Text('Groß'),
+                    ),
+                  ],
+                ),
+                IconButton(
+                  icon: Icon(Icons.copy, color: AppTheme.lightTextSecondary),
+                  onPressed: () {
+                    ref
+                        .read(dashboardWidgetsProvider.notifier)
+                        .duplicateWidget(instance.id);
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.delete, color: Colors.red),
+                  onPressed: () {
+                    ref
+                        .read(dashboardWidgetsProvider.notifier)
+                        .removeWidget(instance.id);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildWidgetCard(
+    BuildContext context,
+    WidgetRef ref,
+    WidgetInstance instance,
+    WidgetDefinition definition,
+  ) {
     return FutureBuilder<Map<String, dynamic>>(
       future: _fetchWidgetData(ref, instance),
       builder: (context, snapshot) {
@@ -198,7 +438,9 @@ class DashboardView extends StatelessWidget {
   }
 
   Future<Map<String, dynamic>> _fetchWidgetData(
-      WidgetRef ref, WidgetInstance instance) async {
+    WidgetRef ref,
+    WidgetInstance instance,
+  ) async {
     final provider = ref.read(mockDataProviderProvider);
     return provider.getData(instance.widgetType, instance.config);
   }
@@ -249,7 +491,9 @@ class DashboardView extends StatelessWidget {
                   subtitle: Text(def.description),
                   trailing: Icon(Icons.add, color: AppTheme.primary),
                   onTap: () {
-                    _addWidget(ref, def.id);
+                    ref
+                        .read(dashboardWidgetsProvider.notifier)
+                        .addWidget(def.id);
                     Navigator.pop(context);
                   },
                 );
@@ -259,12 +503,5 @@ class DashboardView extends StatelessWidget {
         );
       },
     );
-  }
-
-  void _addWidget(WidgetRef ref, String widgetType) {
-    final widgets = ref.read(dashboardWidgetsProvider);
-    final newWidget = WidgetInstance(widgetType: widgetType);
-    widgets.add(newWidget);
-    ref.read(dashboardWidgetsProvider.notifier).state = widgets;
   }
 }

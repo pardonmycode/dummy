@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 
@@ -23,139 +24,141 @@ class WeatherWidget extends WidgetDefinition {
   RefreshInterval get defaultRefreshInterval => RefreshInterval.hours1;
 
   @override
-  Widget buildView(WidgetData? data, WidgetDataState state, WidgetConfig config) {
+  Widget buildView(
+    WidgetData? data,
+    WidgetDataState state,
+    WidgetConfig config,
+  ) {
     if (data == null) {
       return const SizedBox();
     }
 
     final current = data.data['current'] as Map<String, dynamic>?;
     final hourly = data.data['hourly'] as List<dynamic>?;
-    final daily = data.data['daily'] as List<dynamic>?;
     final warnings = data.data['warnings'] as List<dynamic>?;
     final summary = data.data['summary'] as String?;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Current weather
-        if (current != null)
-          Padding(
-            padding: const EdgeInsets.only(bottom: AppTheme.spacingSm),
-            child: Row(
-              children: [
-                Icon(
-                  _weatherIcon(current['condition'] as String),
-                  size: 32,
-                  color: AppTheme.lightWarning,
-                ),
-                const SizedBox(width: AppTheme.spacingSm),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${current['temp'] as int}°C',
-                        style: AppTheme.titleMedium,
-                      ),
-                      Text(
-                        '${current['condition'] as String}',
-                        style: AppTheme.bodySmall,
-                      ),
-                      if (current['location'] != null)
-                        Text(
-                          '${current['location'] as String}',
-                          style: AppTheme.caption,
-                        ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-        // AI Summary
-        if (summary != null && summary.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.only(bottom: AppTheme.spacingSm),
-            child: Container(
-              padding: const EdgeInsets.all(AppTheme.spacingXs),
-              decoration: BoxDecoration(
-                color: AppTheme.lightInfo.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(AppTheme.radiusSm),
-              ),
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Current weather
+          if (current != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppTheme.spacingSm),
               child: Row(
                 children: [
-                  Icon(Icons.auto_awesome, size: 12, color: AppTheme.lightInfo),
-                  const SizedBox(width: 4),
+                  Icon(
+                    _weatherIcon(current['condition'] as String),
+                    size: 32,
+                    color: AppTheme.lightWarning,
+                  ),
+                  const SizedBox(width: AppTheme.spacingSm),
                   Expanded(
-                    child: Text(
-                      summary,
-                      style: AppTheme.caption,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${current['temperature'] ?? 0}°C',
+                          style: AppTheme.titleMedium,
+                        ),
+                        Text(
+                          '${current['condition'] as String}',
+                          style: AppTheme.bodySmall,
+                        ),
+                        if (current['location'] != null)
+                          Text(
+                            '${current['location'] as String}',
+                            style: AppTheme.caption,
+                          ),
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
-          ),
 
-        // Hourly forecast (simplified)
-        if (hourly != null && hourly.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.only(bottom: AppTheme.spacingSm),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: hourly
-                  .take(6)
-                  .map((h) {
+          // AI Summary
+          if (summary != null && summary.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppTheme.spacingSm),
+              child: Container(
+                padding: const EdgeInsets.all(AppTheme.spacingXs),
+                decoration: BoxDecoration(
+                  color: AppTheme.lightInfo.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.auto_awesome,
+                      size: 12,
+                      color: AppTheme.lightInfo,
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(child: Text(summary, style: AppTheme.caption)),
+                  ],
+                ),
+              ),
+            ),
+
+          // Hourly forecast (simplified)
+          if (hourly != null && hourly.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppTheme.spacingSm),
+              child: SizedBox(
+                height: 60,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: hourly.take(6).map((h) {
                     final hour = h['time'] as String;
                     final temp = h['temp'] as int;
                     final condition = h['condition'] as String;
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          hour,
-                          style: AppTheme.caption,
-                        ),
-                        Icon(
-                          _weatherIcon(condition),
-                          size: 16,
-                        ),
-                        Text(
-                          '$temp°',
-                          style: AppTheme.caption,
-                        ),
-                      ],
+                    return Flexible(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            hour,
+                            style: AppTheme.caption,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Icon(_weatherIcon(condition), size: 16),
+                          Text('$temp°', style: AppTheme.caption),
+                        ],
+                      ),
                     );
-                  })
-                  .toList(),
-            ),
-          ),
-
-        // Warnings
-        if (warnings != null && warnings.isNotEmpty)
-          Container(
-            padding: const EdgeInsets.all(AppTheme.spacingXs),
-            decoration: BoxDecoration(
-              color: AppTheme.lightWarning.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(AppTheme.radiusSm),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.warning, size: 12, color: AppTheme.lightWarning),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Text(
-                    warnings.first['message'] as String,
-                    style: AppTheme.caption,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  }).toList(),
                 ),
-              ],
+              ),
             ),
-          ),
-      ],
+
+          // Warnings
+          if (warnings != null && warnings.isNotEmpty)
+            Container(
+              padding: const EdgeInsets.all(AppTheme.spacingXs),
+              decoration: BoxDecoration(
+                color: AppTheme.lightWarning.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.warning, size: 12, color: AppTheme.lightWarning),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      warnings.first['message'] as String,
+                      style: AppTheme.caption,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
     );
   }
 

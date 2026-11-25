@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import Limiter
@@ -15,10 +16,20 @@ from app.scheduler import start_scheduler, shutdown_scheduler
 # Rate limiter
 limiter = Limiter(key_func=get_remote_address, default_limits=["100/minute"])
 
+@asynccontextmanager
+async def lifespan(app):
+    # Startup
+    Base.metadata.create_all(bind=engine)
+    start_scheduler()
+    yield
+    # Shutdown
+    shutdown_scheduler()
+
 app = FastAPI(
     title="Widgetly Backend",
     description="KI-gesteuerte Widget-Plattform",
-    version="0.3.0"
+    version="0.3.0",
+    lifespan=lifespan,
 )
 
 app.state.limiter = limiter
@@ -42,15 +53,6 @@ app.include_router(widgets.router, prefix="/api/widgets", tags=["widgets"])
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(dashboard.router, prefix="/api/dashboard", tags=["dashboard"])
 app.include_router(tracker.router, prefix="/api/tracker", tags=["tracker"])
-
-@app.on_event("startup")
-async def startup():
-    Base.metadata.create_all(bind=engine)
-    start_scheduler()
-
-@app.on_event("shutdown")
-async def shutdown():
-    shutdown_scheduler()
 
 @app.get("/")
 async def root():

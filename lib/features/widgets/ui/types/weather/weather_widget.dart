@@ -29,10 +29,44 @@ class WeatherWidget extends WidgetDefinition {
     WidgetDataState state,
     WidgetConfig config,
   ) {
+    // Empty state: no weather data available
+    if (state == WidgetDataState.empty) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.wb_sunny_outlined, size: 48, color: Colors.grey),
+          const SizedBox(height: 8),
+          Text('Keine Wetterdaten verfügbar', style: AppTheme.bodySmall),
+        ],
+      );
+    }
+
+    // Offline state: show cached data with indicator
+    if (state == WidgetDataState.offline) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.cloud_off, size: 16, color: AppTheme.lightTextSecondary),
+              const SizedBox(width: 4),
+              Text('Offline - gecachte Daten', style: AppTheme.caption),
+            ],
+          ),
+          const SizedBox(height: 8),
+          if (data != null) _buildContent(data),
+        ],
+      );
+    }
+
     if (data == null) {
       return const SizedBox();
     }
 
+    return _buildContent(data);
+  }
+
+  Widget _buildContent(WidgetData data) {
     final current = data.data['current'] as Map<String, dynamic>?;
     final hourly = data.data['hourly'] as List<dynamic>?;
     final warnings = data.data['warnings'] as List<dynamic>?;
@@ -63,12 +97,12 @@ class WeatherWidget extends WidgetDefinition {
                           style: AppTheme.titleMedium,
                         ),
                         Text(
-                          '${current['condition'] as String}',
+                          current['condition'] as String,
                           style: AppTheme.bodySmall,
                         ),
                         if (current['location'] != null)
                           Text(
-                            '${current['location'] as String}',
+                            current['location'] as String,
                             style: AppTheme.caption,
                           ),
                       ],
@@ -85,7 +119,7 @@ class WeatherWidget extends WidgetDefinition {
               child: Container(
                 padding: const EdgeInsets.all(AppTheme.spacingXs),
                 decoration: BoxDecoration(
-                  color: AppTheme.lightInfo.withOpacity(0.1),
+                  color: AppTheme.lightInfo.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(AppTheme.radiusSm),
                 ),
                 child: Row(
@@ -139,7 +173,7 @@ class WeatherWidget extends WidgetDefinition {
             Container(
               padding: const EdgeInsets.all(AppTheme.spacingXs),
               decoration: BoxDecoration(
-                color: AppTheme.lightWarning.withOpacity(0.1),
+                color: AppTheme.lightWarning.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(AppTheme.radiusSm),
               ),
               child: Row(

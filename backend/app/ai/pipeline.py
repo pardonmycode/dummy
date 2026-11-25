@@ -7,7 +7,7 @@ from app.ai.tools import get_tools
 from app.ai.cache import get_cached, set_cached
 from app.ai.validation import validate_widget_data, repair_json, has_sources
 from app.ai.tracing import start_trace, add_trace_step, complete_trace
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Token and cost tracking
 token_usage: Dict[str, Dict] = {}
@@ -87,7 +87,7 @@ async def run_widget_pipeline(widget_id: str, user_context: Dict, location: Opti
                 "schemaVersion": 1,
                 "data": {"error": str(e)},
                 "sources": [],
-                "generatedAt": datetime.utcnow().isoformat(),
+                "generatedAt": datetime.now(timezone.utc).isoformat(),
                 "status": "error"
             }
         
@@ -107,7 +107,7 @@ async def run_widget_pipeline(widget_id: str, user_context: Dict, location: Opti
             "schemaVersion": 1,
             "data": {"error": str(e)},
             "sources": [],
-            "generatedAt": datetime.utcnow().isoformat(),
+            "generatedAt": datetime.now(timezone.utc).isoformat(),
             "status": "error"
         }
 
@@ -233,7 +233,7 @@ def build_widget_json(widget_id: str, result: Dict, prompt_config: Dict) -> Dict
         "schemaVersion": 1,
         "data": result.get("content", ""),
         "sources": result.get("sources", []),
-        "generatedAt": datetime.utcnow().isoformat(),
+        "generatedAt": datetime.now(timezone.utc).isoformat(),
         "expiresAt": None,
         "status": "ok"
     }

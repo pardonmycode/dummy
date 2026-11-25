@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../framework/widget_registry.dart';
+import '../../framework/widget_registry.dart';
 import '../../ui/types/weather/weather_widget.dart';
 import '../../ui/types/protein/protein_tracker_widget.dart';
 

@@ -1,6 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 
-import '../framework/widget_definition.dart';
+import './widget_definition.dart';
 
 /// Generic data provider for widgets with caching and error isolation.
 class WidgetDataProvider {
@@ -59,7 +60,7 @@ class WidgetDataProvider {
             return cached.data;
           }
           throw e;
-        }).finally(() {
+        }).whenComplete(() {
           _inFlightRequests.remove(cacheKey);
         });
 

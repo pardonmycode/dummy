@@ -15,6 +15,9 @@ import '../../../widgets/ui/types/parties/parties_widget.dart';
 import '../../../widgets/ui/types/carbs/carbs_tracker_widget.dart';
 import '../../../widgets/ui/types/water/water_tracker_widget.dart';
 import '../../../widgets/ui/types/steps/steps_tracker_widget.dart';
+import '../../../widgets/ui/types/sleep/sleep_tracker_widget.dart';
+import '../../../widgets/ui/types/weight/weight_tracker_widget.dart';
+import '../../../widgets/ui/types/briefing/tagesbriefing_widget.dart';
 
 // Providers
 final widgetRegistryProvider = Provider<WidgetRegistry>((ref) {
@@ -25,6 +28,9 @@ final widgetRegistryProvider = Provider<WidgetRegistry>((ref) {
   registry.register(CarbsTrackerWidget());
   registry.register(WaterTrackerWidget());
   registry.register(StepsTrackerWidget());
+  registry.register(SleepTrackerWidget());
+  registry.register(WeightTrackerWidget());
+  registry.register(TagesbriefingWidget());
   return registry;
 });
 
@@ -103,6 +109,57 @@ class MockWidgetDataProvider {
           ],
         },
         'sources': ['Lokale Einträge'],
+        'generatedAt': DateTime.now().toIso8601String(),
+      };
+    }
+
+    if (widgetType == 'sleep_tracker') {
+      return {
+        'schemaVersion': 1,
+        'data': {
+          'goal': 8,
+          'slept': 7.5,
+          'quality': 8,
+        },
+        'sources': ['Apple Health'],
+        'generatedAt': DateTime.now().toIso8601String(),
+      };
+    }
+
+    if (widgetType == 'weight_tracker') {
+      return {
+        'schemaVersion': 1,
+        'data': {
+          'current': 82.5,
+          'goal': 75.0,
+          'start': 85.0,
+          'trend': 'down',
+          'lastChange': '-0.5 kg letzte Woche',
+        },
+        'sources': ['Lokale Einträge'],
+        'generatedAt': DateTime.now().toIso8601String(),
+      };
+    }
+
+    if (widgetType == 'tagesbriefing') {
+      return {
+        'schemaVersion': 1,
+        'data': {
+          'summary': 'Heute ist ein guter Tag für deine Fitness-Ziele. Du hast 2 wichtige Termine und das Wetter ist ideal für deinen geplanten Lauf.',
+          'weather': 'Sonnig, 22°C. Perfekt für Outdoor-Aktivitäten.',
+          'appointments': [
+            {'title': '10:00 - Meeting mit Team'},
+            {'title': '14:00 - Zahnarzt'},
+          ],
+          'tasks': [
+            {'title': 'Einkaufen für die Woche'},
+            {'title': 'Projektbericht fertigstellen'},
+          ],
+          'news': [
+            {'headline': 'Deine Lieblingsband gibt Konzert in Berlin'},
+          ],
+        },
+        'sources': ['OpenWeatherMap', 'Google Calendar', 'Todo App'],
         'generatedAt': DateTime.now().toIso8601String(),
       };
     }

@@ -1,5 +1,3 @@
-import '../../../framework/widget_definition.dart';
-
 class WeatherData {
   final double temperature;
   final String condition;

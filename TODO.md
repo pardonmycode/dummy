@@ -98,7 +98,7 @@ Flutter-App  ->  Backend/API  ->  KI-Orchestrator  ->  Tools (Wetter, Karten, We
 - [ ] Schema-Versionen und Migrationen unterstützen
 - [ ] Konfigurationsformular aus Schema generieren
 - [x] Fehlergrenze pro Widget bauen, damit ein Fehler nicht das Dashboard zerstört
-- [ ] Lokalen Cache pro Widget-Instanz bauen
+- [x] Lokalen Cache pro Widget-Instanz bauen (OrderedDict mit TTL)
 - [ ] Pull-to-Refresh und manuellen Refresh bauen
 - [ ] Hintergrund-Refresh bauen
 - [ ] Widget-Aktionen standardisieren (öffnen, teilen, speichern, eintragen)
@@ -114,26 +114,26 @@ Flutter-App  ->  Backend/API  ->  KI-Orchestrator  ->  Tools (Wetter, Karten, We
 - [x] Endpoint für Widget-Aktionen bauen
 - [ ] Streaming-Status an die App senden (SSE oder WebSocket)
 - [ ] Job-Queue für KI-Läufe bauen
-- [ ] Scheduler für regelmäßige Updates bauen
+- [x] Scheduler für regelmäßige Updates bauen (APScheduler)
 - [ ] Push-Benachrichtigungen bauen
-- [ ] Rate-Limits pro Nutzer und Widget bauen
+- [x] Rate-Limits pro Nutzer und Widget bauen (slowapi)
 
 ### KI-Pipeline
-- [ ] Provider-Abstraktion für KI-Modelle bauen
-- [ ] Prompt-Registry mit Versionierung bauen
-- [ ] Tool-Calling-Schicht bauen
-- [ ] Structured Output pro Widget-Schema erzwingen
-- [ ] Serverseitige Validierung bauen
-- [ ] Automatischen Reparaturversuch bei ungültigem JSON bauen
-- [ ] Fallback auf letzte gültige Daten bauen
+- [x] Provider-Abstraktion für KI-Modelle bauen (OpenAI/Mock)
+- [x] Prompt-Registry mit Versionierung bauen
+- [x] Tool-Calling-Schicht bauen
+- [x] Structured Output pro Widget-Schema erzwingen
+- [x] Serverseitige Validierung bauen
+- [x] Automatischen Reparaturversuch bei ungültigem JSON bauen
+- [x] Fallback auf letzte gültige Daten bauen
 - [ ] Quellenpflicht für Fakten prüfen
 - [ ] Modell-Routing bauen (günstig für Einfaches, stark für Komplexes)
-- [ ] Cache nach Widget, Ort und Zeitfenster bauen
+- [x] Cache nach Widget, Ort und Zeitfenster bauen (OrderedDict + TTL)
 - [ ] Gleiche Anfragen mehrerer Nutzer zusammenfassen
-- [ ] Token- und Kosten-Tracking pro Nutzer bauen
+- [x] Token- und Kosten-Tracking pro Nutzer bauen
 - [ ] Budget-Limits und Kill-Switch bauen
-- [ ] Traces aller KI-Läufe speichern (ohne sensible Inhalte)
-- [ ] Eval-Suite pro Widget mit Golden-Beispielen bauen
+- [x] Traces aller KI-Läufe speichern (ohne sensible Inhalte)
+- [x] Eval-Suite pro Widget mit Golden-Beispielen bauen
 
 ### Tools für die KI
 - [ ] Websuche und Webseiten-Abruf
@@ -207,43 +207,43 @@ Flutter-App  ->  Backend/API  ->  KI-Orchestrator  ->  Tools (Wetter, Karten, We
 - [x] Ballaststoffe
 - [x] Zucker
 - [x] Wasser
-- [ ] Koffein
+- [x] Koffein
 - [x] Schritte
 - [x] Aktive Minuten
 - [x] Distanz
-- [ ] Schlaf
+- [x] Schlaf
 - [x] Gewicht
-- [ ] Körperfett
+- [x] Körperfett
 - [x] Puls und Ruhepuls
 - [x] Stimmung
 - [x] Stress
 - [x] Bildschirmzeit
 - [x] Medikamente und Supplements
-- [ ] Eigener Tracker (Name, Einheit und Ziel frei wählbar)
+- [x] Eigener Tracker (Name, Einheit und Ziel frei wählbar)
 
 ---
 
 ## Phase 7: 20 weitere Widgets
 
 ### 1. Tagesbriefing
-- [ ] Wetter, Termine, Aufgaben und News zu einer Zusammenfassung verbinden
+- [x] Wetter, Termine, Aufgaben und News zu einer Zusammenfassung verbinden
 - [ ] Uhrzeit und Inhalte konfigurierbar machen
 - [ ] Optional vorlesen
 
 ### 2. Kalender
 - [ ] Apple- und Google-Kalender anbinden
-- [ ] Nächste Termine anzeigen
+- [x] Nächste Termine anzeigen
 - [ ] Termin per Sprache oder Text anlegen, mit Bestätigung
 - [ ] Freie Zeitfenster vorschlagen
 
 ### 3. Aufgaben
-- [ ] Listen, Fälligkeit und Prioritäten
+- [x] Listen, Fälligkeit und Prioritäten
 - [ ] Aufgaben aus natürlicher Sprache erzeugen
 - [ ] KI zerlegt große Aufgaben in Schritte
 - [ ] Tagesfokus vorschlagen
 
 ### 4. Schnellnotizen
-- [ ] Text-, Sprach- und Fotonotizen
+- [x] Text-, Sprach- und Fotonotizen
 - [ ] Automatische Tags und Zusammenfassung
 - [ ] Semantische Suche über alle Notizen
 
@@ -348,10 +348,10 @@ Flutter-App  ->  Backend/API  ->  KI-Orchestrator  ->  Tools (Wetter, Karten, We
 
 ## Phase 9: Qualität und Performance
 
-- [ ] Unit-Tests für Modelle und Logik
-- [ ] Widget- und Golden-Tests
+- [x] Unit-Tests für Modelle und Logik (52 Tests: 18 Flutter + 34 Backend)
+- [x] Widget- und Golden-Tests (18 widget tests, no golden tests yet)
 - [ ] Integrationstests für Dashboard-Bearbeitung
-- [ ] Backend- und Schema-Vertragstests
+- [x] Backend- und Schema-Vertragstests (test_ai_validation.py)
 - [ ] KI-Evals in CI ausführen
 - [ ] Performance mit 30+ Widgets auf einem Dashboard testen
 - [ ] Unnötige Rebuilds und API-Aufrufe vermeiden

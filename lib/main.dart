@@ -4,6 +4,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/theme.dart';
 import 'features/dashboard/ui/views/dashboard_view.dart';
 
+// Export providers for testing
+export 'features/dashboard/ui/views/dashboard_view.dart'
+    show
+        dashboardWidgetsProvider,
+        widgetRegistryProvider,
+        isEditingProvider,
+        mockDataProviderProvider,
+        widgetDataProvider;
+
 void main() {
   runApp(const ProviderScope(child: WidgetlyApp()));
 }

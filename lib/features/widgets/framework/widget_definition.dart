@@ -118,10 +118,39 @@ abstract class WidgetDefinition {
   /// Default refresh interval.
   RefreshInterval get defaultRefreshInterval => RefreshInterval.hours1;
 
+  /// Configuration options for this widget.
+  /// Returns a list of config field definitions.
+  List<WidgetConfigField> get configFields => [];
+
   /// Build the widget UI from data and state.
   Widget buildView(
     WidgetData? data,
     WidgetDataState state,
     WidgetConfig config,
   );
+}
+
+/// Configuration field definition for widget forms.
+class WidgetConfigField {
+  final String key;
+  final String label;
+  final String? description;
+  final String type; // 'string', 'number', 'bool', 'select'
+  final dynamic defaultValue;
+  final List<Map<String, dynamic>>? options; // For select fields
+  final double? min;
+  final double? max;
+  final String? unit;
+
+  const WidgetConfigField({
+    required this.key,
+    required this.label,
+    this.description,
+    this.type = 'string',
+    this.defaultValue,
+    this.options,
+    this.min,
+    this.max,
+    this.unit,
+  });
 }

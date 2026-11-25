@@ -77,14 +77,14 @@ Flutter-App  ->  Backend/API  ->  KI-Orchestrator  ->  Tools (Wetter, Karten, We
 - [x] Widget-Größe ändern
 - [x] Widget hinzufügen, duplizieren und entfernen
 - [x] Bearbeitungsmodus bauen
-- [ ] Undo/Redo im Bearbeitungsmodus
-- [ ] Mehrere Dashboards (z. B. Morgens, Fitness, Wochenende)
+- [x] Undo/Redo im Bearbeitungsmodus
+- [x] Mehrere Dashboards (z. B. Morgens, Fitness, Wochenende)
 - [x] Layout als JSON lokal speichern
 - [ ] Layout geräteübergreifend synchronisieren
 - [ ] Layout-Vorlagen anbieten
 - [ ] Layouts teilen und importieren
-- [ ] Widget-Katalog mit Suche und Kategorien
-- [ ] Vorschau im Katalog mit Beispieldaten
+- [x] Widget-Katalog mit Suche und Kategorien
+- [x] Vorschau im Katalog mit Beispieldaten
 - [ ] Dashboard per Prompt erstellen ("Bau mir ein Fitness-Dashboard")
 - [ ] Automatische Dashboard-Wechsel nach Uhrzeit oder Ort
 
@@ -94,12 +94,12 @@ Flutter-App  ->  Backend/API  ->  KI-Orchestrator  ->  Tools (Wetter, Karten, We
 - [x] `WidgetRegistry` bauen
 - [x] `WidgetInstance` mit ID, Typ, Größe und Konfiguration modellieren
 - [x] Generischen `WidgetDataProvider` bauen
-- [ ] Schema-Validierung im Client ergänzen
+- [x] Schema-Validierung im Client ergänzen
 - [ ] Schema-Versionen und Migrationen unterstützen
-- [ ] Konfigurationsformular aus Schema generieren
+- [x] Konfigurationsformular aus Schema generieren
 - [x] Fehlergrenze pro Widget bauen, damit ein Fehler nicht das Dashboard zerstört
 - [x] Lokalen Cache pro Widget-Instanz bauen (OrderedDict mit TTL)
-- [ ] Pull-to-Refresh und manuellen Refresh bauen
+- [x] Pull-to-Refresh und manuellen Refresh bauen
 - [ ] Hintergrund-Refresh bauen
 - [ ] Widget-Aktionen standardisieren (öffnen, teilen, speichern, eintragen)
 - [ ] Homescreen-Widgets für iOS und Android evaluieren
@@ -126,12 +126,12 @@ Flutter-App  ->  Backend/API  ->  KI-Orchestrator  ->  Tools (Wetter, Karten, We
 - [x] Serverseitige Validierung bauen
 - [x] Automatischen Reparaturversuch bei ungültigem JSON bauen
 - [x] Fallback auf letzte gültige Daten bauen
-- [ ] Quellenpflicht für Fakten prüfen
-- [ ] Modell-Routing bauen (günstig für Einfaches, stark für Komplexes)
+- [x] Quellenpflicht für Fakten prüfen
+- [x] Modell-Routing bauen (günstig für Einfaches, stark für Komplexes)
 - [x] Cache nach Widget, Ort und Zeitfenster bauen (OrderedDict + TTL)
-- [ ] Gleiche Anfragen mehrerer Nutzer zusammenfassen
+- [x] Gleiche Anfragen mehrerer Nutzer zusammenfassen
 - [x] Token- und Kosten-Tracking pro Nutzer bauen
-- [ ] Budget-Limits und Kill-Switch bauen
+- [x] Budget-Limits und Kill-Switch bauen
 - [x] Traces aller KI-Läufe speichern (ohne sensible Inhalte)
 - [x] Eval-Suite pro Widget mit Golden-Beispielen bauen
 
@@ -187,17 +187,17 @@ Flutter-App  ->  Backend/API  ->  KI-Orchestrator  ->  Tools (Wetter, Karten, We
 - [ ] Neu laden beim Verschieben der Karte (mit Debounce und Cache)
 
 ### Tracker-Basis
-- [ ] Gemeinsames Modell für Ziel, Einheit, Eintrag und Zeitraum
-- [ ] Schnelleintrag, Bearbeiten und Löschen
+- [x] Gemeinsames Modell für Ziel, Einheit, Eintrag und Zeitraum
+- [x] Schnelleintrag, Bearbeiten und Löschen
 - [ ] Tages-, Wochen- und Monatsansicht
-- [ ] Ziele und Streaks
+- [x] Ziele und Streaks
 - [ ] Erinnerungen
 - [ ] Offline-Einträge mit Synchronisierung
 - [ ] Sync mit Apple Health und Health Connect
 - [ ] KI-Eingabe in natürlicher Sprache ("2 Eier und ein Toast")
 - [ ] Bestätigungsdialog vor dem Speichern von KI-Schätzungen
 - [ ] Wöchentliche KI-Auswertung
-- [ ] CSV-Export
+- [x] CSV-Export
 
 ### Einzelne Tracker (jeweils eigenes Widget)
 - [x] Proteine

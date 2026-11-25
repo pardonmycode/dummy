@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../../core/models/tracker_base.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 
-/// Steps tracker widget.
+/// Steps tracker widget using shared TrackerBase model.
 class StepsTrackerWidget extends WidgetDefinition {
   @override
   String get id => 'steps_tracker';
@@ -36,9 +37,28 @@ class StepsTrackerWidget extends WidgetDefinition {
       return const SizedBox();
     }
 
-    final goal = (data.data['goal'] as num?)?.toInt() ?? 10000;
-    final steps = (data.data['steps'] as num?)?.toInt() ?? 0;
-    final progress = steps / goal;
+    // Use shared TrackerBase model
+    final tracker = TrackerBase(
+      target: (data.data['goal'] as num?) ?? 10000,
+      unit: 'Schritte',
+      period: TimePeriod.day,
+    );
+
+    // Parse entries from data
+    final rawEntries = data.data['entries'] as List? ?? [];
+    for (final entry in rawEntries) {
+      if (entry is Map && entry['value'] != null && entry['timestamp'] != null) {
+        tracker.entries.add(TrackerEntry(
+          value: entry['value'],
+          timestamp: DateTime.parse(entry['timestamp']),
+          note: entry['note'],
+        ));
+      }
+    }
+
+    final steps = tracker.getPeriodTotal();
+    final progress = tracker.calculateProgress();
+    final streak = tracker.calculateStreak();
     final distance = steps * 0.00076; // Average step length in km
 
     return Column(
@@ -82,6 +102,17 @@ class StepsTrackerWidget extends WidgetDefinition {
           ),
         ),
         const SizedBox(height: 8),
+
+        // Streak
+        if (streak > 0)
+          Row(
+            children: [
+              Icon(Icons.local_fire_department, size: 16, color: Colors.orange),
+              const SizedBox(width: 4),
+              Text('$streak Tage Streak', style: AppTheme.labelMedium),
+            ],
+          ),
+        const SizedBox(height: 4),
 
         // Stats
         Row(

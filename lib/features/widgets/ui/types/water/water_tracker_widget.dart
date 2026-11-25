@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../../core/models/tracker_base.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../ui/components/design_system.dart';
 
-/// Water intake tracker widget.
+/// Water intake tracker widget using shared TrackerBase model.
 class WaterTrackerWidget extends WidgetDefinition {
   @override
   String get id => 'water_tracker';
@@ -37,8 +38,29 @@ class WaterTrackerWidget extends WidgetDefinition {
       return const SizedBox();
     }
 
-    final goal = (data.data['goal'] as num?)?.toInt() ?? 2000;
-    final consumed = (data.data['consumed'] as num?)?.toInt() ?? 0;
+    // Use shared TrackerBase model
+    final tracker = TrackerBase(
+      target: (data.data['goal'] as num?) ?? 2000,
+      unit: 'ml',
+      period: TimePeriod.day,
+    );
+
+    // Parse entries from data
+    final rawEntries = data.data['entries'] as List? ?? [];
+    for (final entry in rawEntries) {
+      if (entry is Map && entry['value'] != null && entry['timestamp'] != null) {
+        tracker.entries.add(TrackerEntry(
+          value: entry['value'],
+          timestamp: DateTime.parse(entry['timestamp']),
+          note: entry['note'],
+        ));
+      }
+    }
+
+    final goal = tracker.target;
+    final consumed = tracker.getPeriodTotal();
+    final progress = tracker.calculateProgress();
+    final streak = tracker.calculateStreak();
     final glasses = consumed ~/ 250;
 
     return Column(
@@ -67,6 +89,25 @@ class WaterTrackerWidget extends WidgetDefinition {
         ),
         const SizedBox(height: 8),
 
+        // Progress
+        LinearProgressIndicator(
+          value: progress,
+          backgroundColor: Colors.grey.shade200,
+          color: AppTheme.info,
+        ),
+        const SizedBox(height: 8),
+
+        // Streak
+        if (streak > 0)
+          Row(
+            children: [
+              Icon(Icons.local_fire_department, size: 16, color: Colors.orange),
+              const SizedBox(width: 4),
+              Text('$streak Tage Streak', style: AppTheme.labelMedium),
+            ],
+          ),
+        const SizedBox(height: 4),
+
         // Add water button
         ActionButton(
           label: '+ 250ml',
@@ -74,7 +115,9 @@ class WaterTrackerWidget extends WidgetDefinition {
           primary: true,
           width: 120,
           onPressed: () {
-            // Add water logic
+            // Quick add using TrackerBase
+            tracker.addEntry(250, note: 'Wasser');
+            // Refresh data
           },
         ),
       ],

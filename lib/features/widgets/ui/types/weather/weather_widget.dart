@@ -24,6 +24,17 @@ class WeatherWidget extends WidgetDefinition {
   RefreshInterval get defaultRefreshInterval => RefreshInterval.hours1;
 
   @override
+  List<WidgetConfigField> get configFields => [
+    WidgetConfigField(
+      key: 'location',
+      label: 'Ort',
+      description: 'Standort für Wetterinformationen',
+      type: 'string',
+      defaultValue: 'Berlin',
+    ),
+  ];
+
+  @override
   Widget buildView(
     WidgetData? data,
     WidgetDataState state,

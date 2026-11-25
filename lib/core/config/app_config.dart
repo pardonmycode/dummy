@@ -5,9 +5,9 @@ enum Environment { dev, staging, prod }
 /// Validate API keys and print warnings for unconfigured placeholders.
 void _validateApiKeys() {
   final keys = {
-    'supabaseAnonKey': supabaseAnonKey,
-    'mapboxToken': mapboxToken,
-    'openaiApiKey': openaiApiKey,
+    'supabaseAnonKey': AppConfig.supabaseAnonKey,
+    'mapboxToken': AppConfig.mapboxToken,
+    'openaiApiKey': AppConfig.openaiApiKey,
   };
 
   for (final entry in keys.entries) {

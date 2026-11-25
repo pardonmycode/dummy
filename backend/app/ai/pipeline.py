@@ -5,12 +5,16 @@ from app.ai.provider import get_provider, AIResponse
 from app.ai.prompts import get_prompt
 from app.ai.tools import get_tools
 from app.ai.cache import get_cached, set_cached
-from app.ai.validation import validate_widget_data, repair_json, has_sources
+from app.ai.validation import validate_widget_data, repair_json, has_sources, validate_quellenpflicht
 from app.ai.tracing import start_trace, add_trace_step, complete_trace
 from datetime import datetime, timezone
 
 # Token and cost tracking
 token_usage: Dict[str, Dict] = {}
+
+# Budget limits (tokens per user)
+USER_TOKEN_BUDGET = 50000
+ai_killed = False  # Kill-switch flag
 
 def _evict_old_token_usage():
     """Evict oldest token_usage entries when over 1000."""
@@ -19,6 +23,39 @@ def _evict_old_token_usage():
         keys_to_remove = list(token_usage.keys())[:100]
         for key in keys_to_remove:
             del token_usage[key]
+
+# Model routing configuration
+SIMPLE_MODELS = ["gpt-4o-mini", "gpt-3.5-turbo"]
+COMPLEX_MODELS = ["gpt-4o", "gpt-4-turbo"]
+
+def determine_model(widget_id: str, user_context: Dict) -> str:
+    """
+    Route to appropriate model based on complexity.
+    
+    Simple requests (weather, basic queries) -> cheaper model
+    Complex requests (analysis, multi-step) -> more capable model
+    """
+    # Kill-switch: if AI is killed, use fallback
+    if ai_killed:
+        return "fallback"
+    
+    # Simple widget types
+    simple_widgets = ["weather_summary"]
+    if widget_id in simple_widgets:
+        return "gpt-4o-mini"
+    
+    # Complex widget types (analysis, recommendations)
+    complex_widgets = ["party_recommendations", "health_insights", "meal_suggestions"]
+    if widget_id in complex_widgets:
+        return "gpt-4o"
+    
+    # Default to complex model
+    return "gpt-4o"
+
+def set_ai_kill_switch(enabled: bool):
+    """Enable/disable AI calls entirely."""
+    global ai_killed
+    ai_killed = enabled
 
 async def run_widget_pipeline(widget_id: str, user_context: Dict, location: Optional[str] = None, force_refresh: bool = False) -> Dict:
     """
@@ -32,6 +69,32 @@ async def run_widget_pipeline(widget_id: str, user_context: Dict, location: Opti
     trace_id = start_trace(user_id, widget_id, None)
     
     try:
+        # Kill-switch check
+        if ai_killed:
+            add_trace_step(trace_id, "kill_switch", {})
+            return {
+                "schemaVersion": 1,
+                "data": {"error": "AI-Dienst derzeit inaktiv"},
+                "sources": [],
+                "generatedAt": datetime.now(timezone.utc).isoformat(),
+                "status": "error"
+            }
+        
+        # Budget check
+        if user_id in token_usage:
+            if token_usage[user_id]["tokens"] >= USER_TOKEN_BUDGET:
+                add_trace_step(trace_id, "budget_exceeded", {"used": token_usage[user_id]["tokens"]})
+                return {
+                    "schemaVersion": 1,
+                    "data": {"error": f"Token-Budget überschritten ({token_usage[user_id]['tokens']}/{USER_TOKEN_BUDGET})"},
+                    "sources": [],
+                    "generatedAt": datetime.now(timezone.utc).isoformat(),
+                    "status": "error"
+                }
+        
+        # Determine model
+        model = determine_model(widget_id, user_context)
+        
         # Check cache
         cache_key_params = {"location": location, "user_id": user_id}
         if not force_refresh:
@@ -68,7 +131,7 @@ async def run_widget_pipeline(widget_id: str, user_context: Dict, location: Opti
                 else:
                     result = await call_with_tools(provider, messages, tools)
             else:
-                response = await asyncio.wait_for(provider.chat(messages, model=prompt_config.get("model")), timeout=60)
+                response = await asyncio.wait_for(provider.chat(messages, model=model), timeout=60)
                 result = {"content": response.content, "sources": response.sources}
             
             add_trace_step(trace_id, "ai_response", {"tokens": result.get("tokens_used", 0)})
@@ -90,6 +153,11 @@ async def run_widget_pipeline(widget_id: str, user_context: Dict, location: Opti
                 "generatedAt": datetime.now(timezone.utc).isoformat(),
                 "status": "error"
             }
+        
+        # Validate Quellenpflicht
+        quellen_valid = validate_quellenpflicht(widget_id, result)
+        if not quellen_valid["valid"]:
+            add_trace_step(trace_id, "quellenpflicht_failed", {"errors": quellen_valid["errors"]})
         
         # Validate and build widget JSON
         widget_json = build_widget_json(widget_id, result, prompt_config)

@@ -93,3 +93,43 @@ def repair_json(text: str) -> Optional[Dict]:
 def has_sources(data: Dict) -> bool:
     """Check if data has required sources field."""
     return isinstance(data.get("sources"), list) and len(data["sources"]) > 0
+
+import re
+
+# Patterns indicating factual data that requires sourcing
+FACTUAL_PATTERNS = [
+    r'\d{1,2}\.\s+\d{1,2}\.',          # German date format (DD. MM.)
+    r'\d{4}-\d{2}-\d{2}',              # ISO date
+    r'\d{1,2}[:.]?\d{2}\s*(Uhr|h)',    # Time expressions
+    r'\d+,\d+\s*°C',                    # Temperature
+    r'\d+\s*(€|EUR|DM)',               # Prices in EUR
+    r'https?://\S+',                    # URLs
+    r'[-+]?[0-9]*\.?[0-9]+%?',          # Percentages/numbers
+]
+
+def contains_factual_data(text: str) -> bool:
+    """Check if text contains factual data (dates, times, prices, locations, links)."""
+    if not isinstance(text, str):
+        return False
+    for pattern in FACTUAL_PATTERNS:
+        if re.search(pattern, text, re.IGNORECASE):
+            return True
+    return False
+
+def validate_quellenpflicht(widget_id: str, result: Dict) -> Dict:
+    """
+    Enforce Quellenpflicht: check that factual data includes sources.
+    
+    Returns validation result with 'valid' and 'errors' keys.
+    """
+    errors = []
+    content = result.get("content", "")
+    sources = result.get("sources", [])
+    
+    if contains_factual_data(content):
+        if not has_sources(result):
+            errors.append("Faktische Daten enthalten, aber keine Quellen angegeben")
+        elif not isinstance(sources, list) or len(sources) == 0:
+            errors.append("Quellen-Pflicht verletzt: sources-Feld ist leer")
+    
+    return {"valid": len(errors) == 0, "errors": errors}

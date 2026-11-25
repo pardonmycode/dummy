@@ -5,9 +5,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 import '../../../../core/theme/theme.dart';
+import '../domain/dashboards_notifier.dart';
 import '../../../widgets/framework/widget_definition.dart';
 import '../../../widgets/framework/widget_instance.dart';
 import '../../../widgets/framework/widget_registry.dart';
+import '../../../widgets/framework/widget_schema_validator.dart';
+import '../../../widgets/framework/widget_local_cache.dart';
 import '../../../widgets/ui/base/widget_card.dart';
 import '../../../widgets/ui/types/weather/weather_widget.dart';
 import '../../../widgets/ui/types/protein/protein_tracker_widget.dart';
@@ -76,6 +79,17 @@ final dashboardWidgetsProvider =
     });
 
 final isEditingProvider = StateProvider<bool>((ref) => false);
+
+// Undo/Redo history
+final undoHistoryProvider = StateProvider<List<List<WidgetInstance>>>((ref) => []);
+final redoHistoryProvider = StateProvider<List<List<WidgetInstance>>>((ref) => []);
+
+// Dashboard management
+final dashboardsProvider = Provider<DashboardsNotifier>((ref) {
+  return DashboardsNotifier();
+});
+
+final activeDashboardProvider = StateProvider<String?>((ref) => null);
 
 // Mock widget data provider
 class MockWidgetDataProvider {
@@ -537,7 +551,16 @@ final widgetDataProvider = FutureProvider.family<Map<String, dynamic>, String>(
     final dashboardWidgets = ref.watch(dashboardWidgetsProvider);
     final instance = dashboardWidgets.firstWhere((w) => w.id == instanceId);
     final provider = ref.watch(mockDataProviderProvider);
-    return provider.getData(instance.widgetType, instance.config);
+    final data = await provider.getData(instance.widgetType, instance.config);
+
+    // Save to local cache
+    await widgetLocalCache.setCachedData(
+      widgetType: instance.widgetType,
+      instanceId: instance.id,
+      data: data,
+    );
+
+    return data;
   },
 );
 
@@ -601,6 +624,13 @@ class DashboardWidgetsNotifier extends StateNotifier<List<WidgetInstance>> {
     _saveWidgets();
   }
 
+  void updateConfig(String id, Map<String, dynamic> newConfig) {
+    state = state
+        .map((w) => w.id == id ? w.clone(newConfig: newConfig) : w)
+        .toList();
+    _saveWidgets();
+  }
+
   Future<void> _loadWidgets() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -660,16 +690,43 @@ class DashboardView extends ConsumerWidget {
     final widgets = ref.watch(dashboardWidgetsProvider);
     final registry = ref.watch(widgetRegistryProvider);
     final isEditing = ref.watch(isEditingProvider);
+    final dashboards = ref.watch(dashboardsProvider);
+    final activeId = ref.watch(activeDashboardProvider);
+    final activeDashboard = dashboards.active;
 
     return Scaffold(
       backgroundColor: bg,
       appBar: AppBar(
-        title: const Text('Mein Dashboard'),
+        title: Text(activeDashboard?.name ?? 'Mein Dashboard'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.dashboard),
+            onPressed: () => _showDashboardSwitcher(context, ref, dashboards),
+            tooltip: 'Dashboard wechseln',
+          ),
+          if (isEditing)
+            IconButton(
+              icon: const Icon(Icons.undo),
+              onPressed: () => _undo(ref),
+              tooltip: 'Zurücknehmen',
+            ),
+          if (isEditing)
+            IconButton(
+              icon: const Icon(Icons.redo),
+              onPressed: () => _redo(ref),
+              tooltip: 'Wiederholen',
+            ),
+          IconButton(
             icon: Icon(isEditing ? Icons.check : Icons.edit),
-            onPressed: () =>
-                ref.read(isEditingProvider.notifier).update((s) => !s),
+            onPressed: () {
+              ref.read(isEditingProvider.notifier).update((s) => !s);
+              if (isEditing) {
+                // Save when exiting edit mode
+                ref
+                    .read(dashboardsProvider)
+                    .saveActive(ref.read(dashboardWidgetsProvider));
+              }
+            },
             tooltip: isEditing ? 'Fertig' : 'Bearbeiten',
           ),
           IconButton(
@@ -745,6 +802,11 @@ class DashboardView extends ConsumerWidget {
       padding: const EdgeInsets.all(AppTheme.spacingSm),
       onReorder: (oldIndex, newIndex) {
         ref
+            .read(undoHistoryProvider.notifier)
+            .update((s) => [...s, widgets]);
+        ref.read(redoHistoryProvider.notifier).state = [];
+
+        ref
             .read(dashboardWidgetsProvider.notifier)
             .moveWidget(oldIndex, newIndex);
       },
@@ -784,6 +846,11 @@ class DashboardView extends ConsumerWidget {
                   ),
                   onSelected: (size) {
                     ref
+                        .read(undoHistoryProvider.notifier)
+                        .update((s) => [...s, widgets]);
+                    ref.read(redoHistoryProvider.notifier).state = [];
+
+                    ref
                         .read(dashboardWidgetsProvider.notifier)
                         .resizeWidget(instance.id, size);
                   },
@@ -806,6 +873,11 @@ class DashboardView extends ConsumerWidget {
                   icon: Icon(Icons.copy, color: AppTheme.lightTextSecondary),
                   onPressed: () {
                     ref
+                        .read(undoHistoryProvider.notifier)
+                        .update((s) => [...s, widgets]);
+                    ref.read(redoHistoryProvider.notifier).state = [];
+
+                    ref
                         .read(dashboardWidgetsProvider.notifier)
                         .duplicateWidget(instance.id);
                   },
@@ -813,6 +885,11 @@ class DashboardView extends ConsumerWidget {
                 IconButton(
                   icon: Icon(Icons.delete, color: Colors.red),
                   onPressed: () {
+                    ref
+                        .read(undoHistoryProvider.notifier)
+                        .update((s) => [...s, widgets]);
+                    ref.read(redoHistoryProvider.notifier).state = [];
+
                     ref
                         .read(dashboardWidgetsProvider.notifier)
                         .removeWidget(instance.id);
@@ -832,16 +909,46 @@ class DashboardView extends ConsumerWidget {
     WidgetInstance instance,
     WidgetDefinition definition,
   ) {
-    return Consumer(
-      builder: (context, ref, _) {
-        final snapshot = ref.watch(widgetDataProvider(instance.id));
-
-        if (snapshot.isLoading) {
-          return WidgetCard(
-            definition: definition,
-            data: null,
-            state: WidgetDataState.loading,
-            config: WidgetConfig(instance.config),
+    return FutureBuilder<Map<String, dynamic>?>(
+      future: _loadWidgetData(ref, instance),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // Check local cache while waiting
+          return FutureBuilder<Map<String, dynamic>?>(
+            future: widgetLocalCache.getCachedData(
+              widgetType: instance.widgetType,
+              instanceId: instance.id,
+            ),
+            builder: (context, cacheSnapshot) {
+              if (cacheSnapshot.hasData && cacheSnapshot.data != null) {
+                // Show cached data with stale indicator
+                return WidgetCard(
+                  definition: definition,
+                  data: WidgetData.fromJson(cacheSnapshot.data!),
+                  state: WidgetDataState.stale,
+                  config: WidgetConfig(instance.config),
+                  onConfigure: () {
+                    final card = WidgetCard(
+                      definition: definition,
+                      data: WidgetData.fromJson(cacheSnapshot.data!),
+                      state: WidgetDataState.stale,
+                      config: WidgetConfig(instance.config),
+                    );
+                    card.showConfigForm(context, ref, instance);
+                  },
+                  onRefresh: () {
+                    ref.invalidate(widgetDataProvider(instance.id));
+                  },
+                );
+              }
+              // No cache, show loading
+              return WidgetCard(
+                definition: definition,
+                data: null,
+                state: WidgetDataState.loading,
+                config: WidgetConfig(instance.config),
+              );
+            },
           );
         }
 
@@ -854,14 +961,240 @@ class DashboardView extends ConsumerWidget {
           );
         }
 
+        if (snapshot.data == null) {
+          return WidgetCard(
+            definition: definition,
+            data: null,
+            state: WidgetDataState.empty,
+            config: WidgetConfig(instance.config),
+          );
+        }
+
+        final rawJson = snapshot.data!;
+
+        // Validate data against schema before rendering
+        final validationErrors =
+            validateWidgetData(instance.widgetType, rawJson);
+
+        if (validationErrors != null && validationErrors.isNotEmpty) {
+          return WidgetCard(
+            definition: definition,
+            data: null,
+            state: WidgetDataState.ready,
+            config: WidgetConfig(instance.config),
+            validationErrors: validationErrors,
+            onRefresh: () {
+              ref.invalidate(widgetDataProvider(instance.id));
+            },
+          );
+        }
+
         return WidgetCard(
           definition: definition,
-          data: WidgetData.fromJson(snapshot.value!),
+          data: WidgetData.fromJson(rawJson),
           state: WidgetDataState.ready,
           config: WidgetConfig(instance.config),
+          onConfigure: () {
+            final card = WidgetCard(
+              definition: definition,
+              data: WidgetData.fromJson(rawJson),
+              state: WidgetDataState.ready,
+              config: WidgetConfig(instance.config),
+            );
+            card.showConfigForm(context, ref, instance);
+          },
+          onRefresh: () {
+            ref.invalidate(widgetDataProvider(instance.id));
+          },
         );
       },
     );
+  }
+
+  Future<Map<String, dynamic>?> _loadWidgetData(
+    WidgetRef ref,
+    WidgetInstance instance,
+  ) async {
+    try {
+      final dashboardWidgets = ref.read(dashboardWidgetsProvider);
+      final inst = dashboardWidgets.firstWhere((w) => w.id == instance.id);
+      final provider = ref.read(mockDataProviderProvider);
+      final data = await provider.getData(inst.widgetType, inst.config);
+
+      // Save to local cache
+      await widgetLocalCache.setCachedData(
+        widgetType: inst.widgetType,
+        instanceId: inst.id,
+        data: data,
+      );
+
+      return data;
+    } catch (e) {
+      // On error, try to load from cache
+      final cached = await widgetLocalCache.getCachedData(
+        widgetType: instance.widgetType,
+        instanceId: instance.id,
+      );
+      if (cached != null) {
+        return cached;
+      }
+      throw e;
+    }
+  }
+
+  void _showDashboardSwitcher(
+    BuildContext context,
+    WidgetRef ref,
+    DashboardsNotifier dashboards,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Dashboards', style: AppTheme.titleMedium),
+              const SizedBox(height: 16),
+              ...dashboards.dashboards.map((dashboard) {
+                final isActive = dashboards.active?.id == dashboard.id;
+                return ListTile(
+                  leading: Icon(
+                    isActive ? Icons.dashboard : Icons.dashboard_outlined,
+                    color: isActive ? AppTheme.primary : Colors.grey,
+                  ),
+                  title: Text(dashboard.name),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.edit, size: 18, color: Colors.grey),
+                        onPressed: () async {
+                          final controller = TextEditingController(
+                            text: dashboard.name,
+                          );
+                          await showDialog(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              title: const Text('Dashboard umbenennen'),
+                              content: TextField(
+                                controller: controller,
+                                decoration: const InputDecoration(
+                                  hintText: 'Dashboard-Name',
+                                ),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx),
+                                  child: const Text('Abbrechen'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    if (controller.text.trim().isNotEmpty) {
+                                      dashboards.rename(
+                                        dashboard.id,
+                                        controller.text.trim(),
+                                      );
+                                    }
+                                    Navigator.pop(ctx);
+                                  },
+                                  child: const Text('Speichern'),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                      if (dashboards.dashboards.length > 1)
+                        IconButton(
+                          icon: Icon(Icons.delete, size: 18, color: Colors.grey),
+                          onPressed: () {
+                            dashboards.delete(dashboard.id);
+                            Navigator.pop(context);
+                          },
+                        ),
+                    ],
+                  ),
+                  onTap: () async {
+                    // Save current dashboard before switching
+                    if (dashboards.active != null) {
+                      await dashboards.saveActive(
+                        ref.read(dashboardWidgetsProvider),
+                      );
+                    }
+                    // Switch to selected dashboard
+                    dashboards.setActive(dashboard.id);
+                    // Load widgets for selected dashboard
+                    final loadedDashboard = dashboards.active;
+                    if (loadedDashboard != null) {
+                      ref
+                          .read(dashboardWidgetsProvider.notifier)
+                          .state = loadedDashboard.widgets;
+                    }
+                    ref.read(activeDashboardProvider.notifier).state = dashboard.id;
+                    Navigator.pop(context);
+                  },
+                );
+              }),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: () async {
+                  // Save current dashboard
+                  if (dashboards.active != null) {
+                    await dashboards.saveActive(
+                      ref.read(dashboardWidgetsProvider),
+                    );
+                  }
+                  // Create new dashboard
+                  final newDashboard = await dashboards.create('Neues Dashboard');
+                  // Switch to new dashboard
+                  dashboards.setActive(newDashboard.id);
+                  ref
+                      .read(dashboardWidgetsProvider.notifier)
+                      .state = newDashboard.widgets;
+                  ref.read(activeDashboardProvider.notifier).state = newDashboard.id;
+                  Navigator.pop(context);
+                },
+                icon: const Icon(Icons.add),
+                label: const Text('Neues Dashboard'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _undo(WidgetRef ref) {
+    final undoHistory = ref.read(undoHistoryProvider);
+    if (undoHistory.isEmpty) return;
+
+    final previous = undoHistory.last;
+    ref.read(undoHistoryProvider.notifier).state = undoHistory.sublist(
+      0,
+      undoHistory.length - 1,
+    );
+
+    ref.read(dashboardWidgetsProvider.notifier).state = previous;
+  }
+
+  void _redo(WidgetRef ref) {
+    final redoHistory = ref.read(redoHistoryProvider);
+    if (redoHistory.isEmpty) return;
+
+    final next = redoHistory.last;
+    ref.read(redoHistoryProvider.notifier).state = redoHistory.sublist(
+      0,
+      redoHistory.length - 1,
+    );
+
+    ref.read(dashboardWidgetsProvider.notifier).state = next;
   }
 
   Widget _buildPlaceholder(String type) {
@@ -887,6 +1220,7 @@ class DashboardView extends ConsumerWidget {
   void _showWidgetCatalog(BuildContext context, WidgetRef ref) {
     final registry = ref.read(widgetRegistryProvider);
     final widgets = registry.getAll();
+    final currentWidgets = ref.read(dashboardWidgetsProvider);
 
     showModalBottomSheet(
       context: context,
@@ -910,6 +1244,11 @@ class DashboardView extends ConsumerWidget {
                   subtitle: Text(def.description),
                   trailing: Icon(Icons.add, color: AppTheme.primary),
                   onTap: () {
+                    ref
+                        .read(undoHistoryProvider.notifier)
+                        .update((s) => [...s, currentWidgets]);
+                    ref.read(redoHistoryProvider.notifier).state = [];
+
                     ref
                         .read(dashboardWidgetsProvider.notifier)
                         .addWidget(def.id);

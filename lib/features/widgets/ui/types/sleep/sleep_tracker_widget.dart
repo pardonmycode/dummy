@@ -27,6 +27,20 @@ class SleepTrackerWidget extends WidgetDefinition {
   WidgetSize get defaultSize => WidgetSize.medium;
 
   @override
+  List<WidgetConfigField> get configFields => [
+    WidgetConfigField(
+      key: 'goal',
+      label: 'Schlafziel (h)',
+      description: 'Dein tägliches Schlafziel in Stunden',
+      type: 'number',
+      defaultValue: 8,
+      min: 4,
+      max: 12,
+      unit: 'h',
+    ),
+  ];
+
+  @override
   Widget buildView(
     WidgetData? data,
     WidgetDataState state,

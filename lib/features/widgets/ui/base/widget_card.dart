@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/theme.dart';
 import '../../framework/widget_definition.dart';
+import '../../framework/widget_instance.dart';
+import '../../../dashboard/ui/views/dashboard_view.dart'
+    show dashboardWidgetsProvider;
 
 /// Base card wrapper for all widgets with header, states, and actions.
 class WidgetCard extends StatelessWidget {
@@ -12,6 +16,7 @@ class WidgetCard extends StatelessWidget {
   final VoidCallback? onRefresh;
   final VoidCallback? onConfigure;
   final VoidCallback? onRemove;
+  final List<String>? validationErrors;
 
   const WidgetCard({
     super.key,
@@ -22,6 +27,7 @@ class WidgetCard extends StatelessWidget {
     this.onRefresh,
     this.onConfigure,
     this.onRemove,
+    this.validationErrors,
   });
 
   @override
@@ -123,15 +129,24 @@ class WidgetCard extends StatelessWidget {
   }
 
   Widget _buildBody(BuildContext context) {
+    // Show validation errors if present
+    if (validationErrors != null && validationErrors!.isNotEmpty) {
+      return _buildValidationError();
+    }
+
+    Widget body;
     switch (state) {
       case WidgetDataState.loading:
-        return _buildLoading();
+        body = _buildLoading();
+        break;
       case WidgetDataState.error:
-        return _buildError();
+        body = _buildError();
+        break;
       case WidgetDataState.empty:
-        return _buildEmpty();
+        body = _buildEmpty();
+        break;
       case WidgetDataState.offline:
-        return Column(
+        body = Column(
           children: [
             Icon(Icons.cloud_off, size: 32, color: Colors.grey),
             const SizedBox(height: 8),
@@ -140,9 +155,194 @@ class WidgetCard extends StatelessWidget {
             definition.buildView(data, state, config),
           ],
         );
+        break;
       default:
-        return definition.buildView(data, state, config);
+        body = definition.buildView(data, state, config);
     }
+
+    // Wrap with RefreshIndicator for pull-to-refresh if onRefresh is provided
+    if (onRefresh != null) {
+      return RefreshIndicator(
+        onRefresh: () async {
+          onRefresh!();
+        },
+        color: definition.color,
+        child: body,
+      );
+    }
+
+    return body;
+  }
+
+  Widget _buildValidationError() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.warning_amber_rounded, size: 32, color: Colors.orange),
+        const SizedBox(height: 8),
+        Text(
+          'Schema-Fehler',
+          style: AppTheme.bodyMedium.copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: validationErrors!.map((error) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Text(
+                    '• $error',
+                    style: AppTheme.bodySmall.copyWith(color: Colors.orange),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Show configuration form for this widget.
+  void showConfigForm(BuildContext context, WidgetRef ref, WidgetInstance instance) {
+    final configFields = definition.configFields;
+    if (configFields.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Keine Konfiguration für ${definition.name}')),
+      );
+      return;
+    }
+
+    final formKey = GlobalKey<FormState>();
+    final config = Map<String, dynamic>.from(instance.config);
+    final controllers = <String, TextEditingController>{};
+
+    for (final field in configFields) {
+      final currentValue = config[field.key] ?? field.defaultValue;
+      controllers[field.key] =
+          TextEditingController(text: currentValue?.toString() ?? '');
+    }
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: Text('Konfiguration: ${definition.name}'),
+          content: SingleChildScrollView(
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: configFields.map((field) {
+                  final controller = controllers[field.key]!;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(field.label, style: AppTheme.labelMedium),
+                        if (field.description != null)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 4),
+                            child: Text(field.description!, style: AppTheme.caption),
+                          ),
+                        if (field.type == 'select' && field.options != null)
+                          DropdownButtonFormField<String>(
+                            value: controller.text.isEmpty
+                                ? null
+                                : controller.text,
+                            items: field.options!.map((option) {
+                              return DropdownMenuItem<String>(
+                                value: option['value']?.toString(),
+                                child: Text(option['label']?.toString() ?? ''),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              controller.text = value ?? '';
+                            },
+                          )
+                        else if (field.type == 'bool')
+                          SwitchListTile(
+                            title: const SizedBox.shrink(),
+                            contentPadding: EdgeInsets.zero,
+                            value: controller.text == 'true',
+                            onChanged: (value) {
+                              controller.text = value.toString();
+                            },
+                          )
+                        else
+                          TextFormField(
+                            controller: controller,
+                            keyboardType:
+                                field.type == 'number'
+                                    ? TextInputType.number
+                                    : TextInputType.text,
+                            decoration: InputDecoration(
+                              hintText: field.defaultValue?.toString(),
+                              suffixText: field.unit,
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Bitte eingeben';
+                              }
+                              if (field.type == 'number') {
+                                try {
+                                  double.parse(value);
+                                } catch (e) {
+                                  return 'Ungültige Zahl';
+                                }
+                              }
+                              return null;
+                            },
+                          ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(ctx);
+                for (final c in controllers.values) {
+                  c.dispose();
+                }
+              },
+              child: const Text('Abbrechen'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (formKey.currentState?.validate() ?? false) {
+                  for (final field in configFields) {
+                    final controller = controllers[field.key]!;
+                    final value = controller.text;
+                    if (field.type == 'number') {
+                      config[field.key] = double.tryParse(value) ?? field.defaultValue;
+                    } else if (field.type == 'bool') {
+                      config[field.key] = value == 'true';
+                    } else {
+                      config[field.key] = value;
+                    }
+                  }
+                  ref
+                      .read(dashboardWidgetsProvider.notifier)
+                      .updateConfig(instance.id, config);
+                  for (final c in controllers.values) {
+                    c.dispose();
+                  }
+                  Navigator.pop(ctx);
+                }
+              },
+              child: const Text('Speichern'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Widget _buildLoading() {

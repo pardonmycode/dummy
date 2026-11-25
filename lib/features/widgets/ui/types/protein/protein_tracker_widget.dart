@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../../core/models/tracker_base.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 
-/// Protein tracker widget - shows daily protein intake with goal progress.
+/// Protein tracker widget using shared TrackerBase model.
 class ProteinTrackerWidget extends WidgetDefinition {
   @override
   String get id => 'protein_tracker';
@@ -27,6 +28,20 @@ class ProteinTrackerWidget extends WidgetDefinition {
   WidgetSize get defaultSize => WidgetSize.medium;
 
   @override
+  List<WidgetConfigField> get configFields => [
+    WidgetConfigField(
+      key: 'goal',
+      label: 'Tagesziel (g)',
+      description: 'Dein tägliches Protein-Ziel in Gramm',
+      type: 'number',
+      defaultValue: 150,
+      min: 50,
+      max: 500,
+      unit: 'g',
+    ),
+  ];
+
+  @override
   Widget buildView(
     WidgetData? data,
     WidgetDataState state,
@@ -36,10 +51,30 @@ class ProteinTrackerWidget extends WidgetDefinition {
       return const SizedBox();
     }
 
-    final goal = (data.data['goal'] as num?)?.toInt() ?? 150;
-    final consumed = (data.data['consumed'] as num?)?.toInt() ?? 0;
+    // Use shared TrackerBase model
+    final tracker = TrackerBase(
+      target: (data.data['goal'] as num?) ?? 150,
+      unit: 'g',
+      period: TimePeriod.day,
+    );
+
+    // Parse entries from data
+    final rawEntries = data.data['entries'] as List? ?? [];
+    for (final entry in rawEntries) {
+      if (entry is Map && entry['value'] != null && entry['timestamp'] != null) {
+        tracker.entries.add(TrackerEntry(
+          value: entry['value'],
+          timestamp: DateTime.parse(entry['timestamp']),
+          note: entry['note'],
+        ));
+      }
+    }
+
+    final goal = tracker.target;
+    final consumed = tracker.getPeriodTotal();
     final remaining = goal - consumed;
-    final progress = consumed / goal;
+    final progress = tracker.calculateProgress();
+    final streak = tracker.calculateStreak();
     final meals = data.data['meals'] as List? ?? [];
 
     return SingleChildScrollView(
@@ -107,6 +142,17 @@ class ProteinTrackerWidget extends WidgetDefinition {
                           'Ziel erreicht! 🎉',
                           style: AppTheme.bodySmall.copyWith(
                             color: Colors.green,
+                          ),
+                        ),
+                      if (streak > 0)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Row(
+                            children: [
+                              Icon(Icons.local_fire_department, size: 14, color: Colors.orange),
+                              const SizedBox(width: 4),
+                              Text('$streak Tage Streak', style: AppTheme.labelSmall),
+                            ],
                           ),
                         ),
                     ],

@@ -18,6 +18,10 @@ import '../../../widgets/ui/types/steps/steps_tracker_widget.dart';
 import '../../../widgets/ui/types/sleep/sleep_tracker_widget.dart';
 import '../../../widgets/ui/types/weight/weight_tracker_widget.dart';
 import '../../../widgets/ui/types/briefing/tagesbriefing_widget.dart';
+import '../../../widgets/ui/types/body_fat/body_fat_tracker_widget.dart';
+import '../../../widgets/ui/types/heart_rate/heart_rate_tracker_widget.dart';
+import '../../../widgets/ui/types/mood/mood_tracker_widget.dart';
+import '../../../widgets/ui/types/tasks/tasks_widget.dart';
 
 // Providers
 final widgetRegistryProvider = Provider<WidgetRegistry>((ref) {
@@ -31,6 +35,10 @@ final widgetRegistryProvider = Provider<WidgetRegistry>((ref) {
   registry.register(SleepTrackerWidget());
   registry.register(WeightTrackerWidget());
   registry.register(TagesbriefingWidget());
+  registry.register(BodyFatTrackerWidget());
+  registry.register(HeartRateTrackerWidget());
+  registry.register(MoodTrackerWidget());
+  registry.register(TasksWidget());
   return registry;
 });
 
@@ -160,6 +168,64 @@ class MockWidgetDataProvider {
           ],
         },
         'sources': ['OpenWeatherMap', 'Google Calendar', 'Todo App'],
+        'generatedAt': DateTime.now().toIso8601String(),
+      };
+    }
+
+    if (widgetType == 'body_fat_tracker') {
+      return {
+        'schemaVersion': 1,
+        'data': {
+          'current': 22.5,
+          'goal': 18.0,
+          'start': 25.0,
+          'trend': 'down',
+        },
+        'sources': ['Lokale Einträge'],
+        'generatedAt': DateTime.now().toIso8601String(),
+      };
+    }
+
+    if (widgetType == 'heart_rate_tracker') {
+      return {
+        'schemaVersion': 1,
+        'data': {
+          'current': 72,
+          'resting': 62,
+          'max': 145,
+          'trend': 'down',
+        },
+        'sources': ['Apple Health'],
+        'generatedAt': DateTime.now().toIso8601String(),
+      };
+    }
+
+    if (widgetType == 'mood_tracker') {
+      return {
+        'schemaVersion': 1,
+        'data': {
+          'mood': 4,
+          'note': 'Fühle mich gut nach dem Training',
+          'week': [3, 4, 5, 4, 3, 4, 4],
+        },
+        'sources': ['Lokale Einträge'],
+        'generatedAt': DateTime.now().toIso8601String(),
+      };
+    }
+
+    if (widgetType == 'tasks') {
+      return {
+        'schemaVersion': 1,
+        'data': {
+          'tasks': [
+            {'title': 'Einkaufen für die Woche', 'time': '10:00', 'priority': 'high'},
+            {'title': 'Projektbericht fertigstellen', 'time': '12:00', 'priority': 'high'},
+            {'title': 'E-Mails beantworten', 'time': '14:00'},
+            {'title': 'Abendessen vorbereiten', 'time': '18:00'},
+          ],
+          'completed': 2,
+        },
+        'sources': ['Todo App'],
         'generatedAt': DateTime.now().toIso8601String(),
       };
     }

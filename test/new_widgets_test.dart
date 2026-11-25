@@ -148,8 +148,8 @@ void main() {
     expect(registry.contains('weight_tracker'), isTrue);
     expect(registry.contains('tagesbriefing'), isTrue);
 
-    // Should have 13 widgets total (6 original + 7 new)
-    expect(registry.getAll().length, 13);
+    // Should have 18 widgets total (6 original + 12 new)
+    expect(registry.getAll().length, 18);
 
     container.dispose();
   });

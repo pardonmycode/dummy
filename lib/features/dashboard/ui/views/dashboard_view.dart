@@ -22,6 +22,11 @@ import '../../../widgets/ui/types/body_fat/body_fat_tracker_widget.dart';
 import '../../../widgets/ui/types/heart_rate/heart_rate_tracker_widget.dart';
 import '../../../widgets/ui/types/mood/mood_tracker_widget.dart';
 import '../../../widgets/ui/types/tasks/tasks_widget.dart';
+import '../../../widgets/ui/types/stress/stress_tracker_widget.dart';
+import '../../../widgets/ui/types/screen_time/screen_time_tracker_widget.dart';
+import '../../../widgets/ui/types/medications/medications_tracker_widget.dart';
+import '../../../widgets/ui/types/calendar/calendar_widget.dart';
+import '../../../widgets/ui/types/quick_notes/quick_notes_widget.dart';
 
 // Providers
 final widgetRegistryProvider = Provider<WidgetRegistry>((ref) {
@@ -39,6 +44,11 @@ final widgetRegistryProvider = Provider<WidgetRegistry>((ref) {
   registry.register(HeartRateTrackerWidget());
   registry.register(MoodTrackerWidget());
   registry.register(TasksWidget());
+  registry.register(StressTrackerWidget());
+  registry.register(ScreenTimeTrackerWidget());
+  registry.register(MedicationsTrackerWidget());
+  registry.register(CalendarWidget());
+  registry.register(QuickNotesWidget());
   return registry;
 });
 
@@ -226,6 +236,90 @@ class MockWidgetDataProvider {
           'completed': 2,
         },
         'sources': ['Todo App'],
+        'generatedAt': DateTime.now().toIso8601String(),
+      };
+    }
+
+    if (widgetType == 'stress_tracker') {
+      return {
+        'schemaVersion': 1,
+        'data': {
+          'level': 45,
+          'trend': 'down',
+          'advice': 'Tiefenatmung kann helfen, den Stress zu reduzieren.',
+        },
+        'sources': ['Apple Health'],
+        'generatedAt': DateTime.now().toIso8601String(),
+      };
+    }
+
+    if (widgetType == 'screen_time_tracker') {
+      return {
+        'schemaVersion': 1,
+        'data': {
+          'total': 315,
+          'goal': 480,
+          'apps': [
+            {'name': 'WhatsApp', 'minutes': 45},
+            {'name': 'Instagram', 'minutes': 90},
+            {'name': 'YouTube', 'minutes': 120},
+            {'name': 'Browser', 'minutes': 60},
+          ],
+        },
+        'sources': ['iOS Bildschirmzeit'],
+        'generatedAt': DateTime.now().toIso8601String(),
+      };
+    }
+
+    if (widgetType == 'medications_tracker') {
+      return {
+        'schemaVersion': 1,
+        'data': {
+          'medications': [
+            {'name': 'Vitamin D', 'dose': '1000 IE', 'time': '08:00', 'taken': true, 'type': 'supplement'},
+            {'name': 'Omega-3', 'dose': '1 Kapsel', 'time': '08:00', 'taken': true, 'type': 'supplement'},
+            {'name': 'Aspirin', 'dose': '100mg', 'time': '20:00', 'taken': false},
+          ],
+          'upcoming': [
+            {'name': 'Aspirin', 'time': 'in 2 Stunden'},
+          ],
+        },
+        'sources': ['Lokale Einträge'],
+        'generatedAt': DateTime.now().toIso8601String(),
+      };
+    }
+
+    if (widgetType == 'calendar') {
+      return {
+        'schemaVersion': 1,
+        'data': {
+          'today': 'Mittwoch, 25. November',
+          'events': [
+            {'title': 'Team Meeting', 'start': '09:00', 'end': '10:00', 'location': 'Konferenzraum'},
+            {'title': 'Mittagessen mit Kunden', 'start': '12:30', 'end': '13:30'},
+            {'title': 'Projekt Review', 'start': '15:00', 'end': '16:00'},
+          ],
+          'freeSlots': [
+            {'start': '10:00', 'end': '12:30'},
+            {'start': '16:30', 'end': '18:00'},
+          ],
+        },
+        'sources': ['Google Calendar'],
+        'generatedAt': DateTime.now().toIso8601String(),
+      };
+    }
+
+    if (widgetType == 'quick_notes') {
+      return {
+        'schemaVersion': 1,
+        'data': {
+          'notes': [
+            {'content': 'Einkaufsliste: Milch, Brot, Eier', 'type': 'text', 'tags': ['einkaufen']},
+            {'content': 'Meeting-Notes: Deadline verschoben auf Freitag', 'type': 'text', 'tags': ['arbeit']},
+            {'content': 'Gespräch mit Dr. Schmidt', 'type': 'voice', 'timestamp': '10:30'},
+          ],
+        },
+        'sources': ['Lokale Einträge'],
         'generatedAt': DateTime.now().toIso8601String(),
       };
     }

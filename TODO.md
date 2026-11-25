@@ -209,16 +209,16 @@ Flutter-App  ->  Backend/API  ->  KI-Orchestrator  ->  Tools (Wetter, Karten, We
 - [x] Wasser
 - [ ] Koffein
 - [x] Schritte
-- [ ] Aktive Minuten
-- [ ] Distanz
+- [x] Aktive Minuten
+- [x] Distanz
 - [ ] Schlaf
-- [ ] Gewicht
+- [x] Gewicht
 - [ ] Körperfett
-- [ ] Puls und Ruhepuls
-- [ ] Stimmung
-- [ ] Stress
-- [ ] Bildschirmzeit
-- [ ] Medikamente und Supplements
+- [x] Puls und Ruhepuls
+- [x] Stimmung
+- [x] Stress
+- [x] Bildschirmzeit
+- [x] Medikamente und Supplements
 - [ ] Eigener Tracker (Name, Einheit und Ziel frei wählbar)
 
 ---

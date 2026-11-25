@@ -198,9 +198,10 @@ void main() {
     expect(registry.contains('caffeine_tracker'), isTrue);
     expect(registry.contains('active_minutes_tracker'), isTrue);
     expect(registry.contains('distance_tracker'), isTrue);
+    expect(registry.contains('custom_tracker'), isTrue);
 
-    // Should have 25 widgets total (6 original + 19 new)
-    expect(registry.getAll().length, 25);
+    // Should have 26 widgets total (6 original + 20 new)
+    expect(registry.getAll().length, 26);
 
     container.dispose();
   });

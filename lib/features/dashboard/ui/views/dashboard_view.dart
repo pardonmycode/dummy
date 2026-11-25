@@ -34,6 +34,7 @@ import '../../../widgets/ui/types/sugar/sugar_tracker_widget.dart';
 import '../../../widgets/ui/types/caffeine/caffeine_tracker_widget.dart';
 import '../../../widgets/ui/types/active_minutes/active_minutes_tracker_widget.dart';
 import '../../../widgets/ui/types/distance/distance_tracker_widget.dart';
+import '../../../widgets/ui/types/custom/custom_tracker_widget.dart';
 
 // Providers
 final widgetRegistryProvider = Provider<WidgetRegistry>((ref) {
@@ -63,6 +64,7 @@ final widgetRegistryProvider = Provider<WidgetRegistry>((ref) {
   registry.register(CaffeineTrackerWidget());
   registry.register(ActiveMinutesTrackerWidget());
   registry.register(DistanceTrackerWidget());
+  registry.register(CustomTrackerWidget());
   return registry;
 });
 
@@ -498,6 +500,24 @@ class MockWidgetDataProvider {
           ],
         },
         'sources': ['Apple Health'],
+        'generatedAt': DateTime.now().toIso8601String(),
+      };
+    }
+
+    if (widgetType == 'custom_tracker') {
+      return {
+        'schemaVersion': 1,
+        'data': {
+          'name': 'Leseminuten',
+          'unit': 'min',
+          'goal': 60,
+          'current': 35,
+          'entries': [
+            {'name': 'Buch: Dune', 'amount': 20, 'time': '20:00'},
+            {'name': 'Zeitung lesen', 'amount': 15, 'time': '08:00'},
+          ],
+        },
+        'sources': ['Lokale Einträge'],
         'generatedAt': DateTime.now().toIso8601String(),
       };
     }

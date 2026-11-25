@@ -36,37 +36,37 @@ import '../../../widgets/ui/types/active_minutes/active_minutes_tracker_widget.d
 import '../../../widgets/ui/types/distance/distance_tracker_widget.dart';
 import '../../../widgets/ui/types/custom/custom_tracker_widget.dart';
 
+// Singleton widget registry — created once, shared across the app
+final _sharedRegistry = WidgetRegistry()
+  ..register(WeatherWidget())
+  ..register(ProteinTrackerWidget())
+  ..register(PartiesWidget())
+  ..register(CarbsTrackerWidget())
+  ..register(WaterTrackerWidget())
+  ..register(StepsTrackerWidget())
+  ..register(SleepTrackerWidget())
+  ..register(WeightTrackerWidget())
+  ..register(TagesbriefingWidget())
+  ..register(BodyFatTrackerWidget())
+  ..register(HeartRateTrackerWidget())
+  ..register(MoodTrackerWidget())
+  ..register(TasksWidget())
+  ..register(StressTrackerWidget())
+  ..register(ScreenTimeTrackerWidget())
+  ..register(MedicationsTrackerWidget())
+  ..register(CalendarWidget())
+  ..register(QuickNotesWidget())
+  ..register(FatTrackerWidget())
+  ..register(CalorieTrackerWidget())
+  ..register(FiberTrackerWidget())
+  ..register(SugarTrackerWidget())
+  ..register(CaffeineTrackerWidget())
+  ..register(ActiveMinutesTrackerWidget())
+  ..register(DistanceTrackerWidget())
+  ..register(CustomTrackerWidget());
+
 // Providers
-final widgetRegistryProvider = Provider<WidgetRegistry>((ref) {
-  final registry = WidgetRegistry();
-  registry.register(WeatherWidget());
-  registry.register(ProteinTrackerWidget());
-  registry.register(PartiesWidget());
-  registry.register(CarbsTrackerWidget());
-  registry.register(WaterTrackerWidget());
-  registry.register(StepsTrackerWidget());
-  registry.register(SleepTrackerWidget());
-  registry.register(WeightTrackerWidget());
-  registry.register(TagesbriefingWidget());
-  registry.register(BodyFatTrackerWidget());
-  registry.register(HeartRateTrackerWidget());
-  registry.register(MoodTrackerWidget());
-  registry.register(TasksWidget());
-  registry.register(StressTrackerWidget());
-  registry.register(ScreenTimeTrackerWidget());
-  registry.register(MedicationsTrackerWidget());
-  registry.register(CalendarWidget());
-  registry.register(QuickNotesWidget());
-  registry.register(FatTrackerWidget());
-  registry.register(CalorieTrackerWidget());
-  registry.register(FiberTrackerWidget());
-  registry.register(SugarTrackerWidget());
-  registry.register(CaffeineTrackerWidget());
-  registry.register(ActiveMinutesTrackerWidget());
-  registry.register(DistanceTrackerWidget());
-  registry.register(CustomTrackerWidget());
-  return registry;
-});
+final widgetRegistryProvider = Provider<WidgetRegistry>((ref) => _sharedRegistry);
 
 final dashboardWidgetsProvider =
     StateNotifierProvider<DashboardWidgetsNotifier, List<WidgetInstance>>((
@@ -530,6 +530,17 @@ final mockDataProviderProvider = Provider<MockWidgetDataProvider>(
   (ref) => MockWidgetDataProvider(),
 );
 
+/// Memoized data provider — caches the Future per widget instance
+/// so rebuilds don't trigger new fetches.
+final widgetDataProvider = FutureProvider.family<Map<String, dynamic>, String>(
+  (ref, instanceId) async {
+    final dashboardWidgets = ref.watch(dashboardWidgetsProvider);
+    final instance = dashboardWidgets.firstWhere((w) => w.id == instanceId);
+    final provider = ref.watch(mockDataProviderProvider);
+    return provider.getData(instance.widgetType, instance.config);
+  },
+);
+
 /// State notifier for dashboard widgets with persistence
 class DashboardWidgetsNotifier extends StateNotifier<List<WidgetInstance>> {
   DashboardWidgetsNotifier() : super(_defaultWidgets()) {
@@ -821,10 +832,11 @@ class DashboardView extends ConsumerWidget {
     WidgetInstance instance,
     WidgetDefinition definition,
   ) {
-    return FutureBuilder<Map<String, dynamic>>(
-      future: _fetchWidgetData(ref, instance),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+    return Consumer(
+      builder: (context, ref, _) {
+        final snapshot = ref.watch(widgetDataProvider(instance.id));
+
+        if (snapshot.isLoading) {
           return WidgetCard(
             definition: definition,
             data: null,
@@ -844,20 +856,12 @@ class DashboardView extends ConsumerWidget {
 
         return WidgetCard(
           definition: definition,
-          data: WidgetData.fromJson(snapshot.data!),
+          data: WidgetData.fromJson(snapshot.value!),
           state: WidgetDataState.ready,
           config: WidgetConfig(instance.config),
         );
       },
     );
-  }
-
-  Future<Map<String, dynamic>> _fetchWidgetData(
-    WidgetRef ref,
-    WidgetInstance instance,
-  ) async {
-    final provider = ref.read(mockDataProviderProvider);
-    return provider.getData(instance.widgetType, instance.config);
   }
 
   Widget _buildPlaceholder(String type) {

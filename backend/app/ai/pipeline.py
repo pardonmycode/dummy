@@ -1,4 +1,5 @@
 import json
+import asyncio
 from typing import Dict, List, Any, Optional
 from app.ai.provider import get_provider, AIResponse
 from app.ai.prompts import get_prompt
@@ -10,6 +11,14 @@ from datetime import datetime
 
 # Token and cost tracking
 token_usage: Dict[str, Dict] = {}
+
+def _evict_old_token_usage():
+    """Evict oldest token_usage entries when over 1000."""
+    if len(token_usage) > 1000:
+        # Remove oldest entries (first 100 inserted)
+        keys_to_remove = list(token_usage.keys())[:100]
+        for key in keys_to_remove:
+            del token_usage[key]
 
 async def run_widget_pipeline(widget_id: str, user_context: Dict, location: Optional[str] = None, force_refresh: bool = False) -> Dict:
     """
@@ -59,7 +68,7 @@ async def run_widget_pipeline(widget_id: str, user_context: Dict, location: Opti
                 else:
                     result = await call_with_tools(provider, messages, tools)
             else:
-                response = await provider.chat(messages, model=prompt_config.get("model"))
+                response = await asyncio.wait_for(provider.chat(messages, model=prompt_config.get("model")), timeout=60)
                 result = {"content": response.content, "sources": response.sources}
             
             add_trace_step(trace_id, "ai_response", {"tokens": result.get("tokens_used", 0)})
@@ -70,6 +79,7 @@ async def run_widget_pipeline(widget_id: str, user_context: Dict, location: Opti
                 token_usage[user_id] = {"tokens": 0, "requests": 0}
             token_usage[user_id]["tokens"] += tokens_used
             token_usage[user_id]["requests"] += 1
+            _evict_old_token_usage()
             
         except Exception as e:
             add_trace_step(trace_id, "error", {"error": str(e)})
@@ -107,7 +117,7 @@ async def call_with_tools(provider, messages, tools, max_iterations: int = 3) ->
     """
     total_tokens = 0
     for i in range(max_iterations):
-        response = await provider.chat(messages, tools=tools)
+        response = await asyncio.wait_for(provider.chat(messages, tools=tools), timeout=60)
         total_tokens += response.tokens_used
         
         if not response.tool_calls:
@@ -169,7 +179,7 @@ async def get_weather(city: str, country: str) -> Dict:
     }
     
     async with httpx.AsyncClient() as client:
-        response = await client.get(url, params=params)
+        response = await client.get(url, params=params, timeout=10)
         if response.status_code == 200:
             data = response.json()
             return {
@@ -184,16 +194,36 @@ async def get_weather(city: str, country: str) -> Dict:
         else:
             return {"error": "Weather API error", "status_code": response.status_code}
 
+def _sanitize_input(text: str, max_length: int = 1000) -> str:
+    """Sanitize user input: escape backticks, trim, limit length."""
+    if not isinstance(text, str):
+        text = str(text)
+    text = text.strip()
+    text = text.replace("`", "\\`")
+    if len(text) > max_length:
+        text = text[:max_length] + "..."
+    return text
+
 def build_user_message(widget_id: str, user_context: Dict, location: Optional[str]) -> str:
     """Build the user message for the AI."""
     if widget_id == "weather_summary":
-        return f"Wetter in {location or user_context.get('location', 'Berlin')} bitte."
+        loc = _sanitize_input(location or user_context.get('location', 'Berlin'))
+        return f"Wetter in {loc} bitte."
     elif widget_id == "party_recommendations":
-        return f"Partys in {location or user_context.get('location', 'Berlin')} heute Abend."
+        loc = _sanitize_input(location or user_context.get('location', 'Berlin'))
+        return f"Partys in {loc} heute Abend."
     elif widget_id == "health_insights":
-        return f"Einsichten für meine Tracker-Daten: {json.dumps(user_context.get('tracker', {}))}"
+        tracker_data = user_context.get('tracker', {})
+        tracker_json = json.dumps(tracker_data)
+        if len(tracker_json) >= 5000:
+            tracker_json = tracker_json[:5000] + "..."
+        return f"Einsichten für meine Tracker-Daten: {tracker_json}"
     elif widget_id == "meal_suggestions":
-        return f"Mahlzeitvorschläge für meine Ziele: {json.dumps(user_context.get('goals', {}))}"
+        goals = user_context.get('goals', {})
+        goals_json = json.dumps(goals)
+        if len(goals_json) >= 5000:
+            goals_json = goals_json[:5000] + "..."
+        return f"Mahlzeitvorschläge für meine Ziele: {goals_json}"
     else:
         return "Aktualisiere deine Daten."
 

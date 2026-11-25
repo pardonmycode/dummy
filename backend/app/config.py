@@ -1,11 +1,15 @@
 import os
+import secrets
+import warnings
 from dotenv import load_dotenv
 
 load_dotenv()
 
 class Settings:
     DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///widgetly.db")
-    SECRET_KEY = os.getenv("SECRET_KEY", "widgetly-secret-key-2025")
+    SECRET_KEY = os.getenv("SECRET_KEY") or secrets.token_urlsafe(48)
+    if not os.getenv("SECRET_KEY") and os.getenv("ENVIRONMENT") == "production":
+        warnings.warn("SECRET_KEY not set in production; using random default that changes on restart", stacklevel=2)
     ALGORITHM = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
     

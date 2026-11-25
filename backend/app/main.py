@@ -22,7 +22,6 @@ app = FastAPI(
 )
 
 app.state.limiter = limiter
-limiter.init_app(app)
 
 @app.exception_handler(RateLimitExceeded)
 async def rate_limit_handler(request, exc):
@@ -33,7 +32,7 @@ async def rate_limit_handler(request, exc):
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:8092", "http://127.0.0.1:8092"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

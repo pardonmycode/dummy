@@ -1,9 +1,12 @@
 import json
 import time
 from datetime import datetime
+from collections import deque
 from typing import Dict, List, Any, Optional
 
-traces: List[Dict] = []
+# Limited to 100 traces, evict oldest
+MAX_TRACES = 100
+traces: deque = deque(maxlen=MAX_TRACES)
 
 def start_trace(user_id: int, widget_id: str, prompt: Optional[str] = None) -> str:
     """Start a new AI run trace."""
@@ -43,7 +46,7 @@ def complete_trace(trace_id: str, tokens_used: int, response: Optional[str] = No
 
 def get_traces(widget_id: Optional[str] = None, user_id: Optional[int] = None, limit: int = 10) -> List[Dict]:
     """Get recent traces."""
-    filtered = traces
+    filtered = list(traces)
     if widget_id:
         filtered = [t for t in filtered if t["widget_id"] == widget_id]
     if user_id:

@@ -1,11 +1,13 @@
 import json
 import hashlib
 import time
+from collections import OrderedDict
 from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
 
-# Simple in-memory cache
-cache: Dict[str, Any] = {}
+# Simple in-memory cache with max 500 entries
+cache: OrderedDict[str, Any] = OrderedDict()
+MAX_CACHE_SIZE = 500
 
 def get_cache_key(widget_id: str, params: Dict) -> str:
     """Generate cache key from widget ID and parameters."""
@@ -29,6 +31,9 @@ def set_cached(widget_id: str, params: Dict, data: Dict, ttl: int = 300):
         "expires": time.time() + ttl,
         "created": time.time()
     }
+    # Evict oldest entries if over max size
+    while len(cache) > MAX_CACHE_SIZE:
+        cache.popitem(last=False)
 
 def clear_cache(widget_id: Optional[str] = None):
     """Clear cache for a widget or all."""
@@ -44,4 +49,4 @@ def get_cache_stats():
     now = time.time()
     active = sum(1 for entry in cache.values() if now < entry["expires"])
     expired = len(cache) - active
-    return {"total": len(cache), "active": active, "expired": expired}
+    return {"total": len(cache), "active": active, "expired": expired, "max_size": MAX_CACHE_SIZE}

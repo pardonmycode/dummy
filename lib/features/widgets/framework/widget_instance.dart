@@ -2,6 +2,9 @@ import 'package:uuid/uuid.dart';
 
 import 'widget_definition.dart';
 
+/// Singleton Uuid instance to avoid recreating on every WidgetInstance.
+final _uuid = Uuid();
+
 /// A concrete instance of a widget on a dashboard.
 class WidgetInstance {
   final String id;
@@ -16,7 +19,7 @@ class WidgetInstance {
     this.size = WidgetSize.medium,
     Map<String, dynamic>? config,
     Map<String, int>? gridPosition,
-  }) : id = id ?? const Uuid().v4(),
+  }) : id = id ?? _uuid.v4(),
        config = config ?? {},
        gridPosition =
            gridPosition ?? {'row': 0, 'col': 0, 'rowSpan': 1, 'colSpan': 1};

@@ -30,6 +30,7 @@ class OpenAIProvider(AIProvider):
             model=model or settings.OPENAI_MODEL,
             messages=messages,
             temperature=0.7,
+            timeout=60,
         )
         content = response.choices[0].message.content or ""
         return AIResponse(
@@ -45,6 +46,7 @@ class OpenAIProvider(AIProvider):
             model=model or settings.OPENAI_MODEL,
             messages=messages,
             response_format={"type": "json_object"},
+            timeout=60,
         )
         content = response.choices[0].message.content or "{}"
         try:

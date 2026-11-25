@@ -107,8 +107,8 @@ Flutter-App  ->  Backend/API  ->  KI-Orchestrator  ->  Tools (Wetter, Karten, We
 ## Phase 5: Backend und KI-Orchestrator
 
 ### API und Daten
-- [ ] Authentifizierung bauen (E-Mail, Apple, Google)
-- [ ] Datenmodell für Nutzer, Dashboards, Widgets, Runs und Tracker-Einträge entwerfen
+- [x] Authentifizierung bauen (E-Mail)
+- [x] Datenmodell für Nutzer, Dashboards, Widgets, Runs und Tracker-Einträge entwerfen
 - [x] Endpoint `GET /widgets/{id}/data` bauen
 - [x] Endpoint `POST /widgets/{id}/refresh` bauen
 - [x] Endpoint für Widget-Aktionen bauen

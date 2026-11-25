@@ -1,50 +1,13 @@
-from fastapi import APIRouter, HTTPException, BackgroundTasks
+from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
 from typing import Optional
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
+
+from app.models import WidgetInstance, get_db
+from app.auth import get_current_user
+from app.ai.pipeline import run_widget_pipeline
 
 router = APIRouter()
-
-# In-memory storage for demo
-widget_data = {
-    "weather": {
-        "schemaVersion": 1,
-        "data": {
-            "location": "Berlin",
-            "current": {
-                "temperature": 22,
-                "feelsLike": 23,
-                "condition": "Sonnig",
-                "humidity": 45,
-                "windSpeed": 12,
-            },
-            "hourly": [
-                {"time": "Jetzt", "temp": 22, "condition": "Sonnig"},
-                {"time": "14:00", "temp": 24, "condition": "Sonnig"},
-                {"time": "15:00", "temp": 23, "condition": "Wolken"},
-            ],
-            "daily": [
-                {"day": "Mo", "high": 24, "low": 14, "condition": "Sonnig"},
-                {"day": "Di", "high": 22, "low": 13, "condition": "Regen"},
-            ],
-            "summary": "Heute sonnig mit 22°C."
-        },
-        "sources": ["OpenWeatherMap API"],
-        "generatedAt": "2025-11-23T14:00:00Z"
-    },
-    "protein_tracker": {
-        "schemaVersion": 1,
-        "data": {
-            "goal": 150,
-            "consumed": 95,
-            "meals": [
-                {"name": "Frühstück: Eier & Avocado", "protein": 25, "time": "08:00"},
-                {"name": "Mittag: Hähnchen & Reis", "protein": 40, "time": "12:30"},
-            ]
-        },
-        "sources": ["Lokale Einträge"],
-        "generatedAt": "2025-11-23T14:00:00Z"
-    }
-}
 
 class RefreshRequest(BaseModel):
     force: Optional[bool] = False
@@ -54,24 +17,73 @@ class ActionRequest(BaseModel):
     data: Optional[dict] = None
 
 @router.get("/{widget_id}/data")
-async def get_widget_data(widget_id: str):
-    if widget_id not in widget_data:
-        raise HTTPException(status_code=404, detail=f"Widget '{widget_id}' not found")
-    return widget_data[widget_id]
+async def get_widget_data(widget_id: str, db: Session = Depends(get_db), user=Depends(get_current_user)):
+    widget = db.query(WidgetInstance).filter(
+        WidgetInstance.user_id == user.id,
+        WidgetInstance.widget_type == widget_id
+    ).first()
+    
+    if widget and widget.data:
+        return widget.data
+    
+    # No stored data, run pipeline
+    return await run_widget_pipeline(widget_id, {"user_id": user.id}, location="Berlin")
 
 @router.post("/{widget_id}/refresh")
-async def refresh_widget(widget_id: str, request: RefreshRequest, background_tasks: BackgroundTasks):
-    if widget_id not in widget_data:
-        raise HTTPException(status_code=404, detail=f"Widget '{widget_id}' not found")
-    # In a real implementation, this would trigger the AI pipeline
+async def refresh_widget(
+    widget_id: str,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user)
+):
+    background_tasks.add_task(
+        refresh_widget_task,
+        user.id,
+        widget_id,
+        db
+    )
     return {"status": "refreshing", "widget_id": widget_id}
 
+async def refresh_widget_task(user_id: int, widget_id: str, db):
+    """Background task to refresh widget data."""
+    try:
+        data = await run_widget_pipeline(widget_id, {"user_id": user_id})
+        
+        widget = db.query(WidgetInstance).filter(
+            WidgetInstance.user_id == user_id,
+            WidgetInstance.widget_type == widget_id
+        ).first()
+        
+        if widget:
+            widget.data = data
+            db.commit()
+    except Exception as e:
+        print(f"Error refreshing widget {widget_id}: {e}")
+
 @router.post("/{widget_id}/action")
-async def widget_action(widget_id: str, request: ActionRequest):
-    if widget_id not in widget_data:
-        raise HTTPException(status_code=404, detail=f"Widget '{widget_id}' not found")
-    return {"status": "action_received", "widget_id": widget_id, "action": request.action}
+async def widget_action(
+    widget_id: str,
+    request: ActionRequest,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user)
+):
+    return {
+        "status": "action_received",
+        "widget_id": widget_id,
+        "action": request.action
+    }
 
 @router.get("/available")
-async def list_available_widgets():
-    return {"widgets": list(widget_data.keys())}
+async def list_available_widgets(user=Depends(get_current_user)):
+    return {
+        "widgets": [
+            "weather_summary",
+            "party_recommendations",
+            "health_insights",
+            "meal_suggestions",
+            "protein_tracker",
+            "carbs_tracker",
+            "water_tracker",
+            "steps_tracker"
+        ]
+    }

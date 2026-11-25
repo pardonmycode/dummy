@@ -41,7 +41,9 @@ class BodyFatTrackerWidget extends WidgetDefinition {
     final start = (data.data['start'] as num?)?.toDouble() ?? current;
     final trend = data.data['trend'] as String? ?? 'stable';
 
-    final progress = (start - goal) != 0 ? (current - start) / (start - goal) : 0;
+    final progress = (start - goal) != 0
+        ? (current - start) / (start - goal)
+        : 0;
 
     return SingleChildScrollView(
       child: Column(
@@ -50,8 +52,14 @@ class BodyFatTrackerWidget extends WidgetDefinition {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('${current.toStringAsFixed(1)}%', style: AppTheme.titleMedium),
-              Text('Ziel: ${goal.toStringAsFixed(1)}%', style: AppTheme.labelSmall),
+              Text(
+                '${current.toStringAsFixed(1)}%',
+                style: AppTheme.titleMedium,
+              ),
+              Text(
+                'Ziel: ${goal.toStringAsFixed(1)}%',
+                style: AppTheme.labelSmall,
+              ),
             ],
           ),
           const SizedBox(height: 8),

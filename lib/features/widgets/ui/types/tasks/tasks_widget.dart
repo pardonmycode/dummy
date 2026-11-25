@@ -97,7 +97,9 @@ class TasksWidget extends WidgetDefinition {
                   child: Row(
                     children: [
                       Icon(
-                        isCompleted ? Icons.check_circle : Icons.circle_outlined,
+                        isCompleted
+                            ? Icons.check_circle
+                            : Icons.circle_outlined,
                         size: 16,
                         color: isCompleted ? Colors.green : null,
                       ),

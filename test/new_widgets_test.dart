@@ -44,7 +44,10 @@ void main() {
     expect(briefing.name, 'Tagesbriefing');
     expect(briefing.category, 'Briefing');
     expect(briefing.defaultSize, WidgetSize.large);
-    expect(briefing.supportedSizes, containsAll([WidgetSize.medium, WidgetSize.large]));
+    expect(
+      briefing.supportedSizes,
+      containsAll([WidgetSize.medium, WidgetSize.large]),
+    );
   });
 
   testWidgets('Sleep widget renders with data', (WidgetTester tester) async {
@@ -62,7 +65,11 @@ void main() {
           child: Container(
             width: 300,
             height: 200,
-            child: sleep.buildView(data, WidgetDataState.ready, WidgetConfig({})),
+            child: sleep.buildView(
+              data,
+              WidgetDataState.ready,
+              WidgetConfig({}),
+            ),
           ),
         ),
       ),
@@ -93,7 +100,11 @@ void main() {
           child: Container(
             width: 300,
             height: 200,
-            child: weight.buildView(data, WidgetDataState.ready, WidgetConfig({})),
+            child: weight.buildView(
+              data,
+              WidgetDataState.ready,
+              WidgetConfig({}),
+            ),
           ),
         ),
       ),
@@ -103,7 +114,9 @@ void main() {
     expect(find.text('Gewichtsabnahme'), findsOneWidget);
   });
 
-  testWidgets('Tagesbriefing widget renders with data', (WidgetTester tester) async {
+  testWidgets('Tagesbriefing widget renders with data', (
+    WidgetTester tester,
+  ) async {
     final briefing = TagesbriefingWidget();
     final data = WidgetData.fromJson({
       'schemaVersion': 1,
@@ -128,7 +141,11 @@ void main() {
           child: Container(
             width: 300,
             height: 400,
-            child: briefing.buildView(data, WidgetDataState.ready, WidgetConfig({})),
+            child: briefing.buildView(
+              data,
+              WidgetDataState.ready,
+              WidgetConfig({}),
+            ),
           ),
         ),
       ),
@@ -147,9 +164,22 @@ void main() {
     expect(registry.contains('sleep_tracker'), isTrue);
     expect(registry.contains('weight_tracker'), isTrue);
     expect(registry.contains('tagesbriefing'), isTrue);
+    expect(registry.contains('body_fat_tracker'), isTrue);
+    expect(registry.contains('heart_rate_tracker'), isTrue);
+    expect(registry.contains('mood_tracker'), isTrue);
+    expect(registry.contains('tasks'), isTrue);
+    expect(registry.contains('stress_tracker'), isTrue);
+    expect(registry.contains('screen_time_tracker'), isTrue);
+    expect(registry.contains('medications_tracker'), isTrue);
+    expect(registry.contains('calendar'), isTrue);
+    expect(registry.contains('quick_notes'), isTrue);
+    expect(registry.contains('fat_tracker'), isTrue);
+    expect(registry.contains('calorie_tracker'), isTrue);
+    expect(registry.contains('fiber_tracker'), isTrue);
+    expect(registry.contains('sugar_tracker'), isTrue);
 
-    // Should have 18 widgets total (6 original + 12 new)
-    expect(registry.getAll().length, 18);
+    // Should have 22 widgets total (6 original + 16 new)
+    expect(registry.getAll().length, 22);
 
     container.dispose();
   });

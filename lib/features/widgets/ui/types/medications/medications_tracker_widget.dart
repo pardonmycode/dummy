@@ -53,7 +53,10 @@ class MedicationsTrackerWidget extends WidgetDefinition {
                 children: [
                   Icon(Icons.medication, size: 48, color: Colors.grey),
                   const SizedBox(height: 8),
-                  Text('Keine Medikamente für heute', style: AppTheme.bodySmall),
+                  Text(
+                    'Keine Medikamente für heute',
+                    style: AppTheme.bodySmall,
+                  ),
                 ],
               ),
             )
@@ -94,7 +97,10 @@ class MedicationsTrackerWidget extends WidgetDefinition {
                             ),
                             if (dose.isNotEmpty || time.isNotEmpty)
                               Text(
-                                [dose, time].where((s) => s.isNotEmpty).join(' · '),
+                                [
+                                  dose,
+                                  time,
+                                ].where((s) => s.isNotEmpty).join(' · '),
                                 style: AppTheme.labelSmall,
                               ),
                           ],
@@ -128,27 +134,22 @@ class MedicationsTrackerWidget extends WidgetDefinition {
             const SizedBox(height: 12),
             Text('Als Nächstes', style: AppTheme.labelMedium),
             const SizedBox(height: 4),
-            ...upcoming
-                .map((u) {
-                  final name = u['name']?.toString() ?? 'Medikament';
-                  final time = u['time']?.toString() ?? '';
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 2),
-                    child: Row(
-                      children: [
-                        Icon(Icons.alarm, size: 14, color: Colors.orange),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            '$name $time',
-                            style: AppTheme.bodySmall,
-                          ),
-                        ),
-                      ],
+            ...upcoming.map((u) {
+              final name = u['name']?.toString() ?? 'Medikament';
+              final time = u['time']?.toString() ?? '';
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 2),
+                child: Row(
+                  children: [
+                    Icon(Icons.alarm, size: 14, color: Colors.orange),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text('$name $time', style: AppTheme.bodySmall),
                     ),
-                  );
-                })
-                .toList(),
+                  ],
+                ),
+              );
+            }).toList(),
           ],
         ],
       ),

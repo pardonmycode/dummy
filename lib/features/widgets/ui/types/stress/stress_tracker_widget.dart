@@ -42,8 +42,8 @@ class StressTrackerWidget extends WidgetDefinition {
     final levelColor = level < 30
         ? Colors.green
         : level < 70
-            ? Colors.orange
-            : Colors.red;
+        ? Colors.orange
+        : Colors.red;
 
     return SingleChildScrollView(
       child: Column(
@@ -72,8 +72,8 @@ class StressTrackerWidget extends WidgetDefinition {
             level < 30
                 ? 'Niedriger Stress'
                 : level < 70
-                    ? 'Mäßiger Stress'
-                    : 'Hoher Stress',
+                ? 'Mäßiger Stress'
+                : 'Hoher Stress',
             style: AppTheme.bodySmall,
           ),
           const SizedBox(height: 8),

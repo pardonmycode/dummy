@@ -55,12 +55,7 @@ void main() {
     final bodyFat = BodyFatTrackerWidget();
     final data = WidgetData.fromJson({
       'schemaVersion': 1,
-      'data': {
-        'current': 22.5,
-        'goal': 18.0,
-        'start': 25.0,
-        'trend': 'down',
-      },
+      'data': {'current': 22.5, 'goal': 18.0, 'start': 25.0, 'trend': 'down'},
       'sources': ['Lokale Einträge'],
       'generatedAt': '2024-01-01T00:00:00Z',
     });
@@ -71,7 +66,11 @@ void main() {
           child: Container(
             width: 300,
             height: 200,
-            child: bodyFat.buildView(data, WidgetDataState.ready, WidgetConfig({})),
+            child: bodyFat.buildView(
+              data,
+              WidgetDataState.ready,
+              WidgetConfig({}),
+            ),
           ),
         ),
       ),
@@ -85,12 +84,7 @@ void main() {
     final heartRate = HeartRateTrackerWidget();
     final data = WidgetData.fromJson({
       'schemaVersion': 1,
-      'data': {
-        'current': 72,
-        'resting': 62,
-        'max': 145,
-        'trend': 'down',
-      },
+      'data': {'current': 72, 'resting': 62, 'max': 145, 'trend': 'down'},
       'sources': ['Apple Health'],
       'generatedAt': '2024-01-01T00:00:00Z',
     });
@@ -101,7 +95,11 @@ void main() {
           child: Container(
             width: 300,
             height: 200,
-            child: heartRate.buildView(data, WidgetDataState.ready, WidgetConfig({})),
+            child: heartRate.buildView(
+              data,
+              WidgetDataState.ready,
+              WidgetConfig({}),
+            ),
           ),
         ),
       ),
@@ -130,7 +128,11 @@ void main() {
           child: Container(
             width: 300,
             height: 200,
-            child: mood.buildView(data, WidgetDataState.ready, WidgetConfig({})),
+            child: mood.buildView(
+              data,
+              WidgetDataState.ready,
+              WidgetConfig({}),
+            ),
           ),
         ),
       ),
@@ -161,7 +163,11 @@ void main() {
           child: Container(
             width: 300,
             height: 300,
-            child: tasks.buildView(data, WidgetDataState.ready, WidgetConfig({})),
+            child: tasks.buildView(
+              data,
+              WidgetDataState.ready,
+              WidgetConfig({}),
+            ),
           ),
         ),
       ),
@@ -180,9 +186,18 @@ void main() {
     expect(registry.contains('heart_rate_tracker'), isTrue);
     expect(registry.contains('mood_tracker'), isTrue);
     expect(registry.contains('tasks'), isTrue);
+    expect(registry.contains('stress_tracker'), isTrue);
+    expect(registry.contains('screen_time_tracker'), isTrue);
+    expect(registry.contains('medications_tracker'), isTrue);
+    expect(registry.contains('calendar'), isTrue);
+    expect(registry.contains('quick_notes'), isTrue);
+    expect(registry.contains('fat_tracker'), isTrue);
+    expect(registry.contains('calorie_tracker'), isTrue);
+    expect(registry.contains('fiber_tracker'), isTrue);
+    expect(registry.contains('sugar_tracker'), isTrue);
 
-    // Should have 18 widgets total (6 original + 12 new)
-    expect(registry.getAll().length, 18);
+    // Should have 22 widgets total (6 original + 16 new)
+    expect(registry.getAll().length, 22);
 
     container.dispose();
   });

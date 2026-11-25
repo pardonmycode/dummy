@@ -51,14 +51,8 @@ class ScreenTimeTrackerWidget extends WidgetDefinition {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                '${hours}h ${minutes}m',
-                style: AppTheme.titleMedium,
-              ),
-              Text(
-                'Ziel: ${goalHours}h',
-                style: AppTheme.labelSmall,
-              ),
+              Text('${hours}h ${minutes}m', style: AppTheme.titleMedium),
+              Text('Ziel: ${goalHours}h', style: AppTheme.labelSmall),
             ],
           ),
           const SizedBox(height: 8),

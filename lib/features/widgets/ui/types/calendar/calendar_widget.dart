@@ -80,11 +80,7 @@ class CalendarWidget extends WidgetDefinition {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(
-                        Icons.event,
-                        size: 16,
-                        color: AppTheme.primary,
-                      ),
+                      Icon(Icons.event, size: 16, color: AppTheme.primary),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Column(
@@ -92,16 +88,11 @@ class CalendarWidget extends WidgetDefinition {
                           children: [
                             Text(title, style: AppTheme.bodyMedium),
                             Text(
-                              isAllDay
-                                  ? 'Ganztägig'
-                                  : '$startTime - $endTime',
+                              isAllDay ? 'Ganztägig' : '$startTime - $endTime',
                               style: AppTheme.bodySmall,
                             ),
                             if (location.isNotEmpty)
-                              Text(
-                                location,
-                                style: AppTheme.labelSmall,
-                              ),
+                              Text(location, style: AppTheme.labelSmall),
                           ],
                         ),
                       ),
@@ -116,25 +107,20 @@ class CalendarWidget extends WidgetDefinition {
             const SizedBox(height: 12),
             Text('Freie Zeitfenster', style: AppTheme.labelMedium),
             const SizedBox(height: 4),
-            ...freeSlots
-                .map((slot) {
-                  final start = slot['start']?.toString() ?? '';
-                  final end = slot['end']?.toString() ?? '';
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 2),
-                    child: Row(
-                      children: [
-                        Icon(Icons.access_time, size: 14, color: Colors.green),
-                        const SizedBox(width: 8),
-                        Text(
-                          '$start - $end',
-                          style: AppTheme.bodySmall,
-                        ),
-                      ],
-                    ),
-                  );
-                })
-                .toList(),
+            ...freeSlots.map((slot) {
+              final start = slot['start']?.toString() ?? '';
+              final end = slot['end']?.toString() ?? '';
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 2),
+                child: Row(
+                  children: [
+                    Icon(Icons.access_time, size: 14, color: Colors.green),
+                    const SizedBox(width: 8),
+                    Text('$start - $end', style: AppTheme.bodySmall),
+                  ],
+                ),
+              );
+            }).toList(),
           ],
         ],
       ),

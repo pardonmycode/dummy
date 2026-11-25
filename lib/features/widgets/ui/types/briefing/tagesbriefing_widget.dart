@@ -159,20 +159,24 @@ class _BriefingSection extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: items!
-                    .map((item) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 2),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.circle,
-                                size: 6,
-                                color: AppTheme.primary,
-                              ),
-                              const SizedBox(width: 6),
-                              Expanded(child: Text(item, style: AppTheme.bodySmall)),
-                            ],
-                          ),
-                        ))
+                    .map(
+                      (item) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 2),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.circle,
+                              size: 6,
+                              color: AppTheme.primary,
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(item, style: AppTheme.bodySmall),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
                     .toList(),
               ),
             ),

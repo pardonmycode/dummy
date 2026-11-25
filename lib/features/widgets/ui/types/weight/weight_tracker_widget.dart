@@ -43,7 +43,9 @@ class WeightTrackerWidget extends WidgetDefinition {
     final lastChange = data.data['lastChange'] as String? ?? '';
 
     final diff = current - goal;
-    final progress = (start - goal) != 0 ? (current - start) / (start - goal) : 0;
+    final progress = (start - goal) != 0
+        ? (current - start) / (start - goal)
+        : 0;
 
     return SingleChildScrollView(
       child: Column(
@@ -57,14 +59,20 @@ class WeightTrackerWidget extends WidgetDefinition {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Aktuell', style: AppTheme.labelSmall),
-                  Text('${current.toStringAsFixed(1)} kg', style: AppTheme.titleMedium),
+                  Text(
+                    '${current.toStringAsFixed(1)} kg',
+                    style: AppTheme.titleMedium,
+                  ),
                 ],
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text('Ziel', style: AppTheme.labelSmall),
-                  Text('${goal.toStringAsFixed(1)} kg', style: AppTheme.titleSmall),
+                  Text(
+                    '${goal.toStringAsFixed(1)} kg',
+                    style: AppTheme.titleSmall,
+                  ),
                 ],
               ),
             ],
@@ -97,20 +105,13 @@ class WeightTrackerWidget extends WidgetDefinition {
             ),
             child: Row(
               children: [
-                Icon(
-                  _trendIcon(trend),
-                  size: 16,
-                  color: _trendColor(trend),
-                ),
+                Icon(_trendIcon(trend), size: 16, color: _trendColor(trend)),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        _trendText(trend),
-                        style: AppTheme.bodyMedium,
-                      ),
+                      Text(_trendText(trend), style: AppTheme.bodyMedium),
                       if (lastChange.isNotEmpty)
                         Text(lastChange, style: AppTheme.caption),
                     ],

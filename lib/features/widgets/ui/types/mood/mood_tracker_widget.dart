@@ -106,16 +106,14 @@ class MoodTrackerWidget extends WidgetDefinition {
             const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: week
-                  .map((dayMood) {
-                    final dayMoodInt = (dayMood as num).toInt();
-                    return Icon(
-                      moodIcons[dayMoodInt - 1],
-                      size: 16,
-                      color: moodColors[dayMoodInt - 1],
-                    );
-                  })
-                  .toList(),
+              children: week.map((dayMood) {
+                final dayMoodInt = (dayMood as num).toInt();
+                return Icon(
+                  moodIcons[dayMoodInt - 1],
+                  size: 16,
+                  color: moodColors[dayMoodInt - 1],
+                );
+              }).toList(),
             ),
           ],
         ],

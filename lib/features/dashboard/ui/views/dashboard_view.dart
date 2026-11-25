@@ -27,6 +27,10 @@ import '../../../widgets/ui/types/screen_time/screen_time_tracker_widget.dart';
 import '../../../widgets/ui/types/medications/medications_tracker_widget.dart';
 import '../../../widgets/ui/types/calendar/calendar_widget.dart';
 import '../../../widgets/ui/types/quick_notes/quick_notes_widget.dart';
+import '../../../widgets/ui/types/fat/fat_tracker_widget.dart';
+import '../../../widgets/ui/types/calories/calorie_tracker_widget.dart';
+import '../../../widgets/ui/types/fiber/fiber_tracker_widget.dart';
+import '../../../widgets/ui/types/sugar/sugar_tracker_widget.dart';
 
 // Providers
 final widgetRegistryProvider = Provider<WidgetRegistry>((ref) {
@@ -49,6 +53,10 @@ final widgetRegistryProvider = Provider<WidgetRegistry>((ref) {
   registry.register(MedicationsTrackerWidget());
   registry.register(CalendarWidget());
   registry.register(QuickNotesWidget());
+  registry.register(FatTrackerWidget());
+  registry.register(CalorieTrackerWidget());
+  registry.register(FiberTrackerWidget());
+  registry.register(SugarTrackerWidget());
   return registry;
 });
 
@@ -134,11 +142,7 @@ class MockWidgetDataProvider {
     if (widgetType == 'sleep_tracker') {
       return {
         'schemaVersion': 1,
-        'data': {
-          'goal': 8,
-          'slept': 7.5,
-          'quality': 8,
-        },
+        'data': {'goal': 8, 'slept': 7.5, 'quality': 8},
         'sources': ['Apple Health'],
         'generatedAt': DateTime.now().toIso8601String(),
       };
@@ -185,12 +189,7 @@ class MockWidgetDataProvider {
     if (widgetType == 'body_fat_tracker') {
       return {
         'schemaVersion': 1,
-        'data': {
-          'current': 22.5,
-          'goal': 18.0,
-          'start': 25.0,
-          'trend': 'down',
-        },
+        'data': {'current': 22.5, 'goal': 18.0, 'start': 25.0, 'trend': 'down'},
         'sources': ['Lokale Einträge'],
         'generatedAt': DateTime.now().toIso8601String(),
       };
@@ -199,12 +198,7 @@ class MockWidgetDataProvider {
     if (widgetType == 'heart_rate_tracker') {
       return {
         'schemaVersion': 1,
-        'data': {
-          'current': 72,
-          'resting': 62,
-          'max': 145,
-          'trend': 'down',
-        },
+        'data': {'current': 72, 'resting': 62, 'max': 145, 'trend': 'down'},
         'sources': ['Apple Health'],
         'generatedAt': DateTime.now().toIso8601String(),
       };
@@ -228,8 +222,16 @@ class MockWidgetDataProvider {
         'schemaVersion': 1,
         'data': {
           'tasks': [
-            {'title': 'Einkaufen für die Woche', 'time': '10:00', 'priority': 'high'},
-            {'title': 'Projektbericht fertigstellen', 'time': '12:00', 'priority': 'high'},
+            {
+              'title': 'Einkaufen für die Woche',
+              'time': '10:00',
+              'priority': 'high',
+            },
+            {
+              'title': 'Projektbericht fertigstellen',
+              'time': '12:00',
+              'priority': 'high',
+            },
             {'title': 'E-Mails beantworten', 'time': '14:00'},
             {'title': 'Abendessen vorbereiten', 'time': '18:00'},
           ],
@@ -276,9 +278,26 @@ class MockWidgetDataProvider {
         'schemaVersion': 1,
         'data': {
           'medications': [
-            {'name': 'Vitamin D', 'dose': '1000 IE', 'time': '08:00', 'taken': true, 'type': 'supplement'},
-            {'name': 'Omega-3', 'dose': '1 Kapsel', 'time': '08:00', 'taken': true, 'type': 'supplement'},
-            {'name': 'Aspirin', 'dose': '100mg', 'time': '20:00', 'taken': false},
+            {
+              'name': 'Vitamin D',
+              'dose': '1000 IE',
+              'time': '08:00',
+              'taken': true,
+              'type': 'supplement',
+            },
+            {
+              'name': 'Omega-3',
+              'dose': '1 Kapsel',
+              'time': '08:00',
+              'taken': true,
+              'type': 'supplement',
+            },
+            {
+              'name': 'Aspirin',
+              'dose': '100mg',
+              'time': '20:00',
+              'taken': false,
+            },
           ],
           'upcoming': [
             {'name': 'Aspirin', 'time': 'in 2 Stunden'},
@@ -295,8 +314,17 @@ class MockWidgetDataProvider {
         'data': {
           'today': 'Mittwoch, 25. November',
           'events': [
-            {'title': 'Team Meeting', 'start': '09:00', 'end': '10:00', 'location': 'Konferenzraum'},
-            {'title': 'Mittagessen mit Kunden', 'start': '12:30', 'end': '13:30'},
+            {
+              'title': 'Team Meeting',
+              'start': '09:00',
+              'end': '10:00',
+              'location': 'Konferenzraum',
+            },
+            {
+              'title': 'Mittagessen mit Kunden',
+              'start': '12:30',
+              'end': '13:30',
+            },
             {'title': 'Projekt Review', 'start': '15:00', 'end': '16:00'},
           ],
           'freeSlots': [
@@ -314,9 +342,102 @@ class MockWidgetDataProvider {
         'schemaVersion': 1,
         'data': {
           'notes': [
-            {'content': 'Einkaufsliste: Milch, Brot, Eier', 'type': 'text', 'tags': ['einkaufen']},
-            {'content': 'Meeting-Notes: Deadline verschoben auf Freitag', 'type': 'text', 'tags': ['arbeit']},
-            {'content': 'Gespräch mit Dr. Schmidt', 'type': 'voice', 'timestamp': '10:30'},
+            {
+              'content': 'Einkaufsliste: Milch, Brot, Eier',
+              'type': 'text',
+              'tags': ['einkaufen'],
+            },
+            {
+              'content': 'Meeting-Notes: Deadline verschoben auf Freitag',
+              'type': 'text',
+              'tags': ['arbeit'],
+            },
+            {
+              'content': 'Gespräch mit Dr. Schmidt',
+              'type': 'voice',
+              'timestamp': '10:30',
+            },
+          ],
+        },
+        'sources': ['Lokale Einträge'],
+        'generatedAt': DateTime.now().toIso8601String(),
+      };
+    }
+
+    if (widgetType == 'fat_tracker') {
+      return {
+        'schemaVersion': 1,
+        'data': {
+          'goal': 70,
+          'consumed': 45,
+          'meals': [
+            {'name': 'Frühstück: Eier & Avocado', 'fat': 15, 'time': '08:00'},
+            {'name': 'Mittag: Hähnchen & Reis', 'fat': 18, 'time': '12:30'},
+            {'name': 'Snack: Nüsse', 'fat': 12, 'time': '15:00'},
+          ],
+        },
+        'sources': ['Lokale Einträge'],
+        'generatedAt': DateTime.now().toIso8601String(),
+      };
+    }
+
+    if (widgetType == 'calorie_tracker') {
+      return {
+        'schemaVersion': 1,
+        'data': {
+          'goal': 2000,
+          'consumed': 1250,
+          'burned': 350,
+          'meals': [
+            {'name': 'Frühstück: Porridge', 'calories': 350, 'time': '08:00'},
+            {
+              'name': 'Mittag: Hähnchen & Reis',
+              'calories': 500,
+              'time': '12:30',
+            },
+            {'name': 'Snack: Apfel & Nüsse', 'calories': 200, 'time': '15:00'},
+          ],
+        },
+        'sources': ['Lokale Einträge'],
+        'generatedAt': DateTime.now().toIso8601String(),
+      };
+    }
+
+    if (widgetType == 'fiber_tracker') {
+      return {
+        'schemaVersion': 1,
+        'data': {
+          'goal': 30,
+          'consumed': 18,
+          'meals': [
+            {'name': 'Frühstück: Haferflocken', 'fiber': 6, 'time': '08:00'},
+            {
+              'name': 'Mittag: Salat mit Vollkornbrot',
+              'fiber': 8,
+              'time': '12:30',
+            },
+            {'name': 'Snack: Beeren', 'fiber': 4, 'time': '15:00'},
+          ],
+        },
+        'sources': ['Lokale Einträge'],
+        'generatedAt': DateTime.now().toIso8601String(),
+      };
+    }
+
+    if (widgetType == 'sugar_tracker') {
+      return {
+        'schemaVersion': 1,
+        'data': {
+          'goal': 50,
+          'consumed': 32,
+          'meals': [
+            {
+              'name': 'Frühstück: Joghurt mit Honig',
+              'sugar': 15,
+              'time': '08:00',
+            },
+            {'name': 'Snack: Schokoriegel', 'sugar': 12, 'time': '15:00'},
+            {'name': 'Getränk: Saft', 'sugar': 5, 'time': '17:00'},
           ],
         },
         'sources': ['Lokale Einträge'],

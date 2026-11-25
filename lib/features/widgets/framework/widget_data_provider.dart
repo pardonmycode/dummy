@@ -33,7 +33,10 @@ class WidgetDataProvider {
       // Wait for the existing request
       try {
         final data = await _inFlightRequests[cacheKey]!;
-        _cache[cacheKey] = CachedWidgetData(data: data, timestamp: DateTime.now());
+        _cache[cacheKey] = CachedWidgetData(
+          data: data,
+          timestamp: DateTime.now(),
+        );
         _errorStates.remove(widgetType);
         onComplete(WidgetData.fromJson(data), WidgetDataState.ready);
         return WidgetDataState.ready;
@@ -46,21 +49,29 @@ class WidgetDataProvider {
 
     // Start new request
     late Future<Map<String, dynamic>> request;
-    request = fetcher().timeout(
+    request = fetcher()
+        .timeout(
           errorTimeout,
-          onTimeout: () => throw TimeoutException('Widget $widgetType timed out'),
-        ).then((data) {
-          _cache[cacheKey] = CachedWidgetData(data: data, timestamp: DateTime.now());
+          onTimeout: () =>
+              throw TimeoutException('Widget $widgetType timed out'),
+        )
+        .then((data) {
+          _cache[cacheKey] = CachedWidgetData(
+            data: data,
+            timestamp: DateTime.now(),
+          );
           _errorStates.remove(widgetType);
           return data;
-        }).catchError((e) {
+        })
+        .catchError((e) {
           _errorStates[widgetType] = WidgetDataState.error;
           // Fall back to stale cache
           if (cached != null) {
             return cached.data;
           }
           throw e;
-        }).whenComplete(() {
+        })
+        .whenComplete(() {
           _inFlightRequests.remove(cacheKey);
         });
 
@@ -93,7 +104,11 @@ class WidgetDataProvider {
     _cache.clear();
   }
 
-  String _cacheKey(String widgetType, String instanceId, Map<String, dynamic>? config) {
+  String _cacheKey(
+    String widgetType,
+    String instanceId,
+    Map<String, dynamic>? config,
+  ) {
     final configHash = config != null ? jsonEncode(config).hashCode : 0;
     return '$widgetType:$instanceId:$configHash';
   }

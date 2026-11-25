@@ -83,7 +83,9 @@ class QuickNotesWidget extends WidgetDefinition {
                               color: Colors.amber,
                             ),
                             const SizedBox(width: 8),
-                            Expanded(child: Text(content, style: AppTheme.bodyMedium)),
+                            Expanded(
+                              child: Text(content, style: AppTheme.bodyMedium),
+                            ),
                           ],
                         ),
                         if (tags.isNotEmpty || timestamp.isNotEmpty)

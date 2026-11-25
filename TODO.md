@@ -202,10 +202,10 @@ Flutter-App  ->  Backend/API  ->  KI-Orchestrator  ->  Tools (Wetter, Karten, We
 ### Einzelne Tracker (jeweils eigenes Widget)
 - [x] Proteine
 - [x] Kohlenhydrate
-- [ ] Fett
-- [ ] Kalorien
-- [ ] Ballaststoffe
-- [ ] Zucker
+- [x] Fett
+- [x] Kalorien
+- [x] Ballaststoffe
+- [x] Zucker
 - [x] Wasser
 - [ ] Koffein
 - [x] Schritte

@@ -31,6 +31,9 @@ import '../../../widgets/ui/types/fat/fat_tracker_widget.dart';
 import '../../../widgets/ui/types/calories/calorie_tracker_widget.dart';
 import '../../../widgets/ui/types/fiber/fiber_tracker_widget.dart';
 import '../../../widgets/ui/types/sugar/sugar_tracker_widget.dart';
+import '../../../widgets/ui/types/caffeine/caffeine_tracker_widget.dart';
+import '../../../widgets/ui/types/active_minutes/active_minutes_tracker_widget.dart';
+import '../../../widgets/ui/types/distance/distance_tracker_widget.dart';
 
 // Providers
 final widgetRegistryProvider = Provider<WidgetRegistry>((ref) {
@@ -57,6 +60,9 @@ final widgetRegistryProvider = Provider<WidgetRegistry>((ref) {
   registry.register(CalorieTrackerWidget());
   registry.register(FiberTrackerWidget());
   registry.register(SugarTrackerWidget());
+  registry.register(CaffeineTrackerWidget());
+  registry.register(ActiveMinutesTrackerWidget());
+  registry.register(DistanceTrackerWidget());
   return registry;
 });
 
@@ -441,6 +447,57 @@ class MockWidgetDataProvider {
           ],
         },
         'sources': ['Lokale Einträge'],
+        'generatedAt': DateTime.now().toIso8601String(),
+      };
+    }
+
+    if (widgetType == 'caffeine_tracker') {
+      return {
+        'schemaVersion': 1,
+        'data': {
+          'goal': 400,
+          'consumed': 250,
+          'sources': [
+            {'name': 'Kaffee', 'amount': 100, 'time': '08:00'},
+            {'name': 'Tee', 'amount': 50, 'time': '11:00'},
+            {'name': 'Energy Drink', 'amount': 100, 'time': '14:00'},
+          ],
+        },
+        'sources': ['Lokale Einträge'],
+        'generatedAt': DateTime.now().toIso8601String(),
+      };
+    }
+
+    if (widgetType == 'active_minutes_tracker') {
+      return {
+        'schemaVersion': 1,
+        'data': {
+          'goal': 60,
+          'minutes': 35,
+          'activities': [
+            {'name': 'Laufen', 'minutes': 20, 'time': '07:30'},
+            {'name': 'Treppensteigen', 'minutes': 5, 'time': '09:00'},
+            {'name': 'Radfahren', 'minutes': 10, 'time': '17:00'},
+          ],
+        },
+        'sources': ['Apple Health'],
+        'generatedAt': DateTime.now().toIso8601String(),
+      };
+    }
+
+    if (widgetType == 'distance_tracker') {
+      return {
+        'schemaVersion': 1,
+        'data': {
+          'goal': 10000,
+          'distance': 6500,
+          'activities': [
+            {'name': 'Laufen', 'distance': 3000, 'time': '07:30'},
+            {'name': 'Zu Fuß gehen', 'distance': 2000, 'time': '12:00'},
+            {'name': 'Radfahren', 'distance': 1500, 'time': '17:00'},
+          ],
+        },
+        'sources': ['Apple Health'],
         'generatedAt': DateTime.now().toIso8601String(),
       };
     }

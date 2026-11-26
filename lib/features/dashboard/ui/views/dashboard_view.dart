@@ -704,7 +704,6 @@ class DashboardView extends ConsumerWidget {
     final widgets = ref.watch(dashboardWidgetsProvider);
     final registry = ref.watch(widgetRegistryProvider);
     final isEditing = ref.watch(isEditingProvider);
-    final dashboards = ref.watch(dashboardsProvider);
 
     return Scaffold(
       backgroundColor: bg,

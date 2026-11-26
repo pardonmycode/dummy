@@ -1,12 +1,14 @@
-import uuid
-from datetime import datetime, timedelta, timezone
+import logging
+from datetime import datetime, timezone
 from typing import Optional
+
+logger = logging.getLogger(__name__)
 from fastapi import APIRouter, HTTPException, Depends, Query
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.auth import get_current_user
-from app.models import User, Notification, DeviceToken, PushNotificationLog, get_db
+from app.models import User, Notification, DeviceToken, PushNotificationLog, NotificationPreferences, get_db
 from app.push_notifications import (
     fcm_service,
     build_notification_message,
@@ -61,7 +63,7 @@ class PushLogResponse(BaseModel):
 
 
 # Notification preference models
-class NotificationPreferences(BaseModel):
+class NotificationPreferencesRequest(BaseModel):
     weather_warnings: bool = True
     goal_achievements: bool = True
     data_refreshes: bool = False
@@ -70,14 +72,34 @@ class NotificationPreferences(BaseModel):
     push_notifications: bool = True
 
 
-# In-memory preferences (not persisted, kept for simplicity)
-notification_preferences: dict = {}
-
-
-def get_user_preferences(user_id: int) -> dict:
-    if user_id not in notification_preferences:
-        notification_preferences[user_id] = NotificationPreferences().model_dump()
-    return notification_preferences[user_id]
+def get_user_preferences(db: Session, user_id: int) -> dict:
+    """Get notification preferences from database."""
+    prefs = db.query(NotificationPreferences).filter(
+        NotificationPreferences.user_id == user_id
+    ).first()
+    
+    if prefs is None:
+        # Create default preferences if not exist
+        prefs = NotificationPreferences(
+            user_id=user_id,
+            weather_warnings=True,
+            goal_achievements=True,
+            data_refreshes=False,
+            ai_insights=True,
+            email_notifications=False,
+            push_notifications=True
+        )
+        db.add(prefs)
+        db.commit()
+    
+    return {
+        "weather_warnings": prefs.weather_warnings,
+        "goal_achievements": prefs.goal_achievements,
+        "data_refreshes": prefs.data_refreshes,
+        "ai_insights": prefs.ai_insights,
+        "email_notifications": prefs.email_notifications,
+        "push_notifications": prefs.push_notifications
+    }
 
 
 # In-app notification endpoints
@@ -298,7 +320,7 @@ async def trigger_weather_alert(
         try:
             send_weather_alert(str(device_token.token), location, alert)
         except Exception as e:
-            print(f"[Weather Alert] Failed to send to {device_token.id}: {e}")
+            logger.error(f"[Weather Alert] Failed to send to {device_token.id}: {e}")
 
     # Store in-app notification
     notif = Notification(
@@ -332,7 +354,7 @@ async def trigger_party_reminder(
         try:
             send_party_reminder(str(device_token.token), party_name, time_remaining)
         except Exception as e:
-            print(f"[Party Reminder] Failed to send to {device_token.id}: {e}")
+            logger.error(f"[Party Reminder] Failed to send to {device_token.id}: {e}")
 
     # Store in-app notification
     notif = Notification(
@@ -367,7 +389,7 @@ async def trigger_tracker_goal(
         try:
             send_tracker_goal(str(device_token.token), goal, value, unit)
         except Exception as e:
-            print(f"[Tracker Goal] Failed to send to {device_token.id}: {e}")
+            logger.error(f"[Tracker Goal] Failed to send to {device_token.id}: {e}")
 
     # Store in-app notification
     notif = Notification(
@@ -402,7 +424,7 @@ async def trigger_ai_insight(
                 "Deine Schlafqualität hat sich die letzte Woche verbessert. Weiter so!",
             )
         except Exception as e:
-            print(f"[AI Insight] Failed to send to {device_token.id}: {e}")
+            logger.error(f"[AI Insight] Failed to send to {device_token.id}: {e}")
 
     # Store in-app notification
     notif = Notification(
@@ -448,20 +470,43 @@ async def get_push_notification_history(
 
 # Preferences endpoints
 @router.get("/preferences")
-async def get_preferences(user: User = Depends(get_current_user)):
+async def get_preferences(
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
+):
     """Get notification preferences."""
-    prefs = get_user_preferences(user.id)
+    prefs = get_user_preferences(db, user.id)
     return {"preferences": prefs}
 
 
 @router.put("/preferences")
 async def update_preferences(
-    prefs: NotificationPreferences,
-    user: User = Depends(get_current_user),
+    prefs_request: NotificationPreferencesRequest,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user)
 ):
     """Update notification preferences."""
-    notification_preferences[user.id] = prefs.model_dump()
-    return {"status": "ok", "preferences": prefs.model_dump()}
+    prefs = db.query(NotificationPreferences).filter(
+        NotificationPreferences.user_id == user.id
+    ).first()
+    
+    if prefs is None:
+        prefs = NotificationPreferences(user_id=user.id)
+        db.add(prefs)
+    
+    prefs.weather_warnings = prefs_request.weather_warnings
+    prefs.goal_achievements = prefs_request.goal_achievements
+    prefs.data_refreshes = prefs_request.data_refreshes
+    prefs.ai_insights = prefs_request.ai_insights
+    prefs.email_notifications = prefs_request.email_notifications
+    prefs.push_notifications = prefs_request.push_notifications
+    
+    db.commit()
+    
+    return {
+        "status": "ok",
+        "preferences": get_user_preferences(db, user.id)
+    }
 
 
 # Test trigger endpoint (for development)

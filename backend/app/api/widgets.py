@@ -9,8 +9,11 @@ from app.auth import get_current_user
 from app.ai.pipeline import run_widget_pipeline
 from app.ai.job_queue import job_queue
 from app.scheduler import schedule_widget_refresh
+import logging
 import json
 import asyncio
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -147,7 +150,7 @@ async def refresh_widget_task(user_id: int, widget_id: str):
             widget.data = data
             db.commit()
     except Exception as e:
-        print(f"Error refreshing widget {widget_id}: {e}")
+        logger.error(f"Error refreshing widget {widget_id}: {e}")
     finally:
         db.close()
 

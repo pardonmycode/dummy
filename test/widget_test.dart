@@ -4,21 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetly/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
+import 'test_helpers.dart';
 
 void main() {
-  setUp(() async {
-    // Mock shared_preferences
-    SharedPreferences.setMockInitialValues({});
-  });
-
-  tearDown(() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.clear();
-    } catch (e) {
-      // Ignore
-    }
-  });
+  setUp(setupTestEnvironment);
+  tearDown(teardownTestEnvironment);
 
   testWidgets('App renders dashboard', (WidgetTester tester) async {
     // Ignore layout overflow warnings during test

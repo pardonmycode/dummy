@@ -6,20 +6,11 @@ import 'package:widgetly/features/widgets/ui/types/weather/weather_widget.dart';
 import 'package:widgetly/features/widgets/ui/types/protein/protein_tracker_widget.dart';
 import 'package:widgetly/features/dashboard/ui/views/dashboard_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'test_helpers.dart';
 
 void main() {
-  setUp(() async {
-    SharedPreferences.setMockInitialValues({});
-  });
-
-  tearDown(() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.clear();
-    } catch (e) {
-      // Ignore
-    }
-  });
+  setUp(setupTestEnvironment);
+  tearDown(teardownTestEnvironment);
 
   group('Widget properties', () {
     test('Weather widget has correct properties', () {

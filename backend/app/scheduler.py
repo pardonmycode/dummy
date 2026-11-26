@@ -1,6 +1,9 @@
+import logging
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from app.models import get_db
 from app.ai.pipeline import run_widget_pipeline
+
+logger = logging.getLogger(__name__)
 
 scheduler = AsyncIOScheduler()
 
@@ -19,7 +22,7 @@ async def scheduled_widget_refresh(widget_id: str, user_id: int):
             widget.data = data
             db.commit()
     except Exception as e:
-        print(f"Scheduled refresh error for {widget_id}: {e}")
+        logger.error(f"Scheduled refresh error for {widget_id}: {e}")
     finally:
         db.close()
 

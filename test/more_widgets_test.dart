@@ -8,20 +8,11 @@ import 'package:widgetly/features/widgets/ui/types/mood/mood_tracker_widget.dart
 import 'package:widgetly/features/widgets/ui/types/tasks/tasks_widget.dart';
 import 'package:widgetly/features/dashboard/ui/views/dashboard_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'test_helpers.dart';
 
 void main() {
-  setUp(() async {
-    SharedPreferences.setMockInitialValues({});
-  });
-
-  tearDown(() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.clear();
-    } catch (e) {
-      // Ignore
-    }
-  });
+  setUp(setupTestEnvironment);
+  tearDown(teardownTestEnvironment);
 
   test('Body Fat widget properties', () {
     final bodyFat = BodyFatTrackerWidget();

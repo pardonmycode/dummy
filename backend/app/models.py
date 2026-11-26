@@ -26,6 +26,7 @@ class User(Base):
     device_tokens = relationship("DeviceToken", back_populates="user", cascade="all, delete-orphan")
     notifications = relationship("Notification", back_populates="user", cascade="all, delete-orphan")
     push_logs = relationship("PushNotificationLog", back_populates="user", cascade="all, delete-orphan")
+    notification_preferences = relationship("NotificationPreferences", back_populates="user", uselist=False, cascade="all, delete-orphan")
 
 class Dashboard(Base):
     __tablename__ = "dashboards"
@@ -116,3 +117,16 @@ class PushNotificationLog(Base):
     error = Column(String)
     sent_at = Column(DateTime, default=datetime.utcnow)
     user = relationship("User", back_populates="push_logs")
+
+class NotificationPreferences(Base):
+    """User notification preferences."""
+    __tablename__ = "notification_preferences"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False, index=True)
+    weather_warnings = Column(Boolean, default=True)
+    goal_achievements = Column(Boolean, default=True)
+    data_refreshes = Column(Boolean, default=False)
+    ai_insights = Column(Boolean, default=True)
+    email_notifications = Column(Boolean, default=False)
+    push_notifications = Column(Boolean, default=True)
+    user = relationship("User", back_populates="notification_preferences")

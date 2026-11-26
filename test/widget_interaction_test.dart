@@ -7,20 +7,11 @@ import 'package:widgetly/features/widgets/framework/widget_instance.dart';
 import 'package:widgetly/features/dashboard/ui/views/dashboard_view.dart';
 import 'package:widgetly/core/i18n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'test_helpers.dart';
 
 void main() {
-  setUp(() async {
-    SharedPreferences.setMockInitialValues({});
-  });
-
-  tearDown(() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.clear();
-    } catch (e) {
-      // Ignore
-    }
-  });
+  setUp(setupTestEnvironment);
+  tearDown(teardownTestEnvironment);
 
   group('Widget instance serialization', () {
     test('WidgetInstance can be serialized and deserialized', () {

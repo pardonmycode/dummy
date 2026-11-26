@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, ForeignKey, Text, JSON, Boolean
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
-from datetime import datetime
+from datetime import datetime, timezone
 from app.config import settings
 
 Base = declarative_base()
@@ -20,7 +20,7 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     password_hash = Column(String, nullable=False)
     name = Column(String, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     dashboards = relationship("Dashboard", back_populates="user", cascade="all, delete-orphan")
     tracker_entries = relationship("TrackerEntry", back_populates="user", cascade="all, delete-orphan")
     device_tokens = relationship("DeviceToken", back_populates="user", cascade="all, delete-orphan")
@@ -34,7 +34,7 @@ class Dashboard(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     name = Column(String, nullable=False)
     layout = Column(JSON, default={})
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     user = relationship("User", back_populates="dashboards")
 
 class WidgetInstance(Base):
@@ -59,7 +59,7 @@ class WidgetRun(Base):
     response = Column(Text)
     sources = Column(JSON, default=[])
     tokens_used = Column(Integer, default=0)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     completed_at = Column(DateTime)
     user = relationship("User")
     widget = relationship("WidgetInstance")
@@ -71,7 +71,7 @@ class TrackerEntry(Base):
     tracker_type = Column(String, nullable=False)
     value = Column(Float, nullable=False)
     unit = Column(String, nullable=False)
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    timestamp = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     note = Column(String)
     meal_name = Column(String)
     user = relationship("User")
@@ -84,7 +84,7 @@ class DeviceToken(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     token = Column(String, unique=True, index=True, nullable=False)
     platform = Column(String, default="unknown")  # android, ios, web
-    registered_at = Column(DateTime, default=datetime.utcnow)
+    registered_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     last_used_at = Column(DateTime)
     active = Column(Boolean, default=True)
     user = relationship("User", back_populates="device_tokens")
@@ -99,7 +99,7 @@ class Notification(Base):
     message = Column(String, nullable=False)
     data = Column(JSON, default={})
     read = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     user = relationship("User", back_populates="notifications")
 
 class PushNotificationLog(Base):
@@ -115,7 +115,7 @@ class PushNotificationLog(Base):
     status = Column(String, default="sent")  # sent, failed, delivered
     fcm_message_id = Column(String)
     error = Column(String)
-    sent_at = Column(DateTime, default=datetime.utcnow)
+    sent_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     user = relationship("User", back_populates="push_logs")
 
 class NotificationPreferences(Base):

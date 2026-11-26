@@ -129,7 +129,7 @@ class SleepTrackerWidget extends WidgetDefinition {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppTheme.accent.withOpacity(0.1),
+                color: AppTheme.accent.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(AppTheme.radiusSm),
               ),
               child: Row(

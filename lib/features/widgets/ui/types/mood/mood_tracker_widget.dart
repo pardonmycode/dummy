@@ -72,7 +72,7 @@ class MoodTrackerWidget extends WidgetDefinition {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: moodColors[mood - 1].withOpacity(0.1),
+              color: moodColors[mood - 1].withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(AppTheme.radiusSm),
             ),
             child: Row(

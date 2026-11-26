@@ -100,7 +100,7 @@ class WeightTrackerWidget extends WidgetDefinition {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: _trendColor(trend).withOpacity(0.1),
+              color: _trendColor(trend).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(AppTheme.radiusSm),
             ),
             child: Row(

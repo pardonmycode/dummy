@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
 from fastapi.responses import StreamingResponse
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, validator
 from sqlalchemy.orm import Session
 
 from app.models import WidgetInstance, get_db
@@ -21,14 +21,62 @@ class RefreshRequest(BaseModel):
     force: Optional[bool] = False
 
 class ScheduleRequest(BaseModel):
-    interval_minutes: int = 30
+    interval_minutes: int = Field(30, ge=1, le=1440)
 
 class ActionRequest(BaseModel):
-    action: str
+    action: str = Field(..., min_length=1, max_length=100)
     data: Optional[dict] = None
+
+class WidgetIdRequest(BaseModel):
+    """Request model with validated widget_id."""
+    widget_id: str = Field(..., min_length=1, max_length=100, pattern=r'^[a-zA-Z0-9_-]+$')
+
+    @validator('widget_id')
+    def validate_widget_id(cls, v):
+        """Validate widget_id is a known type or matches the pattern."""
+        allowed_widgets = {
+            'weather_summary', 'party_recommendations', 'health_insights',
+            'meal_suggestions', 'protein_tracker', 'carbs_tracker',
+            'water_tracker', 'steps_tracker', 'sleep_tracker', 'weight_tracker',
+            'body_fat_tracker', 'heart_rate_tracker', 'mood_tracker',
+            'stress_tracker', 'screen_time_tracker', 'medications_tracker',
+            'tasks', 'calendar', 'quick_notes', 'fat_tracker', 'calorie_tracker',
+            'fiber_tracker', 'sugar_tracker', 'caffeine_tracker',
+            'active_minutes_tracker', 'distance_tracker', 'custom_tracker',
+            'budget', 'stocks', 'opnv', 'news', 'tagesbriefing'
+        }
+        # Allow both exact match and pattern match for extensibility
+        if v not in allowed_widgets:
+            raise ValueError(f"Unknown widget type: {v}")
+        return v
+
+def validate_widget_type(widget_id: str) -> None:
+    """Validate widget_id is a known type."""
+    allowed_widgets = {
+        'weather_summary', 'party_recommendations', 'health_insights',
+        'meal_suggestions', 'protein_tracker', 'carbs_tracker',
+        'water_tracker', 'steps_tracker', 'sleep_tracker', 'weight_tracker',
+        'body_fat_tracker', 'heart_rate_tracker', 'mood_tracker',
+        'stress_tracker', 'screen_time_tracker', 'medications_tracker',
+        'tasks', 'calendar', 'quick_notes', 'fat_tracker', 'calorie_tracker',
+        'fiber_tracker', 'sugar_tracker', 'caffeine_tracker',
+        'active_minutes_tracker', 'distance_tracker', 'custom_tracker',
+        'budget', 'stocks', 'opnv', 'news', 'tagesbriefing'
+    }
+    if widget_id not in allowed_widgets:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unknown widget type: {widget_id}"
+        )
+    if len(widget_id) > 100:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Widget type too long: {len(widget_id)} chars"
+        )
 
 @router.get("/{widget_id}/data")
 async def get_widget_data(widget_id: str, db: Session = Depends(get_db), user=Depends(get_current_user)):
+    validate_widget_type(widget_id)
     widget = db.query(WidgetInstance).filter(
         WidgetInstance.user_id == user.id,
         WidgetInstance.widget_type == widget_id
@@ -42,6 +90,7 @@ async def get_widget_data(widget_id: str, db: Session = Depends(get_db), user=De
 
 @router.get("/{widget_id}/data/stream")
 async def stream_widget_data(widget_id: str, db: Session = Depends(get_db), user=Depends(get_current_user)):
+    validate_widget_type(widget_id)
     """Stream widget data with SSE, sending progress events (loading, processing, complete)."""
     
     # Use a queue to communicate progress events from the pipeline
@@ -113,6 +162,7 @@ async def refresh_widget(
     db: Session = Depends(get_db),
     user=Depends(get_current_user)
 ):
+    validate_widget_type(widget_id)
     background_tasks.add_task(
         refresh_widget_task,
         user.id,
@@ -127,6 +177,7 @@ async def schedule_refresh(
     db: Session = Depends(get_db),
     user=Depends(get_current_user)
 ):
+    validate_widget_type(widget_id)
     """Schedule periodic refresh for a widget."""
     schedule_widget_refresh(widget_id, str(user.id), request.interval_minutes)
     return {
@@ -161,6 +212,7 @@ async def widget_action(
     db: Session = Depends(get_db),
     user=Depends(get_current_user)
 ):
+    validate_widget_type(widget_id)
     # Trigger notification for certain actions
     if request.action == "goal_completed":
         from app.api.notifications import trigger_notification, NotificationTrigger

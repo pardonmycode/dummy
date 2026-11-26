@@ -10,6 +10,7 @@ from app.ai.tools import get_tools, web_search, geocode, get_route, search_event
 from app.ai.cache import get_cached, set_cached
 from app.ai.validation import validate_widget_data, repair_json, has_sources, validate_quellenpflicht
 from app.ai.tracing import start_trace, add_trace_step, complete_trace
+from app.security import sanitize_text, validate_url, validate_location_precision, encrypt_data, decrypt_data
 from datetime import datetime, timezone
 
 # Token and cost tracking
@@ -256,9 +257,12 @@ async def execute_tool(tool_name: str, args: Dict) -> Dict:
         return {"error": str(e)}
 
 async def get_weather(city: str, country: str) -> Dict:
-    """Get weather from OpenWeatherMap API."""
+    """Get weather from OpenWeatherMap API with location precision validation."""
     import httpx
     from app.config import settings
+    
+    # Sanitize location input
+    city = sanitize_text(city)
     
     if not settings.OPENWEATHER_API_KEY:
         return {
@@ -272,6 +276,10 @@ async def get_weather(city: str, country: str) -> Dict:
         }
     
     url = "https://api.openweathermap.org/data/2.5/weather"
+    # Validate URL before using
+    if not validate_url(url):
+        raise ValueError(f"Invalid weather API URL: {url}")
+    
     params = {
         "q": f"{city},{country}",
         "appid": settings.OPENWEATHER_API_KEY,
@@ -306,12 +314,12 @@ def _sanitize_input(text: str, max_length: int = 1000) -> str:
     return text
 
 def build_user_message(widget_id: str, user_context: Dict, location: Optional[str]) -> str:
-    """Build the user message for the AI."""
+    """Build the user message for the AI with security sanitization."""
     if widget_id == "weather_summary":
-        loc = _sanitize_input(location or user_context.get('location', 'Berlin'))
+        loc = sanitize_text(location or user_context.get('location', 'Berlin'))
         return f"Wetter in {loc} bitte."
     elif widget_id == "party_recommendations":
-        loc = _sanitize_input(location or user_context.get('location', 'Berlin'))
+        loc = sanitize_text(location or user_context.get('location', 'Berlin'))
         return f"Partys in {loc} heute Abend."
     elif widget_id == "health_insights":
         tracker_data = user_context.get('tracker', {})
@@ -329,11 +337,26 @@ def build_user_message(widget_id: str, user_context: Dict, location: Optional[st
         return "Aktualisiere deine Daten."
 
 def build_widget_json(widget_id: str, result: Dict, prompt_config: Dict) -> Dict:
-    """Build the final widget JSON structure."""
+    """Build the final widget JSON structure with URL validation for sources."""
+    sources = result.get("sources", [])
+    validated_sources = []
+    for source in sources:
+        if isinstance(source, str):
+            # Validate if it looks like a URL
+            if source.startswith("http://") or source.startswith("https://"):
+                if validate_url(source):
+                    validated_sources.append(source)
+                else:
+                    logger.warning(f"Invalid source URL: {source}")
+            else:
+                validated_sources.append(source)
+        else:
+            validated_sources.append(source)
+    
     return {
         "schemaVersion": 1,
         "data": result.get("content", ""),
-        "sources": result.get("sources", []),
+        "sources": validated_sources,
         "generatedAt": datetime.now(timezone.utc).isoformat(),
         "expiresAt": None,
         "status": "ok"

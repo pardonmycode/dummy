@@ -645,6 +645,11 @@ class DashboardWidgetsNotifier extends StateNotifier<List<WidgetInstance>> {
     _saveWidgets();
   }
 
+  void setWidgets(List<WidgetInstance> widgets) {
+    state = widgets;
+    _saveWidgets();
+  }
+
   Future<void> _loadWidgets() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -838,7 +843,7 @@ class DashboardView extends ConsumerWidget {
         ref
             .read(undoHistoryProvider.notifier)
             .update((s) => [...s, widgets]);
-        ref.read(redoHistoryProvider.notifier).state = [];
+        ref.read(redoHistoryProvider.notifier).update((s) => []);
 
         ref
             .read(dashboardWidgetsProvider.notifier)
@@ -882,7 +887,7 @@ class DashboardView extends ConsumerWidget {
                     ref
                         .read(undoHistoryProvider.notifier)
                         .update((s) => [...s, widgets]);
-                    ref.read(redoHistoryProvider.notifier).state = [];
+                    ref.read(redoHistoryProvider.notifier).update((s) => []);
 
                     ref
                         .read(dashboardWidgetsProvider.notifier)
@@ -909,7 +914,7 @@ class DashboardView extends ConsumerWidget {
                     ref
                         .read(undoHistoryProvider.notifier)
                         .update((s) => [...s, widgets]);
-                    ref.read(redoHistoryProvider.notifier).state = [];
+                    ref.read(redoHistoryProvider.notifier).update((s) => []);
 
                     ref
                         .read(dashboardWidgetsProvider.notifier)
@@ -922,7 +927,7 @@ class DashboardView extends ConsumerWidget {
                     ref
                         .read(undoHistoryProvider.notifier)
                         .update((s) => [...s, widgets]);
-                    ref.read(redoHistoryProvider.notifier).state = [];
+                    ref.read(redoHistoryProvider.notifier).update((s) => []);
 
                     ref
                         .read(dashboardWidgetsProvider.notifier)
@@ -1090,13 +1095,11 @@ class DashboardView extends ConsumerWidget {
 
     final current = ref.read(dashboardWidgetsProvider);
     final previous = undoHistory.last;
-    ref.read(undoHistoryProvider.notifier).state = undoHistory.sublist(
-      0,
-      undoHistory.length - 1,
+    ref.read(undoHistoryProvider.notifier).update(
+      (s) => s.sublist(0, s.length - 1),
     );
     ref.read(redoHistoryProvider.notifier).update((s) => [...s, current]);
-
-    ref.read(dashboardWidgetsProvider.notifier).state = previous;
+    ref.read(dashboardWidgetsProvider.notifier).setWidgets(previous);
   }
 
   void _redo(WidgetRef ref) {
@@ -1105,13 +1108,11 @@ class DashboardView extends ConsumerWidget {
 
     final current = ref.read(dashboardWidgetsProvider);
     final next = redoHistory.last;
-    ref.read(redoHistoryProvider.notifier).state = redoHistory.sublist(
-      0,
-      redoHistory.length - 1,
+    ref.read(redoHistoryProvider.notifier).update(
+      (s) => s.sublist(0, s.length - 1),
     );
     ref.read(undoHistoryProvider.notifier).update((s) => [...s, current]);
-
-    ref.read(dashboardWidgetsProvider.notifier).state = next;
+    ref.read(dashboardWidgetsProvider.notifier).setWidgets(next);
   }
 
   Widget _buildPlaceholder(String type) {
@@ -1164,7 +1165,7 @@ class DashboardView extends ConsumerWidget {
                     ref
                         .read(undoHistoryProvider.notifier)
                         .update((s) => [...s, currentWidgets]);
-                    ref.read(redoHistoryProvider.notifier).state = [];
+                    ref.read(redoHistoryProvider.notifier).update((s) => []);
 
                     ref
                         .read(dashboardWidgetsProvider.notifier)
@@ -1263,7 +1264,7 @@ class DashboardView extends ConsumerWidget {
                           .toList();
                       ref
                           .read(dashboardWidgetsProvider.notifier)
-                          .state = widgets;
+                          .setWidgets(widgets);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(context.l10n.layoutImported)),
                       );
@@ -1307,7 +1308,7 @@ class DashboardView extends ConsumerWidget {
                 subtitle: Text(context.l10n.uploadDescription),
                 onTap: () async {
                   Navigator.pop(ctx);
-                  ref.read(isSyncingProvider.notifier).state = true;
+                  ref.read(isSyncingProvider.notifier).update((s) => true);
                   try {
                     final syncService = DashboardSyncService();
                     final widgets = ref.read(dashboardWidgetsProvider);
@@ -1331,7 +1332,7 @@ class DashboardView extends ConsumerWidget {
                       }
                     }
                   } finally {
-                    ref.read(isSyncingProvider.notifier).state = false;
+                    ref.read(isSyncingProvider.notifier).update((s) => false);
                   }
                 },
               ),
@@ -1341,7 +1342,7 @@ class DashboardView extends ConsumerWidget {
                 subtitle: Text(context.l10n.downloadDescription),
                 onTap: () async {
                   Navigator.pop(ctx);
-                  ref.read(isSyncingProvider.notifier).state = true;
+                  ref.read(isSyncingProvider.notifier).update((s) => true);
                   try {
                     final syncService = DashboardSyncService();
                     final syncResult = await syncService.syncFromServer();
@@ -1360,7 +1361,7 @@ class DashboardView extends ConsumerWidget {
                                 .toList();
                             ref
                                 .read(dashboardWidgetsProvider.notifier)
-                                .state = widgets;
+                                .setWidgets(widgets);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text(context.l10n.layoutDownloaded)),
                             );
@@ -1381,7 +1382,7 @@ class DashboardView extends ConsumerWidget {
                       );
                     }
                   } finally {
-                    ref.read(isSyncingProvider.notifier).state = false;
+                    ref.read(isSyncingProvider.notifier).update((s) => false);
                   }
                 },
               ),
@@ -1413,7 +1414,7 @@ class DashboardView extends ConsumerWidget {
                 onTap: () {
                   Navigator.pop(ctx);
                   // Apply fitness template
-                  ref.read(dashboardWidgetsProvider.notifier).state = [
+                  ref.read(dashboardWidgetsProvider.notifier).setWidgets([
                     WidgetInstance(
                       widgetType: 'steps',
                       config: {},
@@ -1430,7 +1431,7 @@ class DashboardView extends ConsumerWidget {
                       widgetType: 'weight_tracker',
                       config: {},
                     ),
-                  ];
+                  ]);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(context.l10n.fitnessTemplateApplied)),
                   );
@@ -1442,11 +1443,11 @@ class DashboardView extends ConsumerWidget {
                 subtitle: const Text('Produktivitäts-Widlets'),
                 onTap: () {
                   Navigator.pop(ctx);
-                  ref.read(dashboardWidgetsProvider.notifier).state = [
+                  ref.read(dashboardWidgetsProvider.notifier).setWidgets([
                     WidgetInstance(widgetType: 'tasks', config: {}),
                     WidgetInstance(widgetType: 'calendar', config: {}),
                     WidgetInstance(widgetType: 'quick_notes', config: {}),
-                  ];
+                  ]);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(context.l10n.workTemplateApplied)),
                   );
@@ -1458,12 +1459,12 @@ class DashboardView extends ConsumerWidget {
                 subtitle: const Text('Wetter, UV & Luftqualität'),
                 onTap: () {
                   Navigator.pop(ctx);
-                  ref.read(dashboardWidgetsProvider.notifier).state = [
+                  ref.read(dashboardWidgetsProvider.notifier).setWidgets([
                     WidgetInstance(
                       widgetType: 'weather',
                       config: {'location': 'Berlin'},
                     ),
-                  ];
+                  ]);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(context.l10n.weatherTemplateApplied)),
                   );

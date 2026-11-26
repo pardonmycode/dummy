@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import './widget_definition.dart';
+import './widget_schema_validator.dart';
 
 /// Generic data provider for widgets with caching and error isolation.
 class WidgetDataProvider {
@@ -9,22 +10,43 @@ class WidgetDataProvider {
   final Map<String, CachedWidgetData> _cache = {};
   final Map<String, WidgetDataState> _errorStates = {};
 
-  /// Fetch data for a widget, with caching and error isolation.
+  /// Fetch data for a widget, with caching, validation, and error isolation.
+  /// Validates data against the widget's JSON schema before caching/rendering.
   Future<WidgetDataState> fetchWidgetData({
     required String widgetType,
     required String instanceId,
     required Map<String, dynamic>? config,
     required Future<Map<String, dynamic>> Function() fetcher,
-    required void Function(WidgetData? data, WidgetDataState state) onComplete,
+    required void Function(
+      WidgetData? data,
+      WidgetDataState state,
+      List<String>? validationErrors,
+    ) onComplete,
     Duration cacheDuration = const Duration(hours: 1),
     Duration errorTimeout = const Duration(seconds: 30),
   }) async {
     final cacheKey = _cacheKey(widgetType, instanceId, config);
 
+    // Validate and report helper
+    bool validateAndReport(Map<String, dynamic> data) {
+      final errors = validateWidgetData(widgetType, data);
+      if (errors != null && errors.isNotEmpty) {
+        print('Widget schema validation failed for $widgetType:');
+        for (final error in errors) {
+          print('  - $error');
+        }
+        onComplete(WidgetData.fromJson(data), WidgetDataState.ready, errors);
+        return true;
+      }
+      return false;
+    }
+
     // Check cache first
     final cached = _cache[cacheKey];
     if (cached != null && !cached.isExpired(cacheDuration)) {
-      onComplete(WidgetData.fromJson(cached.data), WidgetDataState.ready);
+      if (!validateAndReport(cached.data)) {
+        onComplete(WidgetData.fromJson(cached.data), WidgetDataState.ready, null);
+      }
       return WidgetDataState.ready;
     }
 
@@ -38,11 +60,13 @@ class WidgetDataProvider {
           timestamp: DateTime.now(),
         );
         _errorStates.remove(widgetType);
-        onComplete(WidgetData.fromJson(data), WidgetDataState.ready);
+        if (!validateAndReport(data)) {
+          onComplete(WidgetData.fromJson(data), WidgetDataState.ready, null);
+        }
         return WidgetDataState.ready;
       } catch (e) {
         _errorStates[widgetType] = WidgetDataState.error;
-        onComplete(null, WidgetDataState.error);
+        onComplete(null, WidgetDataState.error, null);
         return WidgetDataState.error;
       }
     }
@@ -79,14 +103,18 @@ class WidgetDataProvider {
 
     try {
       final data = await request;
-      onComplete(WidgetData.fromJson(data), WidgetDataState.ready);
+      if (!validateAndReport(data)) {
+        onComplete(WidgetData.fromJson(data), WidgetDataState.ready, null);
+      }
       return WidgetDataState.ready;
     } catch (e) {
       if (cached != null) {
-        onComplete(WidgetData.fromJson(cached.data), WidgetDataState.stale);
+        if (!validateAndReport(cached.data)) {
+          onComplete(WidgetData.fromJson(cached.data), WidgetDataState.stale, null);
+        }
         return WidgetDataState.stale;
       }
-      onComplete(null, WidgetDataState.error);
+      onComplete(null, WidgetDataState.error, null);
       return WidgetDataState.error;
     }
   }

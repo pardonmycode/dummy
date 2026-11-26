@@ -1,9 +1,12 @@
 import json
 import asyncio
+import logging
 from typing import Dict, List, Any, Optional
+
+logger = logging.getLogger(__name__)
 from app.ai.provider import get_provider, AIResponse
 from app.ai.prompts import get_prompt
-from app.ai.tools import get_tools
+from app.ai.tools import get_tools, web_search, geocode, get_route, search_events
 from app.ai.cache import get_cached, set_cached
 from app.ai.validation import validate_widget_data, repair_json, has_sources, validate_quellenpflicht
 from app.ai.tracing import start_trace, add_trace_step, complete_trace
@@ -57,9 +60,11 @@ def set_ai_kill_switch(enabled: bool):
     global ai_killed
     ai_killed = enabled
 
-async def run_widget_pipeline(widget_id: str, user_context: Dict, location: Optional[str] = None, force_refresh: bool = False) -> Dict:
+async def run_widget_pipeline(widget_id: str, user_context: Dict, location: Optional[str] = None, force_refresh: bool = False, on_progress=None) -> Dict:
     """
     Run the complete AI pipeline for a widget.
+    
+    on_progress: Optional callback(status, data) for streaming updates.
     
     Returns the validated widget JSON structure.
     """
@@ -67,6 +72,9 @@ async def run_widget_pipeline(widget_id: str, user_context: Dict, location: Opti
     
     # Start trace
     trace_id = start_trace(user_id, widget_id, None)
+    
+    if on_progress:
+        on_progress("loading", {"widget_id": widget_id})
     
     try:
         # Kill-switch check
@@ -98,6 +106,8 @@ async def run_widget_pipeline(widget_id: str, user_context: Dict, location: Opti
         # Check cache
         cache_key_params = {"location": location, "user_id": user_id}
         if not force_refresh:
+            if on_progress:
+                on_progress("checking_cache", {"widget_id": widget_id})
             cached = get_cached(widget_id, cache_key_params)
             if cached:
                 add_trace_step(trace_id, "cache_hit", {"widget_id": widget_id})
@@ -122,6 +132,8 @@ async def run_widget_pipeline(widget_id: str, user_context: Dict, location: Opti
         tools = get_tools(prompt_config.get("tools", []))
         
         # Call AI
+        if on_progress:
+            on_progress("calling_ai", {"widget_id": widget_id, "model": model})
         try:
             if tools:
                 provider_type = type(provider).__name__
@@ -155,6 +167,8 @@ async def run_widget_pipeline(widget_id: str, user_context: Dict, location: Opti
             }
         
         # Validate Quellenpflicht
+        if on_progress:
+            on_progress("processing", {"widget_id": widget_id})
         quellen_valid = validate_quellenpflicht(widget_id, result)
         if not quellen_valid["valid"]:
             add_trace_step(trace_id, "quellenpflicht_failed", {"errors": quellen_valid["errors"]})
@@ -210,16 +224,35 @@ async def execute_tool(tool_name: str, args: Dict) -> Dict:
         if tool_name == "get_weather":
             return await get_weather(args.get("city", ""), args.get("country", "DE"))
         elif tool_name == "web_search":
-            return {"results": [{"title": "Mock Result", "url": "https://example.com"}]}
+            query = args.get("query", "")
+            return await web_search(query)
         elif tool_name == "geocode":
-            return {"lat": 52.52, "lon": 13.405, "city": args.get("address", "Berlin")}
+            address = args.get("address", "")
+            return await geocode(address)
+        elif tool_name == "get_route":
+            return await get_route(
+                args.get("from", ""),
+                args.get("to", ""),
+                args.get("mode", "car")
+            )
+        elif tool_name == "search_events":
+            return await search_events(
+                args.get("city", ""),
+                args.get("date"),
+                args.get("type")
+            )
         elif tool_name == "get_tracker_data":
             return {"data": [], "message": "No tracker data available"}
         elif tool_name == "get_food_nutrition":
             return {"protein": 0, "carbs": 0, "fat": 0, "calories": 0}
+        elif tool_name == "get_calendar_events":
+            return {"events": [], "message": "No calendar data available"}
+        elif tool_name == "get_news":
+            return await web_search(args.get("topic", "") + " news")
         else:
             return {"error": f"Unknown tool: {tool_name}"}
     except Exception as e:
+        logger.error(f"Tool execution failed: {tool_name} - {e}")
         return {"error": str(e)}
 
 async def get_weather(city: str, country: str) -> Dict:

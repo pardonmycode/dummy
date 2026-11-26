@@ -37,7 +37,7 @@ async def get_summary(tracker_type: str):
 async def add_entry(tracker_type: str, entry: TrackerEntry):
     if tracker_type not in tracker_entries:
         raise HTTPException(status_code=404, detail="Tracker type not found")
-    entry_dict = entry.dict()
+    entry_dict = entry.model_dump()
     entry_dict["id"] = f"e_{len(tracker_entries[tracker_type]) + 1}"
     entry_dict["timestamp"] = datetime.now().isoformat()
     tracker_entries[tracker_type].append(entry_dict)

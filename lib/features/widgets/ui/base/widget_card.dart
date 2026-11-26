@@ -6,6 +6,7 @@ import '../../framework/widget_definition.dart';
 import '../../framework/widget_instance.dart';
 import '../../../dashboard/ui/views/dashboard_view.dart'
     show dashboardWidgetsProvider;
+import '../components/widget_action_menu.dart';
 
 /// Base card wrapper for all widgets with header, states, and actions.
 class WidgetCard extends StatelessWidget {
@@ -16,6 +17,9 @@ class WidgetCard extends StatelessWidget {
   final VoidCallback? onRefresh;
   final VoidCallback? onConfigure;
   final VoidCallback? onRemove;
+  final VoidCallback? onOpen;
+  final VoidCallback? onShare;
+  final VoidCallback? onSave;
   final List<String>? validationErrors;
 
   const WidgetCard({
@@ -27,6 +31,9 @@ class WidgetCard extends StatelessWidget {
     this.onRefresh,
     this.onConfigure,
     this.onRemove,
+    this.onOpen,
+    this.onShare,
+    this.onSave,
     this.validationErrors,
   });
 
@@ -68,20 +75,15 @@ class WidgetCard extends StatelessWidget {
                   ),
                 ),
                 _buildStateIndicator(state),
-                if (onRefresh != null)
-                  IconButton(
-                    icon: Icon(Icons.refresh, size: 14),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    onPressed: onRefresh,
-                  ),
-                if (onConfigure != null)
-                  IconButton(
-                    icon: Icon(Icons.settings, size: 14),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    onPressed: onConfigure,
-                  ),
+                // Standardized action menu
+                WidgetActionMenu(
+                  onOpen: onOpen,
+                  onShare: onShare,
+                  onSave: onSave,
+                  onRefresh: onRefresh,
+                  onConfigure: onConfigure,
+                  onRemove: onRemove,
+                ),
               ],
             ),
           ),

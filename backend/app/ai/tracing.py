@@ -1,6 +1,6 @@
 import json
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from collections import deque
 from typing import Dict, List, Any, Optional
 
@@ -16,7 +16,7 @@ def start_trace(user_id: int, widget_id: str, prompt: Optional[str] = None) -> s
         "user_id": user_id,
         "widget_id": widget_id,
         "prompt": prompt,
-        "started_at": datetime.utcnow().isoformat(),
+        "started_at": datetime.now(timezone.utc).isoformat(),
         "steps": [],
         "completed": False
     }
@@ -30,7 +30,7 @@ def add_trace_step(trace_id: str, step: str, data: Dict):
             trace["steps"].append({
                 "step": step,
                 "data": data,
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat()
             })
             break
 
@@ -41,7 +41,7 @@ def complete_trace(trace_id: str, tokens_used: int, response: Optional[str] = No
             trace["completed"] = True
             trace["tokens_used"] = tokens_used
             trace["response"] = response
-            trace["completed_at"] = datetime.utcnow().isoformat()
+            trace["completed_at"] = datetime.now(timezone.utc).isoformat()
             break
 
 def get_traces(widget_id: Optional[str] = None, user_id: Optional[int] = None, limit: int = 10) -> List[Dict]:

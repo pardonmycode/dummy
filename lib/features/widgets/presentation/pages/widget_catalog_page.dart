@@ -77,15 +77,18 @@ class _WidgetCatalogPageState extends ConsumerState<WidgetCatalogPage> {
   }
 
   List<String> get categories {
-    final cats = <String>{};
-    for (final widget in registry.getAll()) {
-      cats.add(widget.category);
-    }
-    return cats.toList()..sort();
+    final cats = registry.getCategories();
+    cats.sort();
+    return cats;
   }
 
   List<WidgetDefinition> get filteredWidgets {
-    var widgets = registry.getAll();
+    List<WidgetDefinition> widgets;
+    if (_selectedCategory != null) {
+      widgets = registry.getByCategory(_selectedCategory!);
+    } else {
+      widgets = registry.getAll();
+    }
 
     if (_searchQuery.isNotEmpty) {
       final query = _searchQuery.toLowerCase();
@@ -93,10 +96,6 @@ class _WidgetCatalogPageState extends ConsumerState<WidgetCatalogPage> {
         return w.name.toLowerCase().contains(query) ||
             w.description.toLowerCase().contains(query);
       }).toList();
-    }
-
-    if (_selectedCategory != null) {
-      widgets = widgets.where((w) => w.category == _selectedCategory).toList();
     }
 
     return widgets;

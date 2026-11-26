@@ -1,15 +1,20 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dart:convert';
 
+import '../../../../core/i18n/app_localizations.dart';
 import '../../../../core/theme/theme.dart';
 import '../domain/dashboards_notifier.dart';
+import '../../domain/dashboard_sync_service.dart';
 import '../../../widgets/framework/widget_definition.dart';
 import '../../../widgets/framework/widget_instance.dart';
 import '../../../widgets/framework/widget_registry.dart';
 import '../../../widgets/framework/widget_schema_validator.dart';
+import '../../../widgets/framework/widget_schema_migration.dart';
 import '../../../widgets/framework/widget_local_cache.dart';
 import '../../../widgets/ui/base/widget_card.dart';
 import '../../../widgets/ui/types/weather/weather_widget.dart';
@@ -79,6 +84,7 @@ final dashboardWidgetsProvider =
     });
 
 final isEditingProvider = StateProvider<bool>((ref) => false);
+final isSyncingProvider = StateProvider<bool>((ref) => false);
 
 // Undo/Redo history
 final undoHistoryProvider = StateProvider<List<List<WidgetInstance>>>((ref) => []);
@@ -551,7 +557,15 @@ final widgetDataProvider = FutureProvider.family<Map<String, dynamic>, String>(
     final dashboardWidgets = ref.watch(dashboardWidgetsProvider);
     final instance = dashboardWidgets.firstWhere((w) => w.id == instanceId);
     final provider = ref.watch(mockDataProviderProvider);
-    final data = await provider.getData(instance.widgetType, instance.config);
+    var data = await provider.getData(instance.widgetType, instance.config);
+
+    // Apply schema migrations if needed
+    final expectedVersion = getExpectedVersion(instance.widgetType);
+    data = await widgetMigrationRegistry.migrateData(
+      widgetType: instance.widgetType,
+      data: data,
+      targetVersion: expectedVersion,
+    );
 
     // Save to local cache
     await widgetLocalCache.setCachedData(
@@ -697,24 +711,47 @@ class DashboardView extends ConsumerWidget {
     return Scaffold(
       backgroundColor: bg,
       appBar: AppBar(
-        title: Text(activeDashboard?.name ?? 'Mein Dashboard'),
+        title: Text(context.l10n.myDashboard),
         actions: [
           IconButton(
-            icon: const Icon(Icons.dashboard),
-            onPressed: () => _showDashboardSwitcher(context, ref, dashboards),
-            tooltip: 'Dashboard wechseln',
+            icon: const Icon(Icons.share),
+            onPressed: () => _shareLayout(context, ref),
+            tooltip: 'Layout teilen',
+          ),
+          IconButton(
+            icon: const Icon(Icons.import_contacts),
+            onPressed: () => _importLayout(context, ref),
+            tooltip: 'Layout importieren',
+          ),
+          IconButton(
+            icon: ref.watch(isSyncingProvider)
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.cloud_sync),
+            onPressed: ref.watch(isSyncingProvider)
+                ? null
+                : () => _showSyncOptions(context, ref),
+            tooltip: context.l10n.sync,
+          ),
+          IconButton(
+            icon: const Icon(Icons.grid_on),
+            onPressed: () => _showTemplates(context, ref),
+            tooltip: context.l10n.templates,
           ),
           if (isEditing)
             IconButton(
               icon: const Icon(Icons.undo),
               onPressed: () => _undo(ref),
-              tooltip: 'Zurücknehmen',
+              tooltip: context.l10n.undo,
             ),
           if (isEditing)
             IconButton(
               icon: const Icon(Icons.redo),
               onPressed: () => _redo(ref),
-              tooltip: 'Wiederholen',
+              tooltip: context.l10n.redo,
             ),
           IconButton(
             icon: Icon(isEditing ? Icons.check : Icons.edit),
@@ -727,12 +764,12 @@ class DashboardView extends ConsumerWidget {
                     .saveActive(ref.read(dashboardWidgetsProvider));
               }
             },
-            tooltip: isEditing ? 'Fertig' : 'Bearbeiten',
+            tooltip: isEditing ? context.l10n.done : context.l10n.edit,
           ),
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () => _showWidgetCatalog(context, ref),
-            tooltip: 'Widget hinzufügen',
+            tooltip: context.l10n.addWidget,
           ),
         ],
       ),
@@ -1019,7 +1056,15 @@ class DashboardView extends ConsumerWidget {
       final dashboardWidgets = ref.read(dashboardWidgetsProvider);
       final inst = dashboardWidgets.firstWhere((w) => w.id == instance.id);
       final provider = ref.read(mockDataProviderProvider);
-      final data = await provider.getData(inst.widgetType, inst.config);
+      var data = await provider.getData(inst.widgetType, inst.config);
+
+      // Apply schema migrations if needed
+      final expectedVersion = getExpectedVersion(inst.widgetType);
+      data = await widgetMigrationRegistry.migrateData(
+        widgetType: inst.widgetType,
+        data: data,
+        targetVersion: expectedVersion,
+      );
 
       // Save to local cache
       await widgetLocalCache.setCachedData(
@@ -1060,7 +1105,7 @@ class DashboardView extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Dashboards', style: AppTheme.titleMedium),
+              Text(context.l10n.dashboards, style: AppTheme.titleMedium),
               const SizedBox(height: 16),
               ...dashboards.dashboards.map((dashboard) {
                 final isActive = dashboards.active?.id == dashboard.id;
@@ -1082,17 +1127,17 @@ class DashboardView extends ConsumerWidget {
                           await showDialog(
                             context: context,
                             builder: (ctx) => AlertDialog(
-                              title: const Text('Dashboard umbenennen'),
+                              title: Text(context.l10n.renameDashboard),
                               content: TextField(
                                 controller: controller,
-                                decoration: const InputDecoration(
-                                  hintText: 'Dashboard-Name',
+                                decoration: InputDecoration(
+                                  hintText: context.l10n.dashboardName,
                                 ),
                               ),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(ctx),
-                                  child: const Text('Abbrechen'),
+                                  child: Text(context.l10n.cancel),
                                 ),
                                 TextButton(
                                   onPressed: () {
@@ -1104,7 +1149,7 @@ class DashboardView extends ConsumerWidget {
                                     }
                                     Navigator.pop(ctx);
                                   },
-                                  child: const Text('Speichern'),
+                                  child: Text(context.l10n.save),
                                 ),
                               ],
                             ),
@@ -1152,7 +1197,7 @@ class DashboardView extends ConsumerWidget {
                     );
                   }
                   // Create new dashboard
-                  final newDashboard = await dashboards.create('Neues Dashboard');
+                  final newDashboard = await dashboards.create(context.l10n.newDashboard);
                   // Switch to new dashboard
                   dashboards.setActive(newDashboard.id);
                   ref
@@ -1162,7 +1207,7 @@ class DashboardView extends ConsumerWidget {
                   Navigator.pop(context);
                 },
                 icon: const Icon(Icons.add),
-                label: const Text('Neues Dashboard'),
+                label: Text(context.l10n.newDashboard),
               ),
             ],
           ),
@@ -1175,11 +1220,13 @@ class DashboardView extends ConsumerWidget {
     final undoHistory = ref.read(undoHistoryProvider);
     if (undoHistory.isEmpty) return;
 
+    final current = ref.read(dashboardWidgetsProvider);
     final previous = undoHistory.last;
     ref.read(undoHistoryProvider.notifier).state = undoHistory.sublist(
       0,
       undoHistory.length - 1,
     );
+    ref.read(redoHistoryProvider.notifier).update((s) => [...s, current]);
 
     ref.read(dashboardWidgetsProvider.notifier).state = previous;
   }
@@ -1188,11 +1235,13 @@ class DashboardView extends ConsumerWidget {
     final redoHistory = ref.read(redoHistoryProvider);
     if (redoHistory.isEmpty) return;
 
+    final current = ref.read(dashboardWidgetsProvider);
     final next = redoHistory.last;
     ref.read(redoHistoryProvider.notifier).state = redoHistory.sublist(
       0,
       redoHistory.length - 1,
     );
+    ref.read(undoHistoryProvider.notifier).update((s) => [...s, current]);
 
     ref.read(dashboardWidgetsProvider.notifier).state = next;
   }
@@ -1235,7 +1284,7 @@ class DashboardView extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Widgets hinzufügen', style: AppTheme.titleMedium),
+              Text(context.l10n.addWidgets, style: AppTheme.titleMedium),
               const SizedBox(height: 16),
               ...widgets.map((def) {
                 return ListTile(
@@ -1256,6 +1305,302 @@ class DashboardView extends ConsumerWidget {
                   },
                 );
               }),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _shareLayout(BuildContext context, WidgetRef ref) {
+    final syncService = DashboardSyncService();
+    final widgets = ref.read(dashboardWidgetsProvider);
+    final dashboard = ref.read(dashboardsProvider).active;
+
+    if (dashboard == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.error)),
+      );
+      return;
+    }
+
+    final layoutJson = syncService.exportLayout({
+      'id': dashboard.id,
+      'name': dashboard.name,
+      'widgets': widgets.map((w) => w.toJson()).toList(),
+    });
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(context.l10n.editDashboard),
+        content: SingleChildScrollView(
+          child: SelectableText(layoutJson),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(context.l10n.close),
+          ),
+          TextButton.icon(
+            icon: const Icon(Icons.copy),
+            label: Text(context.l10n.add),
+            onPressed: () {
+              // Copy to clipboard (simplified)
+              Navigator.pop(ctx);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(context.l10n.layoutCopied)),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _importLayout(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        final controller = TextEditingController();
+        return AlertDialog(
+          title: Text(context.l10n.editDashboard),
+          content: TextField(
+            controller: controller,
+            maxLines: 10,
+            decoration: InputDecoration(
+              hintText: context.l10n.searchWidgets,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(context.l10n.cancel),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(ctx);
+                final syncService = DashboardSyncService();
+                final importResult = syncService.importLayout(controller.text);
+                if (importResult.isSuccess && importResult.value != null) {
+                  final imported = importResult.value!;
+                  if (imported['widgets'] != null) {
+                    try {
+                      final widgets = (imported['widgets'] as List)
+                          .map(
+                            (w) => WidgetInstance.fromJson(
+                              Map<String, dynamic>.from(w as Map),
+                            ),
+                          )
+                          .toList();
+                      ref
+                          .read(dashboardWidgetsProvider.notifier)
+                          .state = widgets;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(context.l10n.layoutImported)),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Import fehlgeschlagen: $e')),
+                      );
+                    }
+                  }
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(importResult.error ?? 'Ungültiges JSON-Format')),
+                  );
+                }
+              },
+              child: Text(context.l10n.importLayout),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showSyncOptions(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(context.l10n.sync, style: AppTheme.titleMedium),
+              const SizedBox(height: 16),
+              ListTile(
+                leading: const Icon(Icons.cloud_upload),
+                title: Text(context.l10n.uploadToServer),
+                subtitle: Text(context.l10n.uploadDescription),
+                onTap: () async {
+                  Navigator.pop(ctx);
+                  ref.read(isSyncingProvider.notifier).state = true;
+                  try {
+                    final syncService = DashboardSyncService();
+                    final widgets = ref.read(dashboardWidgetsProvider);
+                    final dashboard = ref.read(dashboardsProvider).active;
+                    if (dashboard != null) {
+                      final syncResult = await syncService.syncToServer([
+                        {
+                          'id': dashboard.id,
+                          'name': dashboard.name,
+                          'widgets': widgets.map((w) => w.toJson()).toList(),
+                        },
+                      ]);
+                      if (syncResult.isSuccess) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(context.l10n.layoutSynced)),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(syncResult.error ?? context.l10n.syncFailed)),
+                        );
+                      }
+                    }
+                  } finally {
+                    ref.read(isSyncingProvider.notifier).state = false;
+                  }
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.cloud_download),
+                title: Text(context.l10n.downloadFromServer),
+                subtitle: Text(context.l10n.downloadDescription),
+                onTap: () async {
+                  Navigator.pop(ctx);
+                  ref.read(isSyncingProvider.notifier).state = true;
+                  try {
+                    final syncService = DashboardSyncService();
+                    final syncResult = await syncService.syncFromServer();
+                    if (syncResult.isSuccess) {
+                      final remoteDashboards = syncResult.value ?? [];
+                      if (remoteDashboards.isNotEmpty) {
+                        final remote = remoteDashboards.first;
+                        if (remote['widgets'] != null) {
+                          try {
+                            final widgets = (remote['widgets'] as List)
+                                .map(
+                                  (w) => WidgetInstance.fromJson(
+                                    Map<String, dynamic>.from(w as Map),
+                                  ),
+                                )
+                                .toList();
+                            ref
+                                .read(dashboardWidgetsProvider.notifier)
+                                .state = widgets;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(context.l10n.layoutDownloaded)),
+                            );
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Download fehlgeschlagen: $e')),
+                            );
+                          }
+                        }
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(context.l10n.noLayoutOnServer)),
+                        );
+                      }
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(syncResult.error ?? context.l10n.downloadFailed)),
+                      );
+                    }
+                  } finally {
+                    ref.read(isSyncingProvider.notifier).state = false;
+                  }
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showTemplates(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(context.l10n.templates, style: AppTheme.titleMedium),
+              const SizedBox(height: 16),
+              ListTile(
+                leading: const Icon(Icons.fitness_center),
+                title: const Text('Fitness'),
+                subtitle: const Text('Workout & Gesundheit Widgets'),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  // Apply fitness template
+                  ref.read(dashboardWidgetsProvider.notifier).state = [
+                    WidgetInstance(
+                      widgetType: 'steps',
+                      config: {},
+                    ),
+                    WidgetInstance(
+                      widgetType: 'protein_tracker',
+                      config: {'goal': 150},
+                    ),
+                    WidgetInstance(
+                      widgetType: 'water',
+                      config: {},
+                    ),
+                    WidgetInstance(
+                      widgetType: 'weight_tracker',
+                      config: {},
+                    ),
+                  ];
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(context.l10n.fitnessTemplateApplied)),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.work),
+                title: const Text('Arbeit'),
+                subtitle: const Text('Produktivitäts-Widlets'),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  ref.read(dashboardWidgetsProvider.notifier).state = [
+                    WidgetInstance(widgetType: 'tasks', config: {}),
+                    WidgetInstance(widgetType: 'calendar', config: {}),
+                    WidgetInstance(widgetType: 'quick_notes', config: {}),
+                  ];
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(context.l10n.workTemplateApplied)),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.local_fire_department),
+                title: const Text('Wetter & Umweltaufklärung'),
+                subtitle: const Text('Wetter, UV & Luftqualität'),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  ref.read(dashboardWidgetsProvider.notifier).state = [
+                    WidgetInstance(
+                      widgetType: 'weather',
+                      config: {'location': 'Berlin'},
+                    ),
+                  ];
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(context.l10n.weatherTemplateApplied)),
+                  );
+                },
+              ),
             ],
           ),
         );

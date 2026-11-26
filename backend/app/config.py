@@ -20,6 +20,10 @@ class Settings:
     # Weather
     OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY", "")
     
+    # FCM Push Notifications
+    FCM_PROJECT_ID = os.getenv("FCM_PROJECT_ID", "widgetly-project")
+    FCM_API_KEY = os.getenv("FCM_API_KEY", "")
+    
     # Rate limiting
     RATE_LIMIT = "100/minute"
 

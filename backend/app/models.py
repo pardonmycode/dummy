@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, ForeignKey, Text, JSON
+from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, ForeignKey, Text, JSON, Boolean
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from datetime import datetime
 from app.config import settings
@@ -23,6 +23,9 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     dashboards = relationship("Dashboard", back_populates="user", cascade="all, delete-orphan")
     tracker_entries = relationship("TrackerEntry", back_populates="user", cascade="all, delete-orphan")
+    device_tokens = relationship("DeviceToken", back_populates="user", cascade="all, delete-orphan")
+    notifications = relationship("Notification", back_populates="user", cascade="all, delete-orphan")
+    push_logs = relationship("PushNotificationLog", back_populates="user", cascade="all, delete-orphan")
 
 class Dashboard(Base):
     __tablename__ = "dashboards"
@@ -71,3 +74,45 @@ class TrackerEntry(Base):
     note = Column(String)
     meal_name = Column(String)
     user = relationship("User")
+
+# Push notification models
+class DeviceToken(Base):
+    """FCM device token for push notifications."""
+    __tablename__ = "device_tokens"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    token = Column(String, unique=True, index=True, nullable=False)
+    platform = Column(String, default="unknown")  # android, ios, web
+    registered_at = Column(DateTime, default=datetime.utcnow)
+    last_used_at = Column(DateTime)
+    active = Column(Boolean, default=True)
+    user = relationship("User", back_populates="device_tokens")
+
+class Notification(Base):
+    """Stored notification for a user."""
+    __tablename__ = "notifications"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    type = Column(String, nullable=False)  # weather_alert, party_reminder, tracker_goal, etc.
+    title = Column(String, nullable=False)
+    message = Column(String, nullable=False)
+    data = Column(JSON, default={})
+    read = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    user = relationship("User", back_populates="notifications")
+
+class PushNotificationLog(Base):
+    """History of push notifications sent via FCM."""
+    __tablename__ = "push_notification_logs"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
+    device_token_id = Column(Integer, ForeignKey("device_tokens.id"), nullable=True)
+    type = Column(String, nullable=False)
+    title = Column(String, nullable=False)
+    message = Column(String, nullable=False)
+    data = Column(JSON, default={})
+    status = Column(String, default="sent")  # sent, failed, delivered
+    fcm_message_id = Column(String)
+    error = Column(String)
+    sent_at = Column(DateTime, default=datetime.utcnow)
+    user = relationship("User", back_populates="push_logs")

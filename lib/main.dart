@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter/material.dart' as flutter;
+import 'package:flutter_localizations/flutter_localizations.dart' as flutter_localizations;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -44,23 +44,23 @@ class _WidgetlyAppState extends State<WidgetlyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return flutter.MaterialApp(
       title: 'Widgetly',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
-      themeMode: ThemeMode.system,
+      themeMode: flutter.ThemeMode.system,
       supportedLocales: const [
-        Locale('en'),
-        Locale('de'),
+        flutter.Locale('en'),
+        flutter.Locale('de'),
       ],
       localizationsDelegates: const [
         AppLocalizationsDelegate(),
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
+        flutter_localizations.GlobalMaterialLocalizations.delegate,
+        flutter_localizations.GlobalWidgetsLocalizations.delegate,
+        flutter_localizations.GlobalCupertinoLocalizations.delegate,
       ],
-      localeResolutionCallback: (Locale? locale, Iterable<Locale> supported) {
+      localeResolutionCallback: (flutter.Locale? locale, Iterable<flutter.Locale> supported) {
         final localeCode = locale?.languageCode;
         if (localeCode != null) {
           for (final supportedLocale in supported) {

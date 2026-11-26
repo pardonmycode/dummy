@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as flutter;
 import 'package:material_ui/material_ui.dart';
 
 /// Design tokens for the Widgetly app.
@@ -137,127 +137,127 @@ class AppTheme {
   ];
 
   /// Build light theme
-  static ThemeData light() {
-    return ThemeData(
-      brightness: Brightness.light,
+  static flutter.ThemeData light() {
+    return flutter.ThemeData(
+      brightness: flutter.Brightness.light,
       primaryColor: lightPrimary,
       scaffoldBackgroundColor: lightBackground,
-      cardTheme: CardThemeData(
+      cardTheme: flutter.CardThemeData(
         color: lightCard,
         elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(radiusLg),
-          side: BorderSide(color: lightBorder, width: 1),
+        shape: flutter.RoundedRectangleBorder(
+          borderRadius: flutter.BorderRadius.circular(radiusLg),
+          side: flutter.BorderSide(color: lightBorder, width: 1),
         ),
       ),
-      appBarTheme: AppBarTheme(
+      appBarTheme: flutter.AppBarTheme(
         backgroundColor: lightSurface,
         elevation: 0,
         titleTextStyle: titleMedium.copyWith(color: lightText),
-        iconTheme: IconThemeData(color: lightText),
+        iconTheme: flutter.IconThemeData(color: lightText),
         centerTitle: true,
       ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
+      elevatedButtonTheme: flutter.ElevatedButtonThemeData(
+        style: flutter.ElevatedButton.styleFrom(
           backgroundColor: lightPrimary,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(
+          foregroundColor: flutter.Colors.white,
+          padding: const flutter.EdgeInsets.symmetric(
             horizontal: spacingMd,
             vertical: spacingSm,
           ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(radiusMd),
+          shape: flutter.RoundedRectangleBorder(
+            borderRadius: flutter.BorderRadius.circular(radiusMd),
           ),
           textStyle: label,
         ),
       ),
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
+      outlinedButtonTheme: flutter.OutlinedButtonThemeData(
+        style: flutter.OutlinedButton.styleFrom(
           foregroundColor: lightPrimary,
-          side: BorderSide(color: lightPrimary),
-          padding: const EdgeInsets.symmetric(
+          side: flutter.BorderSide(color: lightPrimary),
+          padding: const flutter.EdgeInsets.symmetric(
             horizontal: spacingMd,
             vertical: spacingSm,
           ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(radiusMd),
+          shape: flutter.RoundedRectangleBorder(
+            borderRadius: flutter.BorderRadius.circular(radiusMd),
           ),
           textStyle: label,
         ),
       ),
-      chipTheme: ChipThemeData(
+      chipTheme: flutter.ChipThemeData(
         backgroundColor: lightBorder,
         labelStyle: bodySmall,
-        padding: const EdgeInsets.symmetric(horizontal: spacingSm, vertical: 2),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(radiusFull),
+        padding: const flutter.EdgeInsets.symmetric(horizontal: spacingSm, vertical: 2),
+        shape: flutter.RoundedRectangleBorder(
+          borderRadius: flutter.BorderRadius.circular(radiusFull),
         ),
       ),
-      iconTheme: IconThemeData(color: lightText, size: 20),
-      dividerTheme: DividerThemeData(color: lightBorder, thickness: 1),
+      iconTheme: flutter.IconThemeData(color: lightText, size: 20),
+      dividerTheme: flutter.DividerThemeData(color: lightBorder, thickness: 1),
       useMaterial3: true,
     );
   }
 
   /// Build dark theme
-  static ThemeData dark() {
-    return ThemeData(
-      brightness: Brightness.dark,
+  static flutter.ThemeData dark() {
+    return flutter.ThemeData(
+      brightness: flutter.Brightness.dark,
       primaryColor: darkPrimary,
       scaffoldBackgroundColor: darkBackground,
-      cardTheme: CardThemeData(
+      cardTheme: flutter.CardThemeData(
         color: darkCard,
         elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(radiusLg),
-          side: BorderSide(color: darkBorder, width: 1),
+        shape: flutter.RoundedRectangleBorder(
+          borderRadius: flutter.BorderRadius.circular(radiusLg),
+          side: flutter.BorderSide(color: darkBorder, width: 1),
         ),
       ),
-      appBarTheme: AppBarTheme(
+      appBarTheme: flutter.AppBarTheme(
         backgroundColor: darkSurface,
         elevation: 0,
         titleTextStyle: titleMedium.copyWith(color: darkText),
-        iconTheme: IconThemeData(color: darkText),
+        iconTheme: flutter.IconThemeData(color: darkText),
         centerTitle: true,
       ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
+      elevatedButtonTheme: flutter.ElevatedButtonThemeData(
+        style: flutter.ElevatedButton.styleFrom(
           backgroundColor: darkPrimary,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(
+          foregroundColor: flutter.Colors.white,
+          padding: const flutter.EdgeInsets.symmetric(
             horizontal: spacingMd,
             vertical: spacingSm,
           ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(radiusMd),
+          shape: flutter.RoundedRectangleBorder(
+            borderRadius: flutter.BorderRadius.circular(radiusMd),
           ),
           textStyle: label,
         ),
       ),
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
+      outlinedButtonTheme: flutter.OutlinedButtonThemeData(
+        style: flutter.OutlinedButton.styleFrom(
           foregroundColor: darkPrimary,
-          side: BorderSide(color: darkPrimary),
-          padding: const EdgeInsets.symmetric(
+          side: flutter.BorderSide(color: darkPrimary),
+          padding: const flutter.EdgeInsets.symmetric(
             horizontal: spacingMd,
             vertical: spacingSm,
           ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(radiusMd),
+          shape: flutter.RoundedRectangleBorder(
+            borderRadius: flutter.BorderRadius.circular(radiusMd),
           ),
           textStyle: label,
         ),
       ),
-      chipTheme: ChipThemeData(
+      chipTheme: flutter.ChipThemeData(
         backgroundColor: darkBorder,
         labelStyle: bodySmall,
-        padding: const EdgeInsets.symmetric(horizontal: spacingSm, vertical: 2),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(radiusFull),
+        padding: const flutter.EdgeInsets.symmetric(horizontal: spacingSm, vertical: 2),
+        shape: flutter.RoundedRectangleBorder(
+          borderRadius: flutter.BorderRadius.circular(radiusFull),
         ),
       ),
-      iconTheme: IconThemeData(color: darkText, size: 20),
-      dividerTheme: DividerThemeData(color: darkBorder, thickness: 1),
+      iconTheme: flutter.IconThemeData(color: darkText, size: 20),
+      dividerTheme: flutter.DividerThemeData(color: darkBorder, thickness: 1),
       useMaterial3: true,
     );
   }

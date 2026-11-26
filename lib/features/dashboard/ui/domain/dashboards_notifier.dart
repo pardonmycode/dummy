@@ -46,8 +46,6 @@ class Dashboard {
 /// State notifier for managing multiple dashboards.
 class DashboardsNotifier extends Notifier<List<Dashboard>> {
   static const String _storageKey = 'dashboards';
-  static const String _activeKey = 'active_dashboard_id';
-  final _uuid = Uuid();
 
   @override
   List<Dashboard> build() {

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetly/features/widgets/framework/widget_definition.dart';
@@ -6,6 +6,7 @@ import 'package:widgetly/features/widgets/ui/types/sleep/sleep_tracker_widget.da
 import 'package:widgetly/features/widgets/ui/types/weight/weight_tracker_widget.dart';
 import 'package:widgetly/features/widgets/ui/types/briefing/tagesbriefing_widget.dart';
 import 'package:widgetly/features/dashboard/ui/views/dashboard_view.dart';
+import 'package:widgetly/features/widgets/framework/mock_widget_data_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {

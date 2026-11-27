@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
@@ -74,7 +74,7 @@ class BodyFatTrackerWidget extends WidgetDefinition {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppTheme.accent.withOpacity(0.1),
+              color: AppTheme.accent.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(AppTheme.radiusSm),
             ),
             child: Row(

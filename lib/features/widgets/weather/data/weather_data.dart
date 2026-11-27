@@ -1,68 +1,44 @@
-class WeatherData {
-  final double temperature;
-  final String condition;
-  final String icon;
-  final List<HourlyForecast> hourly;
-  final List<DailyForecast> daily;
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  WeatherData({
-    required this.temperature,
-    required this.condition,
-    required this.icon,
-    required this.hourly,
-    required this.daily,
-  });
+part 'weather_data.freezed.dart';
+part 'weather_data.g.dart';
 
-  factory WeatherData.fromJson(Map<String, dynamic> json) {
-    return WeatherData(
-      temperature: json['current']['temp'],
-      condition: json['current']['condition'],
-      icon: json['current']['icon'],
-      hourly: (json['hourly'] as List)
-          .map((h) => HourlyForecast.fromJson(h))
-          .toList(),
-      daily: (json['daily'] as List)
-          .map((d) => DailyForecast.fromJson(d))
-          .toList(),
-    );
-  }
+/// Typed data model for weather widget.
+@freezed
+abstract class WeatherData with _$WeatherData {
+  const factory WeatherData({
+    required double temperature,
+    required String condition,
+    required String icon,
+    @Default([]) List<HourlyForecast> hourly,
+    @Default([]) List<DailyForecast> daily,
+  }) = _WeatherData;
+
+  factory WeatherData.fromJson(Map<String, dynamic> json) =>
+      _$WeatherDataFromJson(json);
 }
 
-class HourlyForecast {
-  final String time;
-  final double temp;
-  final String icon;
+@freezed
+abstract class HourlyForecast with _$HourlyForecast {
+  const factory HourlyForecast({
+    required String time,
+    required double temp,
+    required String icon,
+  }) = _HourlyForecast;
 
-  HourlyForecast({required this.time, required this.temp, required this.icon});
-
-  factory HourlyForecast.fromJson(Map<String, dynamic> json) {
-    return HourlyForecast(
-      time: json['time'],
-      temp: json['temp'],
-      icon: json['icon'],
-    );
-  }
+  factory HourlyForecast.fromJson(Map<String, dynamic> json) =>
+      _$HourlyForecastFromJson(json);
 }
 
-class DailyForecast {
-  final String date;
-  final double high;
-  final double low;
-  final String icon;
+@freezed
+abstract class DailyForecast with _$DailyForecast {
+  const factory DailyForecast({
+    required String date,
+    required double high,
+    required double low,
+    required String icon,
+  }) = _DailyForecast;
 
-  DailyForecast({
-    required this.date,
-    required this.high,
-    required this.low,
-    required this.icon,
-  });
-
-  factory DailyForecast.fromJson(Map<String, dynamic> json) {
-    return DailyForecast(
-      date: json['date'],
-      high: json['high'],
-      low: json['low'],
-      icon: json['icon'],
-    );
-  }
+  factory DailyForecast.fromJson(Map<String, dynamic> json) =>
+      _$DailyForecastFromJson(json);
 }

@@ -326,8 +326,12 @@ class DashboardView extends ConsumerWidget {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          // Refresh all widgets (simulated)
-          await Future.delayed(const Duration(seconds: 1));
+          // Refresh all widget data by invalidating all providers
+          final widgets = ref.read(dashboardWidgetsProvider);
+          for (final widget in widgets) {
+            ref.invalidate(widgetDataProvider(widget.id));
+          }
+          await Future.delayed(const Duration(milliseconds: 500));
         },
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -498,153 +502,108 @@ class DashboardView extends ConsumerWidget {
     WidgetInstance instance,
     WidgetDefinition definition,
   ) {
-    return FutureBuilder<Map<String, dynamic>?>(
-      future: _loadWidgetData(ref, instance),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          // Check local cache while waiting
-          return FutureBuilder<Map<String, dynamic>?>(
-            future: widgetLocalCache.getCachedData(
-              widgetType: instance.widgetType,
-              instanceId: instance.id,
-            ),
-            builder: (context, cacheSnapshot) {
-              if (cacheSnapshot.hasData && cacheSnapshot.data != null) {
-                // Show cached data with stale indicator
-                return WidgetCard(
+    // Watch the provider directly instead of using FutureBuilder
+    // so that invalidation triggers a refresh
+    final snapshot = ref.watch(widgetDataProvider(instance.id));
+
+    if (snapshot.isLoading) {
+      return FutureBuilder<Map<String, dynamic>?>(
+        future: widgetLocalCache.getCachedData(
+          widgetType: instance.widgetType,
+          instanceId: instance.id,
+        ),
+        builder: (context, cacheSnapshot) {
+          if (cacheSnapshot.hasData && cacheSnapshot.data != null) {
+            return WidgetCard(
+              definition: definition,
+              instance: instance,
+              data: WidgetData.fromJson(cacheSnapshot.data!),
+              state: WidgetDataState.stale,
+              config: WidgetConfig(instance.config),
+              onConfigure: () {
+                final card = WidgetCard(
                   definition: definition,
-          instance: instance,
+                  instance: instance,
                   data: WidgetData.fromJson(cacheSnapshot.data!),
                   state: WidgetDataState.stale,
                   config: WidgetConfig(instance.config),
-                  onConfigure: () {
-                    final card = WidgetCard(
-                      definition: definition,
-          instance: instance,
-                      data: WidgetData.fromJson(cacheSnapshot.data!),
-                      state: WidgetDataState.stale,
-                      config: WidgetConfig(instance.config),
-                    );
-                    card.showConfigForm(context, ref, instance);
-                  },
-                  onRefresh: () {
-                    ref.invalidate(widgetDataProvider(instance.id));
-                  },
                 );
-              }
-              // No cache, show loading
-              return WidgetCard(
-                definition: definition,
-          instance: instance,
-                data: null,
-                state: WidgetDataState.loading,
-                config: WidgetConfig(instance.config),
-              );
-            },
-          );
-        }
-
-        if (snapshot.hasError) {
+                card.showConfigForm(context, ref, instance);
+              },
+              onRefresh: () {
+                ref.invalidate(widgetDataProvider(instance.id));
+              },
+            );
+          }
           return WidgetCard(
             definition: definition,
-          instance: instance,
+            instance: instance,
             data: null,
-            state: WidgetDataState.error,
+            state: WidgetDataState.loading,
             config: WidgetConfig(instance.config),
           );
-        }
+        },
+      );
+    }
 
-        if (snapshot.data == null) {
-          return WidgetCard(
-            definition: definition,
-          instance: instance,
-            data: null,
-            state: WidgetDataState.empty,
-            config: WidgetConfig(instance.config),
-          );
-        }
+    if (snapshot.hasError) {
+      return WidgetCard(
+        definition: definition,
+        instance: instance,
+        data: null,
+        state: WidgetDataState.error,
+        config: WidgetConfig(instance.config),
+      );
+    }
 
-        final rawJson = snapshot.data!;
+    final rawJson = snapshot.value;
+    if (rawJson == null) {
+      return WidgetCard(
+        definition: definition,
+        instance: instance,
+        data: null,
+        state: WidgetDataState.empty,
+        config: WidgetConfig(instance.config),
+      );
+    }
 
-        // Validate data against schema before rendering
-        final validationErrors =
-            validateWidgetData(instance.widgetType, rawJson);
+    // Validate data against schema before rendering
+    final validationErrors = validateWidgetData(instance.widgetType, rawJson);
 
-        if (validationErrors != null && validationErrors.isNotEmpty) {
-          return WidgetCard(
-            definition: definition,
-          instance: instance,
-            data: null,
-            state: WidgetDataState.ready,
-            config: WidgetConfig(instance.config),
-            validationErrors: validationErrors,
-            onRefresh: () {
-              ref.invalidate(widgetDataProvider(instance.id));
-            },
-          );
-        }
+    if (validationErrors != null && validationErrors.isNotEmpty) {
+      return WidgetCard(
+        definition: definition,
+        instance: instance,
+        data: null,
+        state: WidgetDataState.ready,
+        config: WidgetConfig(instance.config),
+        validationErrors: validationErrors,
+        onRefresh: () {
+          ref.invalidate(widgetDataProvider(instance.id));
+        },
+      );
+    }
 
-        return WidgetCard(
+    return WidgetCard(
+      definition: definition,
+      instance: instance,
+      data: WidgetData.fromJson(rawJson),
+      state: WidgetDataState.ready,
+      config: WidgetConfig(instance.config),
+      onConfigure: () {
+        final card = WidgetCard(
           definition: definition,
           instance: instance,
           data: WidgetData.fromJson(rawJson),
           state: WidgetDataState.ready,
           config: WidgetConfig(instance.config),
-          onConfigure: () {
-            final card = WidgetCard(
-              definition: definition,
-          instance: instance,
-              data: WidgetData.fromJson(rawJson),
-              state: WidgetDataState.ready,
-              config: WidgetConfig(instance.config),
-            );
-            card.showConfigForm(context, ref, instance);
-          },
-          onRefresh: () {
-            ref.invalidate(widgetDataProvider(instance.id));
-          },
         );
+        card.showConfigForm(context, ref, instance);
+      },
+      onRefresh: () {
+        ref.invalidate(widgetDataProvider(instance.id));
       },
     );
-  }
-
-  Future<Map<String, dynamic>?> _loadWidgetData(
-    WidgetRef ref,
-    WidgetInstance instance,
-  ) async {
-    try {
-      final dashboardWidgets = ref.read(dashboardWidgetsProvider);
-      final inst = dashboardWidgets.firstWhere((w) => w.id == instance.id);
-      final provider = ref.read(mockDataProviderProvider);
-      var data = await provider.getData(inst.widgetType, inst.config);
-
-      // Apply schema migrations if needed
-      final expectedVersion = getExpectedVersion(inst.widgetType);
-      data = await widgetMigrationRegistry.migrateData(
-        widgetType: inst.widgetType,
-        data: data,
-        targetVersion: expectedVersion,
-      );
-
-      // Save to local cache
-      await widgetLocalCache.setCachedData(
-        widgetType: inst.widgetType,
-        instanceId: inst.id,
-        data: data,
-      );
-
-      return data;
-    } catch (e) {
-      // On error, try to load from cache
-      final cached = await widgetLocalCache.getCachedData(
-        widgetType: instance.widgetType,
-        instanceId: instance.id,
-      );
-      if (cached != null) {
-        return cached;
-      }
-      rethrow;
-    }
   }
 
   void _undo(WidgetRef ref) {

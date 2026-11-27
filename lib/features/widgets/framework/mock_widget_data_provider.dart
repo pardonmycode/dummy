@@ -448,6 +448,92 @@ class MockWidgetDataProvider {
       };
     }
 
+    if (widgetType == 'steps_tracker') {
+      return {
+        'schemaVersion': 1,
+        'data': {
+          'goal': 10000,
+          'steps': 6847,
+          'distance': 4.8,
+          'calories': 312,
+          'time': '1h 23min',
+        },
+        'sources': ['Apple Health'],
+        'generatedAt': DateTime.now().toIso8601String(),
+      };
+    }
+
+    if (widgetType == 'water_tracker') {
+      return {
+        'schemaVersion': 1,
+        'data': {
+          'goal': 2000,
+          'consumed': 1250,
+          'entries': [
+            {'value': 250, 'timestamp': '08:00', 'note': 'Wasser'},
+            {'value': 500, 'timestamp': '12:30', 'note': 'Wasser'},
+            {'value': 250, 'timestamp': '15:00', 'note': 'Tee'},
+            {'value': 250, 'timestamp': '17:30', 'note': 'Wasser'},
+          ],
+        },
+        'sources': ['Lokale Einträge'],
+        'generatedAt': DateTime.now().toIso8601String(),
+      };
+    }
+
+    if (widgetType == 'carbs_tracker') {
+      return {
+        'schemaVersion': 1,
+        'data': {
+          'goal': 250,
+          'consumed': 145,
+          'meals': [
+            {'name': 'Frühstück: Porridge', 'carbs': 45, 'time': '08:00'},
+            {'name': 'Mittag: Reis & Gemüse', 'carbs': 75, 'time': '12:30'},
+            {'name': 'Snack: Obst', 'carbs': 25, 'time': '15:00'},
+          ],
+        },
+        'sources': ['Lokale Einträge'],
+        'generatedAt': DateTime.now().toIso8601String(),
+      };
+    }
+
+    if (widgetType == 'parties') {
+      return {
+        'schemaVersion': 1,
+        'data': {
+          'events': [
+            {
+              'name': 'Techno Night',
+              'venue': 'Berghain',
+              'time': '22:00',
+              'genre': 'club',
+              'lat': 52.5233,
+              'lng': 13.4147,
+            },
+            {
+              'name': 'Live Musik: Indie Band',
+              'venue': 'Kesselhaus',
+              'time': '20:00',
+              'genre': 'concert',
+              'lat': 52.4965,
+              'lng': 13.4251,
+            },
+            {
+              'name': 'Sommerfest',
+              'venue': 'Tempelhofer Feld',
+              'time': '18:00',
+              'genre': 'open air',
+              'lat': 52.4707,
+              'lng': 13.4075,
+            },
+          ],
+        },
+        'sources': ['Event API'],
+        'generatedAt': DateTime.now().toIso8601String(),
+      };
+    }
+
     return {};
   }
 }

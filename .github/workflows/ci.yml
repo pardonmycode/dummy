@@ -28,6 +28,17 @@ jobs:
           channel: 'stable'
       - run: flutter pub get
       - run: flutter test --coverage
+      - run: |
+          # Check coverage for critical packages (dashboard + widgets/framework)
+          # Requires lcov (installed by default on ubuntu-latest)
+          lcov --extract coverage/lcov.info "lib/features/dashboard/*" "lib/features/widgets/framework/*" --output-file coverage/critical.lcov
+          lcov --list coverage/critical.lcov
+          COVERAGE=$(lcov --extract coverage/lcov.info "lib/features/dashboard/*" "lib/features/widgets/framework/*" | grep "^lines" | awk '{print $2}' | cut -d'%' -f1)
+          echo "Coverage for critical packages: $COVERAGE%"
+          if (( $(echo "$COVERAGE < 40" | bc -l) )); then
+            echo "Coverage below 40% threshold"
+            exit 1
+          fi
 
   build_web:
     runs-on: ubuntu-latest

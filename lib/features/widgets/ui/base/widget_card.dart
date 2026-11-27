@@ -166,8 +166,9 @@ class WidgetCard extends ConsumerWidget {
           state,
           config,
           onQuickAdd: (type, entry) {
-            // Add entry to mock data provider
-            ref.read(mockDataProviderProvider).addEntry(
+            // Add entry to mock data provider via provider
+            final provider = ref.read(mockDataProviderProvider);
+            provider.addEntry(
               instance.widgetType,
               instance.id,
               entry,

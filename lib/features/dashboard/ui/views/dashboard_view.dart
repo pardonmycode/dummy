@@ -15,6 +15,7 @@ import '../../../widgets/framework/widget_instance.dart';
 import '../../../widgets/framework/widget_registry.dart';
 import '../../../widgets/framework/widget_schema_validator.dart';
 import '../../../widgets/framework/widget_schema_migration.dart';
+import '../../../widgets/framework/widget_providers.dart';
 import '../../../widgets/framework/widget_local_cache.dart';
 import '../../../widgets/framework/mock_widget_data_provider.dart';
 import '../../../widgets/ui/base/widget_card.dart';
@@ -112,15 +113,17 @@ final widgetDataProvider = FutureProvider.family<Map<String, dynamic>, String>(
     var data = await provider.getData(instance.widgetType, instance.config);
 
     // Apply schema migrations if needed
+    final migrationRegistry = ref.watch(widgetMigrationRegistryProvider);
     final expectedVersion = getExpectedVersion(instance.widgetType);
-    data = await widgetMigrationRegistry.migrateData(
+    data = await migrationRegistry.migrateData(
       widgetType: instance.widgetType,
       data: data,
       targetVersion: expectedVersion,
     );
 
     // Save to local cache
-    await widgetLocalCache.setCachedData(
+    final cache = ref.watch(widgetLocalCacheProvider);
+    await cache.setCachedData(
       widgetType: instance.widgetType,
       instanceId: instance.id,
       data: data,
@@ -507,8 +510,9 @@ class DashboardView extends ConsumerWidget {
     final snapshot = ref.watch(widgetDataProvider(instance.id));
 
     if (snapshot.isLoading) {
+      final cache = ref.read(widgetLocalCacheProvider);
       return FutureBuilder<Map<String, dynamic>?>(
-        future: widgetLocalCache.getCachedData(
+        future: cache.getCachedData(
           widgetType: instance.widgetType,
           instanceId: instance.id,
         ),

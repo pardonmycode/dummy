@@ -112,9 +112,11 @@ class WidgetMigrationRegistry {
 final widgetMigrationRegistry = WidgetMigrationRegistry();
 
 /// Register built-in schema migrations.
-void registerDefaultMigrations() {
+void registerDefaultMigrations([WidgetMigrationRegistry? registry]) {
+  final reg = registry ?? widgetMigrationRegistry;
+  
   // Weather widget: v1 -> v2 (added feelsLike field)
-  widgetMigrationRegistry.addMigration(MigrationEntry(
+  reg.addMigration(MigrationEntry(
     widgetType: 'weather',
     fromVersion: 1,
     toVersion: 2,

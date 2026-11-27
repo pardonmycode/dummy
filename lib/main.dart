@@ -1,23 +1,22 @@
+import 'dart:async';
+
 import 'package:material_ui/material_ui.dart' as flutter;
 import 'package:material_ui/material_ui.dart' show GlobalMaterialLocalizations, GlobalWidgetsLocalizations;
 import 'package:cupertino_ui/cupertino_ui.dart' show GlobalCupertinoLocalizations;
 import 'package:flutter_localizations/flutter_localizations.dart' as flutter_localizations;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/scheduler.dart' show SchedulerBinding;
+import 'package:flutter/foundation.dart' show AppLifecycleState;
 import 'package:material_ui/material_ui.dart';
 
 import 'core/i18n/app_localizations.dart';
 import 'core/routing/app_router.dart';
 import 'core/theme/theme.dart';
-import 'features/dashboard/ui/views/dashboard_view.dart';
 import 'features/widgets/framework/widget_schema_migration.dart';
 import 'features/widgets/framework/widget_background_refresh.dart';
 
 void main() {
   registerDefaultMigrations();
-  
-  // Start background refresh for widgets
-  widgetBackgroundRefresh.start();
-  
   runApp(const ProviderScope(child: WidgetlyApp()));
 }
 
@@ -28,12 +27,25 @@ class WidgetlyApp extends StatefulWidget {
   State<WidgetlyApp> createState() => _WidgetlyAppState();
 }
 
-class _WidgetlyAppState extends State<WidgetlyApp> {
+class _WidgetlyAppState extends State<WidgetlyApp> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
   @override
   void dispose() {
-    // Stop background refresh when app is disposed
+    WidgetsBinding.instance.removeObserver(this);
     widgetBackgroundRefresh.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      widgetBackgroundRefresh.refreshAllOnResume();
+    }
   }
 
   @override

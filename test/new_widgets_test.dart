@@ -175,7 +175,7 @@ void main() {
     expect(registry.contains('calendar'), isTrue);
     expect(registry.contains('quick_notes'), isTrue);
     expect(registry.contains('fat_tracker'), isTrue);
-    expect(registry.contains('calorie_tracker'), isTrue);
+    expect(registry.contains('calories_tracker'), isTrue);
     expect(registry.contains('fiber_tracker'), isTrue);
     expect(registry.contains('sugar_tracker'), isTrue);
     expect(registry.contains('caffeine_tracker'), isTrue);

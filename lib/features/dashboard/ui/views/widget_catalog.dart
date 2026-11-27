@@ -1,10 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetly/features/widgets/framework/widget_registry.dart';
 import 'package:widgetly/features/widgets/ui/types/weather/weather_widget.dart';
-import 'package:widgetly/features/widgets/ui/types/protein/protein_tracker_widget.dart';
 import 'package:widgetly/features/widgets/ui/types/parties/parties_widget.dart';
-import 'package:widgetly/features/widgets/ui/types/carbs/carbs_tracker_widget.dart';
-import 'package:widgetly/features/widgets/ui/types/water/water_tracker_widget.dart';
 import 'package:widgetly/features/widgets/ui/types/steps/steps_tracker_widget.dart';
 import 'package:widgetly/features/widgets/ui/types/sleep/sleep_tracker_widget.dart';
 import 'package:widgetly/features/widgets/ui/types/weight/weight_tracker_widget.dart';
@@ -18,22 +15,15 @@ import 'package:widgetly/features/widgets/ui/types/screen_time/screen_time_track
 import 'package:widgetly/features/widgets/ui/types/medications/medications_tracker_widget.dart';
 import 'package:widgetly/features/widgets/ui/types/calendar/calendar_widget.dart';
 import 'package:widgetly/features/widgets/ui/types/quick_notes/quick_notes_widget.dart';
-import 'package:widgetly/features/widgets/ui/types/fat/fat_tracker_widget.dart';
-import 'package:widgetly/features/widgets/ui/types/calories/calorie_tracker_widget.dart';
-import 'package:widgetly/features/widgets/ui/types/fiber/fiber_tracker_widget.dart';
-import 'package:widgetly/features/widgets/ui/types/sugar/sugar_tracker_widget.dart';
-import 'package:widgetly/features/widgets/ui/types/caffeine/caffeine_tracker_widget.dart';
 import 'package:widgetly/features/widgets/ui/types/active_minutes/active_minutes_tracker_widget.dart';
 import 'package:widgetly/features/widgets/ui/types/distance/distance_tracker_widget.dart';
 import 'package:widgetly/features/widgets/ui/types/custom/custom_tracker_widget.dart';
+import 'package:widgetly/features/widgets/ui/types/nutrient_tracker/nutrient_tracker_widget.dart';
 
 /// Singleton widget registry — created once, shared across the app
 final _sharedRegistry = WidgetRegistry()
   ..register(WeatherWidget())
-  ..register(ProteinTrackerWidget())
   ..register(PartiesWidget())
-  ..register(CarbsTrackerWidget())
-  ..register(WaterTrackerWidget())
   ..register(StepsTrackerWidget())
   ..register(SleepTrackerWidget())
   ..register(WeightTrackerWidget())
@@ -47,14 +37,18 @@ final _sharedRegistry = WidgetRegistry()
   ..register(MedicationsTrackerWidget())
   ..register(CalendarWidget())
   ..register(QuickNotesWidget())
-  ..register(FatTrackerWidget())
-  ..register(CalorieTrackerWidget())
-  ..register(FiberTrackerWidget())
-  ..register(SugarTrackerWidget())
-  ..register(CaffeineTrackerWidget())
   ..register(ActiveMinutesTrackerWidget())
   ..register(DistanceTrackerWidget())
-  ..register(CustomTrackerWidget());
+  ..register(CustomTrackerWidget())
+  // Generic nutrient tracker instances for each nutrient type
+  ..register(NutrientTrackerWidget(nutrient: 'protein', unit: 'g', defaultGoalKey: 'goal', defaultGoal: 150))
+  ..register(NutrientTrackerWidget(nutrient: 'carbs', unit: 'g', defaultGoalKey: 'goal', defaultGoal: 250))
+  ..register(NutrientTrackerWidget(nutrient: 'fat', unit: 'g', defaultGoalKey: 'goal', defaultGoal: 70))
+  ..register(NutrientTrackerWidget(nutrient: 'calories', unit: 'kcal', defaultGoalKey: 'goal', defaultGoal: 2000))
+  ..register(NutrientTrackerWidget(nutrient: 'fiber', unit: 'g', defaultGoalKey: 'goal', defaultGoal: 30))
+  ..register(NutrientTrackerWidget(nutrient: 'sugar', unit: 'g', defaultGoalKey: 'goal', defaultGoal: 50))
+  ..register(NutrientTrackerWidget(nutrient: 'caffeine', unit: 'mg', defaultGoalKey: 'goal', defaultGoal: 400))
+  ..register(NutrientTrackerWidget(nutrient: 'water', unit: 'ml', defaultGoalKey: 'goal', defaultGoal: 2000));
 
 /// Provider for the widget registry
 final widgetRegistryProvider = Provider<WidgetRegistry>((ref) => _sharedRegistry);

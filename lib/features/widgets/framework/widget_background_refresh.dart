@@ -3,9 +3,7 @@ import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../framework/widget_definition.dart';
-import '../framework/widget_instance.dart';
 import '../framework/widget_registry.dart';
-import '../framework/widget_local_cache.dart';
 
 /// Simple logger function for background refresh.
 void _log(String message) {

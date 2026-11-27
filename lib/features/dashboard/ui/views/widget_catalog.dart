@@ -1,3 +1,4 @@
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetly/features/widgets/framework/widget_registry.dart';
 import 'package:widgetly/features/widgets/framework/widget_type_ids.dart';
@@ -16,10 +17,10 @@ import 'package:widgetly/features/widgets/ui/types/screen_time/screen_time_track
 import 'package:widgetly/features/widgets/ui/types/medications/medications_tracker_widget.dart';
 import 'package:widgetly/features/widgets/ui/types/calendar/calendar_widget.dart';
 import 'package:widgetly/features/widgets/ui/types/quick_notes/quick_notes_widget.dart';
-import 'package:widgetly/features/widgets/ui/types/active_minutes/active_minutes_tracker_widget.dart';
 import 'package:widgetly/features/widgets/ui/types/distance/distance_tracker_widget.dart';
 import 'package:widgetly/features/widgets/ui/types/custom/custom_tracker_widget.dart';
 import 'package:widgetly/features/widgets/ui/types/nutrient_tracker/nutrient_tracker_widget.dart';
+import 'package:widgetly/features/widgets/ui/types/metric_tracker/metric_tracker_widget.dart';
 
 /// Singleton widget registry — created once, shared across the app
 final _sharedRegistry = WidgetRegistry()
@@ -38,9 +39,20 @@ final _sharedRegistry = WidgetRegistry()
   ..register(MedicationsTrackerWidget())
   ..register(CalendarWidget())
   ..register(QuickNotesWidget())
-  ..register(ActiveMinutesTrackerWidget())
   ..register(DistanceTrackerWidget())
   ..register(CustomTrackerWidget())
+  // Generic metric tracker for active minutes
+  ..register(MetricTrackerWidget(
+    id: WidgetTypeIds.activeMinutesTracker,
+    name: 'Aktive Minuten',
+    description: 'Tägliche aktive Minuten tracken',
+    unit: 'min',
+    icon: Icons.sports_score,
+    color: Colors.teal,
+    goalKey: 'goal',
+    valueKey: 'minutes',
+    defaultGoal: 60,
+  ))
   // Generic nutrient tracker instances for each nutrient type
   ..register(NutrientTrackerWidget(nutrient: WidgetTypeIds.protein, unit: 'g', defaultGoalKey: 'goal', defaultGoal: 150))
   ..register(NutrientTrackerWidget(nutrient: WidgetTypeIds.carbs, unit: 'g', defaultGoalKey: 'goal', defaultGoal: 250))

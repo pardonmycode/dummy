@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
+import '../../../framework/widget_data.dart';
 
 /// Medications and supplements tracker widget.
 class MedicationsTrackerWidget extends WidgetDefinition {

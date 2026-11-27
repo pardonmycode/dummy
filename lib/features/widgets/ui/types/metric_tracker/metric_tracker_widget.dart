@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:widgetly/core/theme/theme.dart';
 import 'package:widgetly/features/widgets/framework/widget_definition.dart';
+import '../../../framework/widget_data.dart';
 
 /// Generic metric tracker widget for goal-based metrics
 /// (sleep, active minutes, distance, body fat, etc.).

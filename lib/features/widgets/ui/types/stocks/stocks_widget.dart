@@ -3,6 +3,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
+import '../../../framework/widget_data.dart';
 
 /// Stock and crypto watchlist widget - tracks portfolio symbols.
 class StocksWidget extends WidgetDefinition {

@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
+import '../../../framework/widget_data.dart';
 
 /// Fat tracker widget - shows daily fat intake with goal progress.
 class FatTrackerWidget extends WidgetDefinition {

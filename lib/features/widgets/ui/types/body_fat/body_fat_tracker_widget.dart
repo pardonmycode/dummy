@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
+import '../../../framework/widget_data.dart';
 
 /// Body fat tracker widget - shows body fat percentage and progress.
 class BodyFatTrackerWidget extends WidgetDefinition {

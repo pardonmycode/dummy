@@ -1,4 +1,5 @@
 import 'package:material_ui/material_ui.dart';
+import 'widget_data.dart';
 
 /// Widget size variants for responsive layouts.
 enum WidgetSize {
@@ -39,50 +40,6 @@ class WidgetConfig {
   const WidgetConfig([this.settings = const {}]);
 
   T? get<T>(String key) => settings[key] as T?;
-}
-
-/// Data payload for a widget with metadata.
-class WidgetData {
-  final int schemaVersion;
-  final Map<String, dynamic> data;
-  final List<Map<String, dynamic>> sources;
-  final DateTime generatedAt;
-  final DateTime? expiresAt;
-
-  const WidgetData({
-    required this.schemaVersion,
-    required this.data,
-    required this.generatedAt,
-    this.sources = const [],
-    this.expiresAt,
-  });
-
-  bool get isExpired {
-    if (expiresAt == null) return false;
-    return DateTime.now().isAfter(expiresAt!);
-  }
-
-  factory WidgetData.fromJson(Map<String, dynamic> json) {
-    return WidgetData(
-      schemaVersion: json['schemaVersion'] ?? 1,
-      data: json['data'] ?? {},
-      sources:
-          (json['sources'] as List?)
-              ?.map(
-                (s) => s is Map
-                    ? Map<String, dynamic>.from(s)
-                    : {'name': s.toString()},
-              )
-              .toList() ??
-          [],
-      generatedAt: json['generatedAt'] != null
-          ? DateTime.parse(json['generatedAt'])
-          : DateTime.now(),
-      expiresAt: json['expiresAt'] != null
-          ? DateTime.parse(json['expiresAt'])
-          : null,
-    );
-  }
 }
 
 /// Definition for a widget type.

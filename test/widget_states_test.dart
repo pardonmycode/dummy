@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetly/features/widgets/framework/widget_definition.dart';
+import 'package:widgetly/features/widgets/framework/widget_data.dart';
 import 'package:widgetly/features/widgets/ui/types/weather/weather_widget.dart';
 import 'package:widgetly/features/widgets/ui/types/protein/protein_tracker_widget.dart';
 import 'package:widgetly/features/dashboard/ui/views/dashboard_view.dart';
@@ -122,7 +123,7 @@ void main() {
           'warnings': [],
           'summary': 'Test summary',
         },
-        'sources': ['Test'],
+        'sources': [{'name': 'Test'}],
         'generatedAt': '2024-01-01T00:00:00Z',
       });
 

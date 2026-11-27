@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../framework/widget_registry.dart';
 import '../../framework/widget_definition.dart';
+import '../../framework/widget_data.dart';
 import '../../../dashboard/ui/views/dashboard_view.dart';
 import '../../ui/types/weather/weather_widget.dart';
 import '../../ui/types/protein/protein_tracker_widget.dart';

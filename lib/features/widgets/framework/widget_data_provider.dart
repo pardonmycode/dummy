@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import './widget_definition.dart';
+import './widget_data.dart';
 import './widget_schema_validator.dart';
 
 /// Generic data provider for widgets with caching and error isolation.

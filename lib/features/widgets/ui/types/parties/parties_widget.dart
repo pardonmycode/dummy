@@ -4,6 +4,7 @@ import 'package:latlong2/latlong.dart';
 
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
+import '../../../framework/widget_data.dart';
 import '../../../ui/components/design_system.dart';
 
 /// Parties widget - shows nearby events/parties on a map.

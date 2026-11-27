@@ -1,4 +1,5 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:widgetly/features/widgets/framework/widget_data.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetly/features/widgets/framework/widget_definition.dart';
@@ -47,7 +48,7 @@ void main() {
     final data = WidgetData.fromJson({
       'schemaVersion': 1,
       'data': {'current': 22.5, 'goal': 18.0, 'start': 25.0, 'trend': 'down'},
-      'sources': ['Lokale Einträge'],
+      'sources': [{'name': 'Lokale Einträge'}],
       'generatedAt': '2024-01-01T00:00:00Z',
     });
 
@@ -76,7 +77,7 @@ void main() {
     final data = WidgetData.fromJson({
       'schemaVersion': 1,
       'data': {'current': 72, 'resting': 62, 'max': 145, 'trend': 'down'},
-      'sources': ['Apple Health'],
+      'sources': [{'name': 'Apple Health'}],
       'generatedAt': '2024-01-01T00:00:00Z',
     });
 
@@ -109,7 +110,7 @@ void main() {
         'note': 'Fühle mich gut',
         'week': [3, 4, 5, 4, 3, 4, 4],
       },
-      'sources': ['Lokale Einträge'],
+      'sources': [{'name': 'Lokale Einträge'}],
       'generatedAt': '2024-01-01T00:00:00Z',
     });
 
@@ -144,7 +145,7 @@ void main() {
         ],
         'completed': 1,
       },
-      'sources': ['Todo App'],
+      'sources': [{'name': 'Todo App'}],
       'generatedAt': '2024-01-01T00:00:00Z',
     });
 

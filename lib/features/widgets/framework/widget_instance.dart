@@ -1,30 +1,45 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';
-
 import 'widget_definition.dart';
+
+part 'widget_instance.freezed.dart';
+part 'widget_instance.g.dart';
 
 /// Singleton Uuid instance to avoid recreating on every WidgetInstance.
 final _uuid = Uuid();
 
+Map<String, dynamic>? _configFromJson(dynamic json) {
+  if (json == null) return null;
+  final map = json as Map;
+  return map.map((k, v) => MapEntry(k.toString(), v));
+}
+
+Map<String, int>? _gridPositionFromJson(dynamic json) {
+  if (json == null) return null;
+  final map = json as Map;
+  return map.map((k, v) => MapEntry(k.toString(), (v as num).toInt()));
+}
+
 /// A concrete instance of a widget on a dashboard.
-class WidgetInstance {
-  final String id;
-  final String widgetType;
-  final WidgetSize size;
-  final Map<String, dynamic> config;
-  final Map<String, int> gridPosition;
+@freezed
+abstract class WidgetInstance with _$WidgetInstance {
+  const factory WidgetInstance({
+    @Default('') String id,
+    required String widgetType,
+    @Default(WidgetSize.medium) WidgetSize size,
+    @JsonKey(fromJson: _configFromJson)
+    @Default({}) Map<String, dynamic> config,
+    @JsonKey(fromJson: _gridPositionFromJson)
+    @Default({'row': 0, 'col': 0, 'rowSpan': 1, 'colSpan': 1}) Map<String, int> gridPosition,
+  }) = _WidgetInstance;
 
-  WidgetInstance({
-    String? id,
-    required this.widgetType,
-    this.size = WidgetSize.medium,
-    Map<String, dynamic>? config,
-    Map<String, int>? gridPosition,
-  }) : id = id ?? _uuid.v4(),
-       config = config ?? {},
-       gridPosition =
-           gridPosition ?? {'row': 0, 'col': 0, 'rowSpan': 1, 'colSpan': 1};
+  factory WidgetInstance.fromJson(Map<String, dynamic> json) =>
+      _$WidgetInstanceFromJson(json);
+}
 
-  /// Clone this instance.
+extension WidgetInstanceClone on WidgetInstance {
+  /// Clone this instance with optional overrides.
   WidgetInstance clone({
     String? newId,
     WidgetSize? newSize,
@@ -32,49 +47,11 @@ class WidgetInstance {
     Map<String, int>? newGridPosition,
   }) {
     return WidgetInstance(
-      id: newId,
+      id: newId ?? _uuid.v4(),
       widgetType: widgetType,
       size: newSize ?? size,
       config: newConfig ?? config,
       gridPosition: newGridPosition ?? gridPosition,
-    );
-  }
-
-  /// Serialize to JSON.
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'widgetType': widgetType,
-      'size': size.name,
-      'config': config,
-      'gridPosition': gridPosition,
-    };
-  }
-
-  /// Deserialize from JSON.
-  factory WidgetInstance.fromJson(Map<String, dynamic> json) {
-    // config: jsonDecode produces Map<String, dynamic>, but handle null
-    Map<String, dynamic> config = {};
-    if (json['config'] != null) {
-      config = Map<String, dynamic>.from(json['config'] as Map);
-    }
-
-    // gridPosition: jsonDecode produces Map with num values, not int
-    Map<String, int> gridPosition = {'row': 0, 'col': 0, 'rowSpan': 1, 'colSpan': 1};
-    if (json['gridPosition'] != null) {
-      final raw = json['gridPosition'] as Map;
-      gridPosition = raw.map((k, v) => MapEntry(k.toString(), (v as num).toInt()));
-    }
-
-    return WidgetInstance(
-      id: json['id'] as String?,
-      widgetType: json['widgetType'] as String,
-      size: WidgetSize.values.firstWhere(
-        (s) => s.name == json['size'],
-        orElse: () => WidgetSize.medium,
-      ),
-      config: config,
-      gridPosition: gridPosition,
     );
   }
 }

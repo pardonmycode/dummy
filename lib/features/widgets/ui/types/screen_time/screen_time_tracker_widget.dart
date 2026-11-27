@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
+import '../../../framework/widget_data.dart';
 
 /// Screen time tracker widget - shows daily screen time by app.
 class ScreenTimeTrackerWidget extends WidgetDefinition {

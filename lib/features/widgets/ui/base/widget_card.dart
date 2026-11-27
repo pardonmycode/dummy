@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/theme.dart';
 import '../../framework/widget_definition.dart';
+import '../../framework/widget_data.dart';
 import '../../framework/widget_instance.dart';
 import '../../../dashboard/ui/views/dashboard_view.dart'
     show dashboardWidgetsProvider, mockDataProviderProvider, widgetDataProvider;

@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../../../../../core/models/tracker_base.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
+import '../../../framework/widget_data.dart';
 import '../../../ui/components/design_system.dart';
 
 /// Water intake tracker widget using shared TrackerBase model.

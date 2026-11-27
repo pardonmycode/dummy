@@ -1,4 +1,5 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:widgetly/features/widgets/framework/widget_data.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetly/features/widgets/framework/widget_definition.dart';
@@ -56,7 +57,7 @@ void main() {
     final data = WidgetData.fromJson({
       'schemaVersion': 1,
       'data': {'goal': 8, 'slept': 7.5, 'quality': 8},
-      'sources': ['Apple Health'],
+      'sources': [{'name': 'Apple Health'}],
       'generatedAt': '2024-01-01T00:00:00Z',
     });
 
@@ -91,7 +92,7 @@ void main() {
         'trend': 'down',
         'lastChange': '-0.5 kg letzte Woche',
       },
-      'sources': ['Lokale Einträge'],
+      'sources': [{'name': 'Lokale Einträge'}],
       'generatedAt': '2024-01-01T00:00:00Z',
     });
 
@@ -132,7 +133,7 @@ void main() {
         ],
         'news': [],
       },
-      'sources': ['OpenWeatherMap'],
+      'sources': [{'name': 'OpenWeatherMap'}],
       'generatedAt': '2024-01-01T00:00:00Z',
     });
 

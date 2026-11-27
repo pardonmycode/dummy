@@ -11,6 +11,7 @@ import '../../../../core/theme/theme.dart';
 import '../domain/dashboards_notifier.dart';
 import '../../domain/dashboard_sync_service.dart';
 import '../../../widgets/framework/widget_definition.dart';
+import '../../../widgets/framework/widget_data.dart';
 import '../../../widgets/framework/widget_instance.dart';
 import '../../../widgets/framework/widget_registry.dart';
 import '../../../widgets/framework/widget_schema_validator.dart';

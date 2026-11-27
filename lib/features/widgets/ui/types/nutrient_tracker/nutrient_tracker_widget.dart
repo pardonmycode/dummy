@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:widgetly/core/models/tracker_base.dart';
 import 'package:widgetly/core/theme/theme.dart';
 import 'package:widgetly/features/widgets/framework/widget_definition.dart';
+import '../../../framework/widget_data.dart';
 
 /// Generic nutrient/metric tracker widget that can be configured
 /// for any tracker type (protein, carbs, calories, water, etc.).

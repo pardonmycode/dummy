@@ -5,44 +5,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import '../../widgets/framework/widget_instance.dart';
 import '../../widgets/framework/widget_definition.dart';
+import 'dashboard.dart';
 
-/// A named dashboard configuration.
-class Dashboard {
-  final String id;
-  final String name;
-  final List<WidgetInstance> widgets;
-
-  Dashboard({
-    String? id,
-    required this.name,
-    List<WidgetInstance>? widgets,
-  })  : id = id ?? const Uuid().v4(),
-        widgets = widgets ?? [];
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'widgets': widgets.map((w) => w.toJson()).toList(),
-    };
-  }
-
-  factory Dashboard.fromJson(Map<String, dynamic> json) {
-    return Dashboard(
-      id: json['id'] as String?,
-      name: json['name'] as String,
-      widgets: (json['widgets'] as List?)
-              ?.map((w) =>
-                  WidgetInstance.fromJson(Map<String, dynamic>.from(w as Map)))
-              .toList() ??
-          [],
-    );
-  }
-
-  Dashboard copyWith({List<WidgetInstance>? widgets}) {
-    return Dashboard(id: id, name: name, widgets: widgets ?? this.widgets);
-  }
-}
+final _uuid = Uuid();
 
 /// Consolidated notifier managing dashboards, widgets, and undo/redo history.
 class DashboardNotifier extends Notifier<List<Dashboard>> {
@@ -94,7 +59,7 @@ class DashboardNotifier extends Notifier<List<Dashboard>> {
   }
 
   Future<Dashboard> create(String name) async {
-    final dashboard = Dashboard(name: name);
+    final dashboard = Dashboard(id: _uuid.v4(), name: name);
     state = [...state, dashboard];
     setActive(dashboard.id);
     await _saveDashboards();
@@ -249,7 +214,7 @@ class DashboardNotifier extends Notifier<List<Dashboard>> {
   // --- Persistence ---
 
   Dashboard _loadDefaultDashboard() {
-    return Dashboard(name: 'Mein Dashboard');
+    return Dashboard(id: _uuid.v4(), name: 'Mein Dashboard');
   }
 
   void _loadActiveId() {

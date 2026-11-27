@@ -4,6 +4,7 @@ import 'package:widgetly/core/i18n/app_localizations.dart';
 import 'package:widgetly/core/theme/theme.dart';
 import 'package:widgetly/features/dashboard/ui/views/dashboard_view.dart';
 import 'package:widgetly/features/widgets/framework/widget_instance.dart';
+import 'package:widgetly/features/widgets/framework/widget_type_ids.dart';
 
 void showTemplates(
   BuildContext context,
@@ -30,7 +31,7 @@ void showTemplates(
                 Navigator.pop(ctx);
                 ref.read(dashboardWidgetsProvider.notifier).setWidgets([
                   WidgetInstance(
-                    widgetType: 'steps_tracker',
+                    widgetType: WidgetTypeIds.stepsTracker,
                     config: {},
                   ),
                   WidgetInstance(
@@ -42,7 +43,7 @@ void showTemplates(
                     config: {},
                   ),
                   WidgetInstance(
-                    widgetType: 'weight_tracker',
+                    widgetType: WidgetTypeIds.weightTracker,
                     config: {},
                   ),
                 ]);
@@ -58,9 +59,9 @@ void showTemplates(
               onTap: () {
                 Navigator.pop(ctx);
                 ref.read(dashboardWidgetsProvider.notifier).setWidgets([
-                  WidgetInstance(widgetType: 'tasks', config: {}),
-                  WidgetInstance(widgetType: 'calendar', config: {}),
-                  WidgetInstance(widgetType: 'quick_notes', config: {}),
+                  WidgetInstance(widgetType: WidgetTypeIds.tasks, config: {}),
+                  WidgetInstance(widgetType: WidgetTypeIds.calendar, config: {}),
+                  WidgetInstance(widgetType: WidgetTypeIds.quickNotes, config: {}),
                 ]);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text(context.l10n.workTemplateApplied)),
@@ -75,7 +76,7 @@ void showTemplates(
                 Navigator.pop(ctx);
                 ref.read(dashboardWidgetsProvider.notifier).setWidgets([
                   WidgetInstance(
-                    widgetType: 'weather',
+                    widgetType: WidgetTypeIds.weather,
                     config: {'location': 'Berlin'},
                   ),
                 ]);

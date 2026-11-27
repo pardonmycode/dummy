@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetly/features/widgets/framework/widget_registry.dart';
+import 'package:widgetly/features/widgets/framework/widget_type_ids.dart';
 import 'package:widgetly/features/widgets/ui/types/weather/weather_widget.dart';
 import 'package:widgetly/features/widgets/ui/types/parties/parties_widget.dart';
 import 'package:widgetly/features/widgets/ui/types/steps/steps_tracker_widget.dart';
@@ -41,14 +42,14 @@ final _sharedRegistry = WidgetRegistry()
   ..register(DistanceTrackerWidget())
   ..register(CustomTrackerWidget())
   // Generic nutrient tracker instances for each nutrient type
-  ..register(NutrientTrackerWidget(nutrient: 'protein', unit: 'g', defaultGoalKey: 'goal', defaultGoal: 150))
-  ..register(NutrientTrackerWidget(nutrient: 'carbs', unit: 'g', defaultGoalKey: 'goal', defaultGoal: 250))
-  ..register(NutrientTrackerWidget(nutrient: 'fat', unit: 'g', defaultGoalKey: 'goal', defaultGoal: 70))
-  ..register(NutrientTrackerWidget(nutrient: 'calories', unit: 'kcal', defaultGoalKey: 'goal', defaultGoal: 2000))
-  ..register(NutrientTrackerWidget(nutrient: 'fiber', unit: 'g', defaultGoalKey: 'goal', defaultGoal: 30))
-  ..register(NutrientTrackerWidget(nutrient: 'sugar', unit: 'g', defaultGoalKey: 'goal', defaultGoal: 50))
-  ..register(NutrientTrackerWidget(nutrient: 'caffeine', unit: 'mg', defaultGoalKey: 'goal', defaultGoal: 400))
-  ..register(NutrientTrackerWidget(nutrient: 'water', unit: 'ml', defaultGoalKey: 'goal', defaultGoal: 2000));
+  ..register(NutrientTrackerWidget(nutrient: WidgetTypeIds.protein, unit: 'g', defaultGoalKey: 'goal', defaultGoal: 150))
+  ..register(NutrientTrackerWidget(nutrient: WidgetTypeIds.carbs, unit: 'g', defaultGoalKey: 'goal', defaultGoal: 250))
+  ..register(NutrientTrackerWidget(nutrient: WidgetTypeIds.fat, unit: 'g', defaultGoalKey: 'goal', defaultGoal: 70))
+  ..register(NutrientTrackerWidget(nutrient: WidgetTypeIds.calories, unit: 'kcal', defaultGoalKey: 'goal', defaultGoal: 2000))
+  ..register(NutrientTrackerWidget(nutrient: WidgetTypeIds.fiber, unit: 'g', defaultGoalKey: 'goal', defaultGoal: 30))
+  ..register(NutrientTrackerWidget(nutrient: WidgetTypeIds.sugar, unit: 'g', defaultGoalKey: 'goal', defaultGoal: 50))
+  ..register(NutrientTrackerWidget(nutrient: WidgetTypeIds.caffeine, unit: 'mg', defaultGoalKey: 'goal', defaultGoal: 400))
+  ..register(NutrientTrackerWidget(nutrient: WidgetTypeIds.water, unit: 'ml', defaultGoalKey: 'goal', defaultGoal: 2000));
 
 /// Provider for the widget registry
 final widgetRegistryProvider = Provider<WidgetRegistry>((ref) => _sharedRegistry);

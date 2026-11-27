@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'widget_data_repository.dart';
+import 'widget_type_ids.dart';
 
 /// Mock implementation of WidgetDataRepository for development and testing.
 class MockWidgetDataRepository implements WidgetDataRepository {
@@ -19,7 +20,7 @@ class MockWidgetDataRepository implements WidgetDataRepository {
   }
 
   Map<String, dynamic> _getMockData(String widgetType, Map<String, dynamic> config) {
-    if (widgetType == 'weather') {
+    if (widgetType == WidgetTypeIds.weather) {
       final location = config['location'] ?? 'Berlin';
       return {
         'schemaVersion': 1,
@@ -59,7 +60,7 @@ class MockWidgetDataRepository implements WidgetDataRepository {
       };
     }
 
-    if (widgetType == 'protein_tracker') {
+    if (widgetType == WidgetTypeIds.protein) {
       final goal = config['goal'] ?? 150;
       return {
         'schemaVersion': 1,
@@ -77,7 +78,7 @@ class MockWidgetDataRepository implements WidgetDataRepository {
       };
     }
 
-    if (widgetType == 'steps_tracker') {
+    if (widgetType == WidgetTypeIds.stepsTracker) {
       return {
         'schemaVersion': 1,
         'data': {
@@ -92,7 +93,7 @@ class MockWidgetDataRepository implements WidgetDataRepository {
       };
     }
 
-    if (widgetType == 'water_tracker') {
+    if (widgetType == WidgetTypeIds.water) {
       return {
         'schemaVersion': 1,
         'data': {
@@ -110,7 +111,7 @@ class MockWidgetDataRepository implements WidgetDataRepository {
       };
     }
 
-    if (widgetType == 'carbs_tracker') {
+    if (widgetType == WidgetTypeIds.carbs) {
       return {
         'schemaVersion': 1,
         'data': {
@@ -127,7 +128,7 @@ class MockWidgetDataRepository implements WidgetDataRepository {
       };
     }
 
-    if (widgetType == 'parties') {
+    if (widgetType == WidgetTypeIds.parties) {
       return {
         'schemaVersion': 1,
         'data': {

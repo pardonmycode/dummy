@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/theme.dart';
@@ -252,7 +252,7 @@ class WidgetCard extends StatelessWidget {
                           ),
                         if (field.type == 'select' && field.options != null)
                           DropdownButtonFormField<String>(
-                            value: controller.text.isEmpty
+                            initialValue: controller.text.isEmpty
                                 ? null
                                 : controller.text,
                             items: field.options!.map((option) {

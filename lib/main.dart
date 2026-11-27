@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart' as flutter;
+import 'package:material_ui/material_ui.dart' as flutter;
+import 'package:material_ui/material_ui.dart' show GlobalMaterialLocalizations, GlobalWidgetsLocalizations;
+import 'package:cupertino_ui/cupertino_ui.dart' show GlobalCupertinoLocalizations;
 import 'package:flutter_localizations/flutter_localizations.dart' as flutter_localizations;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
@@ -56,9 +58,9 @@ class _WidgetlyAppState extends State<WidgetlyApp> {
       ],
       localizationsDelegates: const [
         AppLocalizationsDelegate(),
-        flutter_localizations.GlobalMaterialLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
         flutter_localizations.GlobalWidgetsLocalizations.delegate,
-        flutter_localizations.GlobalCupertinoLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
       ],
       localeResolutionCallback: (flutter.Locale? locale, Iterable<flutter.Locale> supported) {
         final localeCode = locale?.languageCode;

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'core/i18n/app_localizations.dart';
+import 'core/routing/app_router.dart';
 import 'core/theme/theme.dart';
 import 'features/dashboard/ui/views/dashboard_view.dart';
 import 'features/widgets/framework/widget_schema_migration.dart';
@@ -37,7 +38,7 @@ class _WidgetlyAppState extends State<WidgetlyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return flutter.MaterialApp(
+    return flutter.MaterialApp.router(
       title: 'Widgetly',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
@@ -64,7 +65,7 @@ class _WidgetlyAppState extends State<WidgetlyApp> {
         }
         return supported.first;
       },
-      home: const DashboardView(),
+      routerConfig: appRouter,
     );
   }
 }

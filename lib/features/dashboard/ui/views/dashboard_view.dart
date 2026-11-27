@@ -173,9 +173,6 @@ class DashboardWidgetsNotifier extends StateNotifier<List<WidgetInstance>> {
 
   void moveWidget(int oldIndex, int newIndex) {
     final widgets = List<WidgetInstance>.from(state);
-    if (newIndex > oldIndex) {
-      newIndex--;
-    }
     final item = widgets.removeAt(oldIndex);
     widgets.insert(newIndex, item);
     state = widgets;

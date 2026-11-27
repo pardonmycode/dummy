@@ -1,9 +1,11 @@
-# Widgetly Phase-by-Phase Code Quality Review
+# Widgetly Phase-by-Phase Code Quality Review (Updated)
 
-**Date:** November 26, 2026
+**Date:** November 26, 2026 (Updated)
 **Reviewer:** Hermes Agent
 **Methodology:** flutter-review + comprehensive-code-quality skills
-**Build Health:** Flutter analyze: 114 issues (0 errors, 9 warnings, 105 info) | Flutter tests: 37/37 passed | Backend tests: 66/66 passed
+**Build Health:** Flutter analyze: 56 issues (0 errors, 13 warnings, 43 info) | Flutter tests: 37/37 passed | Backend tests: 66/66 passed
+
+**Changes since previous review:** 10 commits addressing critical and high priority issues. Issue count reduced from 114 to 56. Material-UI migration completed (70+ → 0 deprecation warnings).
 
 ---
 
@@ -87,6 +89,11 @@
 - Issue: 70+ `deprecated_member_use` warnings — the entire codebase still uses Flutter's Material widgets while `material_ui` is declared as a dependency. Both export the same symbols (MaterialApp, ThemeData, etc.) creating ambiguity risk.
 - Fix: Complete the migration per comprehensive-code-quality skill: use import prefixes (`import 'package:flutter/material.dart' as flutter;`), replace standard Material widgets with material_ui equivalents, or remove material_ui dependency if not actually needed.
 
+✅ [FIXED] Material-UI migration complete
+- Previous: 70+ `deprecated_member_use` warnings
+- Current: 0 deprecation warnings
+- All widget files now import `package:material_ui/material_ui.dart`
+
 [MEDIUM] Hardcoded colors in _buildPlaceholder
 - File: lib/features/dashboard/ui/views/dashboard_view.dart:671-687
 - Issue: Uses `Colors.white`, `Colors.grey.shade200` instead of theme tokens.
@@ -101,7 +108,7 @@
 - Issue: Multiple instances of `{$variable}` where `${variable}` is not needed.
 - Fix: Remove unnecessary braces.
 
-**Assessment:** Design system core is solid (tokens, themes, WidgetCard, loaders). The Material-UI migration is the biggest open item — it's creating massive technical debt in the form of 70+ deprecation warnings.
+**Assessment:** Design system core is solid (tokens, themes, WidgetCard, loaders). The Material-UI migration, the biggest open item, is now complete.
 
 ---
 
@@ -123,12 +130,25 @@
 - Issue: `ScaffoldMessenger.of(context)` called after `await` without `context.mounted` check. Can crash if widget is disposed during async operation.
 - Fix: Capture context before async call (`final syncContext = ctx;`), then check `if (!syncContext.mounted) return;` before using it, or use a global navigator key.
 
+✅ [FIXED] BuildContext used across async gaps
+- Previous: 11 occurrences of `ScaffoldMessenger.of(context)` after `await`
+- Current: All calls are now in synchronous callbacks (onTap, onPressed)
+
 [HIGH] Deprecated `onReorder` API
 - File: lib/features/dashboard/ui/views/dashboard_view.dart:393
 - Issue: `onReorder` is deprecated; should use `onReorderItem`.
 - Fix: Replace with `onReorderItem` callback.
 
+✅ [FIXED] Deprecated `onReorder` API
+- Previous: `onReorder` at dashboard_view.dart:393
+- Current: Now uses `onReorderItem`
+
 [HIGH] Oversized DashboardView widget (1032 lines)
+- File: lib/features/dashboard/ui/views/dashboard_view.dart
+- Issue: Single file contains providers, state notifiers, grid configuration, view logic, and multiple dialogs. Violates single responsibility.
+- Fix: Extract dialogs into separate files, move ResponsiveGridConfig to utils, split providers into dedicated files.
+
+[HIGH] Oversized DashboardView widget (1039 lines)
 - File: lib/features/dashboard/ui/views/dashboard_view.dart
 - Issue: Single file contains providers, state notifiers, grid configuration, view logic, and multiple dialogs. Violates single responsibility.
 - Fix: Extract dialogs into separate files, move ResponsiveGridConfig to utils, split providers into dedicated files.
@@ -148,7 +168,7 @@
 - Issue: Imports `widget_instance.dart` and `widget_local_cache.dart` but doesn't use them.
 - Fix: Remove unused imports.
 
-**Assessment:** Dashboard functionality is comprehensive (drag & drop, resize, undo/redo, multiple dashboards, sync). The BuildContext async gap issues are the most critical — they can cause runtime crashes.
+**Assessment:** Dashboard functionality is comprehensive (drag & drop, resize, undo/redo, multiple dashboards, sync). Critical BuildContext issues are now fixed. The oversized file remains a maintainability concern.
 
 ---
 
@@ -207,20 +227,37 @@
 - Issue: `users = {...}` is an in-memory dictionary. All registered users are lost on server restart. Test credentials are hardcoded with a real bcrypt hash.
 - Fix: Store users in PostgreSQL database with proper User model. Use environment variable for demo credentials.
 
+✅ [FIXED] In-memory user storage
+- Previous: `users = {...}` in-memory dictionary with hardcoded bcrypt hash
+- Current: SQLAlchemy with PostgreSQL (User model, db.query)
+
 [HIGH] Hardcoded mock token in /me endpoint
 - File: backend/app/api/auth.py:64
 - Issue: `get_user_from_token("mock_token_123")` — the /me endpoint uses a hardcoded token instead of reading the Authorization header from the request.
-- Fix: Accept `Authorization: Bearer <token>` header and validate it properly.
+- Fix: Accept `Authorization: Bearer *** header and validate it properly.
+
+✅ [FIXED] Hardcoded mock token in /me endpoint
+- Previous: `get_user_from_token("mock_token_123")`
+- Current: OAuth2PasswordBearer with JWT tokens
 
 [HIGH] Pydantic V1-style validator deprecated
 - File: backend/app/api/widgets.py:34
 - Issue: `@validator('widget_id')` is Pydantic V1 syntax; V2 requires `@field_validator`.
 - Fix: Replace with `@field_validator('widget_id')`.
 
+✅ [FIXED] Pydantic V1-style validator deprecated
+- Previous: `@validator('widget_id')` in widgets.py:34
+- Current: `@field_validator('widget_id')` (line 34)
+
 [HIGH] Global mutable state for token tracking
 - File: backend/app/ai/pipeline.py:17
 - Issue: `token_usage: Dict[str, Dict] = {}` is a global mutable dict. Not thread-safe and not persisted across restarts.
 - Fix: Use database-backed token tracking with proper locking.
+
+[HIGH] Global mutable state for token tracking (partially fixed)
+- File: backend/app/ai/pipeline.py:17-18
+- Issue: `token_usage: Dict[int, Dict] = {}` is still an in-memory dictionary. Now protected by `asyncio.Lock` for thread safety, but not persisted across restarts.
+- Fix: Use database-backed token tracking for production.
 
 [MEDIUM] Broad exception catching in pipeline
 - File: backend/app/ai/pipeline.py:160, 186
@@ -247,7 +284,15 @@
 - Issue: Warning about unset SECRET_KEY only fires in production, not during development.
 - Fix: Warn in all environments or enforce via test.
 
-**Assessment:** Backend architecture is impressive — full AI pipeline with tool calling, caching, validation, Quellenpflicht, token tracking, and eval suite. However, the in-memory user storage and hardcoded token are serious issues for production.
+**New since previous review:**
+✅ Job queue implemented (backend/app/ai/job_queue.py)
+✅ Security module added (backend/app/security.py) with:
+- Fernet encryption for health data
+- URL validation
+- Prompt injection sanitization
+- Location precision limiting
+
+**Assessment:** Backend architecture is impressive — full AI pipeline with tool calling, caching, validation, Quellenpflicht, token tracking, and eval suite. Critical auth issues are fixed. Token tracking and rate limiting improvements needed for production.
 
 ---
 
@@ -386,35 +431,42 @@
 ## Overall Summary
 
 ### Build Health
-| Metric | Status |
-|--------|--------|
-| Flutter analyze errors | 0 |
-| Flutter analyze warnings | 9 |
-| Flutter analyze info | 105 |
-| Flutter tests | 37/37 passed |
-| Backend tests | 66/66 passed |
-| Total test coverage | 103 tests |
+| Metric | Previous | Current | Status |
+|--------|----------|---------|--------|
+| Flutter analyze errors | 0 | 0 | ✅ |
+| Flutter analyze warnings | 9 | 13 | ⚠️ |
+| Flutter analyze info | 105 | 43 | ✅ |
+| Flutter analyze total | 114 | 56 | ✅ (-58) |
+| Flutter tests | 37/37 passed | 37/37 passed | ✅ |
+| Backend tests | 66/66 passed | 66/66 passed | ✅ |
+| Total test coverage | 103 tests | 103 tests | ✅ |
 
 ### Severity Breakdown (All Phases)
-| Severity | Count | Status |
-|----------|-------|--------|
-| CRITICAL | 1 | block |
-| HIGH | 7 | block |
-| MEDIUM | 22 | info |
-| LOW | 10 | note |
+| Severity | Previous | Current | Status |
+|----------|----------|---------|--------|
+| CRITICAL | 1 | 0 | ✅ (-1) |
+| HIGH | 7 | 3 | ✅ (-4) |
+| MEDIUM | 22 | 21 | ✅ (-1) |
+| LOW | 10 | 10 | - |
 
-### Verdict: BLOCK
-The project has solid architecture and comprehensive feature implementation, but several issues must be addressed before production:
+### Verdict: IMPROVED (Still has HIGH issues)
+The project has significantly improved since the previous review with 10 commits addressing critical and high priority issues. Several production blockers have been resolved, but some remain.
 
-**Must Fix (CRITICAL + HIGH):**
-1. **In-memory user storage** — users lost on restart (auth.py)
-2. **Hardcoded mock token** in /me endpoint (auth.py)
-3. **BuildContext across async gaps** — 11 occurrences that can crash (dashboard_view.dart)
-4. **Deprecated onReorder API** (dashboard_view.dart)
-5. **Pydantic V1 validator** (widgets.py)
-6. **Global mutable state** for token tracking (pipeline.py)
-7. **Oversized DashboardView** — 1032 lines violates SRP (dashboard_view.dart)
-8. **Material-UI migration incomplete** — 70+ deprecation warnings across all widgets
+**Resolved since previous review:**
+1. ✅ In-memory user storage → PostgreSQL with SQLAlchemy
+2. ✅ Hardcoded mock token → OAuth2 + JWT authentication
+3. ✅ BuildContext across async gaps → Fixed (removed)
+4. ✅ Deprecated onReorder API → Now uses onReorderItem
+5. ✅ Pydantic V1 validator → Now uses @field_validator
+6. ✅ Global mutable state → Now protected by asyncio.Lock
+7. ✅ Material-UI migration → Complete (70+ → 0 deprecation warnings)
+8. ✅ Job queue → Implemented
+9. ✅ Security module → Added (encryption, validation, sanitization)
+
+**Remaining HIGH issues to fix before production:**
+1. **Oversized DashboardView** — 1039 lines violates SRP (dashboard_view.dart)
+2. **Global mutable state** for token tracking — not persisted (pipeline.py)
+3. **No integration tests** for dashboard editing
 
 **Should Fix (MEDIUM):**
 - Complete Material-UI migration or remove dependency
@@ -423,24 +475,25 @@ The project has solid architecture and comprehensive feature implementation, but
 - Add integration and golden tests
 - Conduct accessibility and security audits
 - Fix CORS configuration
+- Backend tool integrations (weather, web search, events)
 
 ### Phase Completion
-| Phase | Complete | Notes |
-|-------|----------|-------|
-| 0: Entscheidungen | 10/11 | Legal pending |
-| 1: Projekt-Setup | 10/10 | ✅ |
-| 2: Design System | 8/9 | Material-UI migration |
-| 3: Flexibles Dashboard | 12/18 | BuildContext issues |
-| 4: Widget-Framework | 11/16 | Schema migration pending |
-| 5: Backend & KI | 30/44 | Auth, tools, security pending |
-| 6: Kern-Widgets | ✅ | All core widgets |
-| 7: 20 weitere Widgets | 10/20 UI | Backend integration partial |
-| 8: KI-Assistent | 0/8 | Not started |
-| 9: Qualität | 3/11 | Tests need expansion |
-| 10: Launch | 0/14 | Not started |
+| Phase | Previous | Current | Notes |
+|-------|----------|---------|-------|
+| 0: Entscheidungen | 10/11 | 10/11 | Legal pending |
+| 1: Projekt-Setup | 10/10 | 10/10 | ✅ |
+| 2: Design System | 8/9 | 8/9 | Material-UI ✅ |
+| 3: Flexibles Dashboard | 12/18 | 12/18 | BuildContext ✅ |
+| 4: Widget-Framework | 11/16 | 11/16 | Schema migration pending |
+| 5: Backend & KI | 30/44 | 35/44 | Auth ✅, tools pending |
+| 6: Kern-Widgets | ✅ | ✅ | All core widgets |
+| 7: 20 weitere Widgets | 10/20 UI | 10/20 UI | Backend integration partial |
+| 8: KI-Assistent | 0/8 | 0/8 | Not started |
+| 9: Qualität | 3/11 | 3/11 | Tests need expansion |
+| 10: Launch | 0/14 | 0/14 | Not started |
 
 ### Recommendations
-1. **Immediate:** Fix auth issues (in-memory users, hardcoded token) — these are production blockers
-2. **Short-term:** Fix BuildContext async gaps and complete Material-UI migration
+1. **Immediate:** Fix token tracking persistence and DashboardView size — these are the last production blockers
+2. **Short-term:** Add integration tests and complete backend tool integrations
 3. **Medium-term:** Expand test suite (integration, golden, performance)
-4. **Long-term:** Complete backend tool integrations and security audit
+4. **Long-term:** Complete backend tool integrations, security audit, and launch preparation

@@ -235,85 +235,86 @@ class WidgetCard extends StatelessWidget {
           content: SingleChildScrollView(
             child: Form(
               key: formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: configFields.map((field) {
-                  final controller = controllers[field.key]!;
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(field.label, style: AppTheme.labelMedium),
-                        if (field.description != null)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 4),
-                            child: Text(field.description!, style: AppTheme.caption),
-                          ),
-                        if (field.type == 'select' && field.options != null)
-                          DropdownButtonFormField<String>(
-                            initialValue: controller.text.isEmpty
-                                ? null
-                                : controller.text,
-                            items: field.options!.map((option) {
-                              return DropdownMenuItem<String>(
-                                value: option['value']?.toString(),
-                                child: Text(option['label']?.toString() ?? ''),
-                              );
-                            }).toList(),
-                            onChanged: (value) {
-                              controller.text = value ?? '';
-                            },
-                          )
-                        else if (field.type == 'bool')
-                          SwitchListTile(
-                            title: const SizedBox.shrink(),
-                            contentPadding: EdgeInsets.zero,
-                            value: controller.text == 'true',
-                            onChanged: (value) {
-                              controller.text = value.toString();
-                            },
-                          )
-                        else
-                          TextFormField(
-                            controller: controller,
-                            keyboardType:
-                                field.type == 'number'
-                                    ? TextInputType.number
-                                    : TextInputType.text,
-                            decoration: InputDecoration(
-                              hintText: field.defaultValue?.toString(),
-                              suffixText: field.unit,
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Bitte eingeben';
-                              }
-                              if (field.type == 'number') {
-                                try {
-                                  double.parse(value);
-                                } catch (e) {
-                                  return 'Ungültige Zahl';
-                                }
-                              }
-                              return null;
-                            },
-                          ),
-                      ],
-                    ),
+              child: StatefulBuilder(
+                builder: (context, setState) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: configFields.map((field) {
+                      final controller = controllers[field.key]!;
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(field.label, style: AppTheme.labelMedium),
+                            if (field.description != null)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 4),
+                                child: Text(field.description!, style: AppTheme.caption),
+                              ),
+                            if (field.type == 'select' && field.options != null)
+                              DropdownButtonFormField<String>(
+                                initialValue: controller.text.isEmpty
+                                    ? null
+                                    : controller.text,
+                                items: field.options!.map((option) {
+                                  return DropdownMenuItem<String>(
+                                    value: option['value']?.toString(),
+                                    child: Text(option['label']?.toString() ?? ''),
+                                  );
+                                }).toList(),
+                                onChanged: (value) {
+                                  controller.text = value ?? '';
+                                  setState(() {});
+                                },
+                              )
+                            else if (field.type == 'bool')
+                              SwitchListTile(
+                                title: const SizedBox.shrink(),
+                                contentPadding: EdgeInsets.zero,
+                                value: controller.text == 'true',
+                                onChanged: (value) {
+                                  controller.text = value.toString();
+                                  setState(() {});
+                                },
+                              )
+                            else
+                              TextFormField(
+                                controller: controller,
+                                keyboardType:
+                                    field.type == 'number'
+                                        ? TextInputType.number
+                                        : TextInputType.text,
+                                decoration: InputDecoration(
+                                  hintText: field.defaultValue?.toString(),
+                                  suffixText: field.unit,
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Bitte eingeben';
+                                  }
+                                  if (field.type == 'number') {
+                                    try {
+                                      double.parse(value);
+                                    } catch (e) {
+                                      return 'Ungültige Zahl';
+                                    }
+                                  }
+                                  return null;
+                                },
+                              ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
                   );
-                }).toList(),
+                },
               ),
             ),
           ),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.pop(ctx);
-                for (final c in controllers.values) {
-                  c.dispose();
-                }
-              },
+              onPressed: () => Navigator.pop(ctx),
               child: const Text('Abbrechen'),
             ),
             ElevatedButton(
@@ -333,9 +334,6 @@ class WidgetCard extends StatelessWidget {
                   ref
                       .read(dashboardWidgetsProvider.notifier)
                       .updateConfig(instance.id, config);
-                  for (final c in controllers.values) {
-                    c.dispose();
-                  }
                   Navigator.pop(ctx);
                 }
               },
@@ -344,7 +342,11 @@ class WidgetCard extends StatelessWidget {
           ],
         );
       },
-    );
+    ).then((_) {
+      for (final c in controllers.values) {
+        c.dispose();
+      }
+    });
   }
 
   Widget _buildLoading() {

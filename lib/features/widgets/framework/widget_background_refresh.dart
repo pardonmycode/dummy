@@ -4,10 +4,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../framework/widget_definition.dart';
 import '../framework/widget_registry.dart';
+import 'package:widgetly/core/logging/app_logger.dart';
 
 /// Simple logger function for background refresh.
 void _log(String message) {
-  print('[Background Refresh] $message');
+  appLogger.i('Background Refresh: $message');
 }
 
 /// Converts a RefreshInterval enum to a Duration.

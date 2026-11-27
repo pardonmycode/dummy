@@ -29,11 +29,13 @@ class WaterTrackerWidget extends WidgetDefinition {
   WidgetSize get defaultSize => WidgetSize.medium;
 
   @override
+  @override
   Widget buildView(
     WidgetData? data,
     WidgetDataState state,
-    WidgetConfig config,
-  ) {
+    WidgetConfig config, {
+    void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
+  }) {
     if (data == null) {
       return const SizedBox();
     }
@@ -117,7 +119,14 @@ class WaterTrackerWidget extends WidgetDefinition {
           onPressed: () {
             // Quick add using TrackerBase
             tracker.addEntry(250, note: 'Wasser');
-            // Refresh data
+            // Report the entry so it can be persisted
+            if (onQuickAdd != null) {
+              onQuickAdd('water', {
+                'value': 250,
+                'timestamp': DateTime.now().toIso8601String(),
+                'note': 'Wasser',
+              });
+            }
           },
         ),
       ],

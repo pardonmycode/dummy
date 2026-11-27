@@ -33,11 +33,13 @@ class BudgetWidget extends WidgetDefinition {
   RefreshInterval get defaultRefreshInterval => RefreshInterval.manual;
 
   @override
+  @override
   Widget buildView(
     WidgetData? data,
     WidgetDataState state,
-    WidgetConfig config,
-  ) {
+    WidgetConfig config, {
+    void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
+  }) {
     // Loading state
     if (state == WidgetDataState.loading) {
       return Column(

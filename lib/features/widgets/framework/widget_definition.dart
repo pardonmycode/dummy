@@ -123,11 +123,13 @@ abstract class WidgetDefinition {
   List<WidgetConfigField> get configFields => [];
 
   /// Build the widget UI from data and state.
+  /// [onQuickAdd] is an optional callback for tracker widgets to report quick-add actions.
   Widget buildView(
     WidgetData? data,
     WidgetDataState state,
-    WidgetConfig config,
-  );
+    WidgetConfig config, {
+    void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
+  });
 }
 
 /// Configuration field definition for widget forms.

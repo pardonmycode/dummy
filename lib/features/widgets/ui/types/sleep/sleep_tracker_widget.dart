@@ -41,11 +41,13 @@ class SleepTrackerWidget extends WidgetDefinition {
   ];
 
   @override
+  @override
   Widget buildView(
     WidgetData? data,
     WidgetDataState state,
-    WidgetConfig config,
-  ) {
+    WidgetConfig config, {
+    void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
+  }) {
     if (data == null) {
       return const SizedBox();
     }

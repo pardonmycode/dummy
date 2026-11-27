@@ -35,11 +35,13 @@ class WeatherWidget extends WidgetDefinition {
   ];
 
   @override
+  @override
   Widget buildView(
     WidgetData? data,
     WidgetDataState state,
-    WidgetConfig config,
-  ) {
+    WidgetConfig config, {
+    void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
+  }) {
     // Empty state: no weather data available
     if (state == WidgetDataState.empty) {
       return Column(

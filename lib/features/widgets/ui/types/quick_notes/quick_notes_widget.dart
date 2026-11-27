@@ -30,11 +30,13 @@ class QuickNotesWidget extends WidgetDefinition {
   Set<WidgetSize> get supportedSizes => {WidgetSize.medium, WidgetSize.large};
 
   @override
+  @override
   Widget buildView(
     WidgetData? data,
     WidgetDataState state,
-    WidgetConfig config,
-  ) {
+    WidgetConfig config, {
+    void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
+  }) {
     if (data == null) {
       return const SizedBox();
     }

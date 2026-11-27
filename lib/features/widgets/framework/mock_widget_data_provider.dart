@@ -3,6 +3,24 @@ import 'dart:async';
 /// Mock widget data provider for development and testing.
 /// Returns sample data for each widget type without network calls.
 class MockWidgetDataProvider {
+  /// In-memory storage for widget entries (water, steps, etc.)
+  final Map<String, List<Map<String, dynamic>>> _entries = {};
+
+  /// Add an entry for a widget instance
+  void addEntry(String widgetType, String instanceId, Map<String, dynamic> entry) {
+    final key = '$widgetType:$instanceId';
+    if (_entries[key] == null) {
+      _entries[key] = [];
+    }
+    _entries[key]!.add(entry);
+  }
+
+  /// Get entries for a widget instance
+  List<Map<String, dynamic>> getEntries(String widgetType, String instanceId) {
+    final key = '$widgetType:$instanceId';
+    return _entries[key] ?? [];
+  }
+
   Future<Map<String, dynamic>> getData(
     String widgetType,
     Map<String, dynamic>? config,

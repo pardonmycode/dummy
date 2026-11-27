@@ -5,12 +5,13 @@ import '../../../../core/theme/theme.dart';
 import '../../framework/widget_definition.dart';
 import '../../framework/widget_instance.dart';
 import '../../../dashboard/ui/views/dashboard_view.dart'
-    show dashboardWidgetsProvider;
+    show dashboardWidgetsProvider, mockDataProviderProvider, widgetDataProvider;
 import '../components/widget_action_menu.dart';
 
 /// Base card wrapper for all widgets with header, states, and actions.
-class WidgetCard extends StatelessWidget {
+class WidgetCard extends ConsumerWidget {
   final WidgetDefinition definition;
+  final WidgetInstance instance;
   final WidgetData? data;
   final WidgetDataState state;
   final WidgetConfig config;
@@ -25,6 +26,7 @@ class WidgetCard extends StatelessWidget {
   const WidgetCard({
     super.key,
     required this.definition,
+    required this.instance,
     this.data,
     required this.state,
     required this.config,
@@ -38,7 +40,7 @@ class WidgetCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final bg = isDark ? AppTheme.darkCard : AppTheme.lightCard;
@@ -91,7 +93,7 @@ class WidgetCard extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(AppTheme.spacingSm),
-              child: _buildBody(context),
+              child: _buildBody(context, ref),
             ),
           ),
           // Footer with sources
@@ -130,7 +132,7 @@ class WidgetCard extends StatelessWidget {
     }
   }
 
-  Widget _buildBody(BuildContext context) {
+  Widget _buildBody(BuildContext context, WidgetRef ref) {
     // Show validation errors if present
     if (validationErrors != null && validationErrors!.isNotEmpty) {
       return _buildValidationError();
@@ -159,7 +161,21 @@ class WidgetCard extends StatelessWidget {
         );
         break;
       default:
-        body = definition.buildView(data, state, config);
+        body = definition.buildView(
+          data,
+          state,
+          config,
+          onQuickAdd: (type, entry) {
+            // Add entry to mock data provider
+            ref.read(mockDataProviderProvider).addEntry(
+              instance.widgetType,
+              instance.id,
+              entry,
+            );
+            // Refresh the widget data
+            ref.invalidate(widgetDataProvider(instance.id));
+          },
+        );
     }
 
     // Wrap with RefreshIndicator for pull-to-refresh if onRefresh is provided

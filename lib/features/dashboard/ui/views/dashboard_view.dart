@@ -513,12 +513,14 @@ class DashboardView extends ConsumerWidget {
                 // Show cached data with stale indicator
                 return WidgetCard(
                   definition: definition,
+          instance: instance,
                   data: WidgetData.fromJson(cacheSnapshot.data!),
                   state: WidgetDataState.stale,
                   config: WidgetConfig(instance.config),
                   onConfigure: () {
                     final card = WidgetCard(
                       definition: definition,
+          instance: instance,
                       data: WidgetData.fromJson(cacheSnapshot.data!),
                       state: WidgetDataState.stale,
                       config: WidgetConfig(instance.config),
@@ -533,6 +535,7 @@ class DashboardView extends ConsumerWidget {
               // No cache, show loading
               return WidgetCard(
                 definition: definition,
+          instance: instance,
                 data: null,
                 state: WidgetDataState.loading,
                 config: WidgetConfig(instance.config),
@@ -544,6 +547,7 @@ class DashboardView extends ConsumerWidget {
         if (snapshot.hasError) {
           return WidgetCard(
             definition: definition,
+          instance: instance,
             data: null,
             state: WidgetDataState.error,
             config: WidgetConfig(instance.config),
@@ -553,6 +557,7 @@ class DashboardView extends ConsumerWidget {
         if (snapshot.data == null) {
           return WidgetCard(
             definition: definition,
+          instance: instance,
             data: null,
             state: WidgetDataState.empty,
             config: WidgetConfig(instance.config),
@@ -568,6 +573,7 @@ class DashboardView extends ConsumerWidget {
         if (validationErrors != null && validationErrors.isNotEmpty) {
           return WidgetCard(
             definition: definition,
+          instance: instance,
             data: null,
             state: WidgetDataState.ready,
             config: WidgetConfig(instance.config),
@@ -580,12 +586,14 @@ class DashboardView extends ConsumerWidget {
 
         return WidgetCard(
           definition: definition,
+          instance: instance,
           data: WidgetData.fromJson(rawJson),
           state: WidgetDataState.ready,
           config: WidgetConfig(instance.config),
           onConfigure: () {
             final card = WidgetCard(
               definition: definition,
+          instance: instance,
               data: WidgetData.fromJson(rawJson),
               state: WidgetDataState.ready,
               config: WidgetConfig(instance.config),

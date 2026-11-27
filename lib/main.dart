@@ -11,15 +11,6 @@ import 'features/dashboard/ui/views/dashboard_view.dart';
 import 'features/widgets/framework/widget_schema_migration.dart';
 import 'features/widgets/framework/widget_background_refresh.dart';
 
-// Export providers for testing
-export 'features/dashboard/ui/views/dashboard_view.dart'
-    show
-        dashboardWidgetsProvider,
-        widgetRegistryProvider,
-        isEditingProvider,
-        mockDataProviderProvider,
-        widgetDataProvider;
-
 void main() {
   registerDefaultMigrations();
   

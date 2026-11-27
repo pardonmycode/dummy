@@ -165,7 +165,7 @@ Severity levels:
 - "+ 250ml" adds to a `TrackerBase` object that is created during `build` and then thrown away, so nothing happens ([water_tracker_widget.dart:119](lib/features/widgets/ui/types/water/water_tracker_widget.dart#L119)).
 
 **H12. CI cannot pass, and the backend is not tested in CI at all.**
-- [ci.yml:16](.github/workflows/ci.yml#L16) pins Flutter 3.27.0, which ships Dart 3.6. [pubspec.yaml:22](pubspec.yaml#L22) requires Dart `^3.14.0`, so `flutter pub get` cannot resolve.
+- [ci.yml:16](.github/workflows/ci.yml#L16) pins Flutter 3.27.0, which ships Dart 3.6. [pubspec.yaml:22](pubspec.yaml#L22) requires Dart `^3.14.0`, and `material_ui` needs Flutter 3.47 or newer, so `flutter pub get` cannot resolve.
 - There is no backend job, so H1 and the 21 failing backend tests went unnoticed.
 
 ### Medium
@@ -237,8 +237,8 @@ Severity levels:
 - There are two `dashboards_notifier.dart` files, and one of them is dead code.
 - Global singletons (`widgetDataProvider`, `widgetBackgroundRefresh`, `_sharedRegistry`) bypass Riverpod, which makes testing and overriding them hard.
 - `riverpod_annotation` and `riverpod_generator` are installed but unused.
-- The `material_ui` package caused namespace conflicts with Flutter's own Material library, and the app needs import prefixes to work around them.
-- **Fix:** split the file into mock data, providers and views. Keep one notifier and remove the extra UI package.
+- The imports mix `material_ui` with old `flutter/material` aliases. `material_ui` and `cupertino_ui` are the official packages that Material and Cupertino moved into (Flutter 3.47+), so keep them and finish the migration with consistent imports and no `as flutter` aliases.
+- **Fix:** split the file into mock data, providers and views, and keep one notifier.
 
 **M13. Background refresh only works while the app is open.**
 - It is a `Timer` running in the app, so it stops when the app goes to the background on iOS and Android.

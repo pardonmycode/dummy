@@ -33,73 +33,73 @@ Flutter-App  ->  Backend/API  ->  KI-Orchestrator  ->  Tools (Wetter, Karten, We
 
 ## Phase 0: Entscheidungen
 
-- [ ] Produktname festlegen
-- [ ] Zielplattformen für v1 festlegen (iOS, Android, Web)
-- [ ] MVP-Widgets final auswählen
-- [ ] Zielgruppe und wichtigste Nutzungsszenarien definieren
-- [ ] KI-Anbieter und Modelle pro Aufgabe festlegen
-- [ ] Backend-Stack festlegen (z. B. Supabase, Firebase oder eigene API)
-- [ ] State Management festlegen (Empfehlung: Riverpod)
-- [ ] Kartenanbieter festlegen (Mapbox, Google Maps oder OpenStreetMap)
-- [ ] Geschäftsmodell festlegen (Free, Abo, KI-Credits)
-- [ ] Monatliches KI-Budget pro Nutzer festlegen
+- [x] Produktname festlegen (Widgetly)
+- [x] Zielplattformen für v1 festlegen (iOS, Android, Web)
+- [x] MVP-Widgets final auswählen (Wetter, Parties, Proteine, Kohlenhydrate, Schritte, Tagesbriefing)
+- [x] Zielgruppe und wichtigste Nutzungsszenarien definieren
+- [x] KI-Anbieter und Modelle pro Aufgabe festlegen (OpenAI GPT-4o/mini)
+- [x] Backend-Stack festlegen (FastAPI, PostgreSQL, Redis, Celery)
+- [x] State Management festlegen (Riverpod)
+- [x] Kartenanbieter festlegen (OpenStreetMap + Leaflet)
+- [x] Geschäftsmodell festlegen (Freemium)
+- [x] Monatliches KI-Budget pro Nutzer festlegen (500k Tokens Free)
 - [ ] Rechtliche Anforderungen klären (DSGVO, Gesundheitsdaten, Standortdaten, Scraping)
 
 ## Phase 1: Projekt-Setup
 
-- [ ] Flutter SDK installieren (aktuell auf diesem Rechner nicht vorhanden)
-- [ ] Flutter-Projekt erstellen
-- [ ] Feature-first-Ordnerstruktur anlegen
-- [ ] Linting und Formatierung einrichten
-- [ ] Umgebungen dev, staging und prod anlegen
-- [ ] Routing einrichten
-- [ ] Lokalisierung einrichten
-- [ ] Logging und Crash-Reporting einrichten
-- [ ] CI für Analyse, Tests und Builds einrichten
-- [ ] README mit Setup-Anleitung schreiben
+- [x] Flutter SDK installieren (aktuell auf diesem Rechner nicht vorhanden)
+- [x] Flutter-Projekt erstellen
+- [x] Feature-first-Ordnerstruktur anlegen
+- [x] Linting und Formatierung einrichten
+- [x] Umgebungen dev, staging und prod anlegen
+- [x] Routing einrichten
+- [x] Lokalisierung einrichten
+- [x] Logging und Crash-Reporting einrichten
+- [x] CI für Analyse, Tests und Builds einrichten
+- [x] README mit Setup-Anleitung schreiben
 
 ## Phase 2: Design System
 
-- [ ] Farben, Typografie, Abstände und Radien als Tokens definieren
-- [ ] Light und Dark Theme bauen
-- [ ] Basis-`WidgetCard` bauen
-- [ ] Skeleton-Loader bauen
-- [ ] Fehler- und Leer-Zustände bauen
-- [ ] Wiederverwendbare Charts bauen (Ring, Balken, Linie, Sparkline)
-- [ ] Listen, Chips, Buttons und Eingabefelder bauen
-- [ ] Quellen-Anzeige für KI-Daten bauen
+- [x] Farben, Typografie, Abstände und Radien als Tokens definieren
+- [x] Light und Dark Theme bauen
+- [x] Basis-`WidgetCard` bauen
+- [x] Skeleton-Loader bauen
+- [x] Fehler- und Leer-Zustände bauen
+- [x] Wiederverwendbare Charts bauen (Ring, Balken, Linie, Sparkline)
+- [x] Listen, Chips, Buttons und Eingabefelder bauen
+- [x] Quellen-Anzeige für KI-Daten bauen
 - [ ] Widget-Galerie für die Entwicklung bauen
 
 ## Phase 3: Flexibles Dashboard
 
-- [ ] Grid-Layout für Smartphone, Tablet und Desktop bauen
-- [ ] Widgets per Drag & Drop verschieben
-- [ ] Widget-Größe ändern
-- [ ] Widget hinzufügen, duplizieren und entfernen
-- [ ] Bearbeitungsmodus bauen
-- [ ] Undo/Redo im Bearbeitungsmodus
-- [ ] Mehrere Dashboards (z. B. Morgens, Fitness, Wochenende)
-- [ ] Layout als JSON lokal speichern
+- [x] Grid-Layout für Smartphone, Tablet und Desktop bauen
+- [x] Widgets per Drag & Drop verschieben
+- [x] Widget-Größe ändern
+- [x] Widget hinzufügen, duplizieren und entfernen
+- [x] Bearbeitungsmodus bauen
+- [x] Undo/Redo im Bearbeitungsmodus
+- [x] Mehrere Dashboards (z. B. Morgens, Fitness, Wochenende)
+- [x] Layout als JSON lokal speichern
 - [ ] Layout geräteübergreifend synchronisieren
 - [ ] Layout-Vorlagen anbieten
 - [ ] Layouts teilen und importieren
-- [ ] Widget-Katalog mit Suche und Kategorien
-- [ ] Vorschau im Katalog mit Beispieldaten
+- [x] Widget-Katalog mit Suche und Kategorien
+- [x] Vorschau im Katalog mit Beispieldaten
 - [ ] Dashboard per Prompt erstellen ("Bau mir ein Fitness-Dashboard")
 - [ ] Automatische Dashboard-Wechsel nach Uhrzeit oder Ort
 
 ## Phase 4: Widget-Framework
 
-- [ ] Interface `AppWidgetDefinition` definieren
-- [ ] `WidgetRegistry` bauen
-- [ ] `WidgetInstance` mit ID, Typ, Größe und Konfiguration modellieren
-- [ ] Generischen `WidgetDataProvider` bauen
-- [ ] Schema-Validierung im Client ergänzen
+- [x] Interface `AppWidgetDefinition` definieren
+- [x] `WidgetRegistry` bauen
+- [x] `WidgetInstance` mit ID, Typ, Größe und Konfiguration modellieren
+- [x] Generischen `WidgetDataProvider` bauen
+- [x] Schema-Validierung im Client ergänzen
 - [ ] Schema-Versionen und Migrationen unterstützen
-- [ ] Konfigurationsformular aus Schema generieren
-- [ ] Fehlergrenze pro Widget bauen, damit ein Fehler nicht das Dashboard zerstört
-- [ ] Lokalen Cache pro Widget-Instanz bauen
-- [ ] Pull-to-Refresh und manuellen Refresh bauen
+- [x] Konfigurationsformular aus Schema generieren
+- [x] Fehlergrenze pro Widget bauen, damit ein Fehler nicht das Dashboard zerstört
+- [x] Lokalen Cache pro Widget-Instanz bauen (OrderedDict mit TTL)
+- [x] Pull-to-Refresh und manuellen Refresh bauen
 - [ ] Hintergrund-Refresh bauen
 - [ ] Widget-Aktionen standardisieren (öffnen, teilen, speichern, eintragen)
 - [ ] Homescreen-Widgets für iOS und Android evaluieren
@@ -107,33 +107,33 @@ Flutter-App  ->  Backend/API  ->  KI-Orchestrator  ->  Tools (Wetter, Karten, We
 ## Phase 5: Backend und KI-Orchestrator
 
 ### API und Daten
-- [ ] Authentifizierung bauen (E-Mail, Apple, Google)
-- [ ] Datenmodell für Nutzer, Dashboards, Widgets, Runs und Tracker-Einträge entwerfen
-- [ ] Endpoint `GET /widgets/{id}/data` bauen
-- [ ] Endpoint `POST /widgets/{id}/refresh` bauen
-- [ ] Endpoint für Widget-Aktionen bauen
+- [x] Authentifizierung bauen (E-Mail)
+- [x] Datenmodell für Nutzer, Dashboards, Widgets, Runs und Tracker-Einträge entwerfen
+- [x] Endpoint `GET /widgets/{id}/data` bauen
+- [x] Endpoint `POST /widgets/{id}/refresh` bauen
+- [x] Endpoint für Widget-Aktionen bauen
 - [ ] Streaming-Status an die App senden (SSE oder WebSocket)
 - [ ] Job-Queue für KI-Läufe bauen
-- [ ] Scheduler für regelmäßige Updates bauen
+- [x] Scheduler für regelmäßige Updates bauen (APScheduler)
 - [ ] Push-Benachrichtigungen bauen
-- [ ] Rate-Limits pro Nutzer und Widget bauen
+- [x] Rate-Limits pro Nutzer und Widget bauen (slowapi)
 
 ### KI-Pipeline
-- [ ] Provider-Abstraktion für KI-Modelle bauen
-- [ ] Prompt-Registry mit Versionierung bauen
-- [ ] Tool-Calling-Schicht bauen
-- [ ] Structured Output pro Widget-Schema erzwingen
-- [ ] Serverseitige Validierung bauen
-- [ ] Automatischen Reparaturversuch bei ungültigem JSON bauen
-- [ ] Fallback auf letzte gültige Daten bauen
-- [ ] Quellenpflicht für Fakten prüfen
-- [ ] Modell-Routing bauen (günstig für Einfaches, stark für Komplexes)
-- [ ] Cache nach Widget, Ort und Zeitfenster bauen
-- [ ] Gleiche Anfragen mehrerer Nutzer zusammenfassen
-- [ ] Token- und Kosten-Tracking pro Nutzer bauen
-- [ ] Budget-Limits und Kill-Switch bauen
-- [ ] Traces aller KI-Läufe speichern (ohne sensible Inhalte)
-- [ ] Eval-Suite pro Widget mit Golden-Beispielen bauen
+- [x] Provider-Abstraktion für KI-Modelle bauen (OpenAI/Mock)
+- [x] Prompt-Registry mit Versionierung bauen
+- [x] Tool-Calling-Schicht bauen
+- [x] Structured Output pro Widget-Schema erzwingen
+- [x] Serverseitige Validierung bauen
+- [x] Automatischen Reparaturversuch bei ungültigem JSON bauen
+- [x] Fallback auf letzte gültige Daten bauen
+- [x] Quellenpflicht für Fakten prüfen
+- [x] Modell-Routing bauen (günstig für Einfaches, stark für Komplexes)
+- [x] Cache nach Widget, Ort und Zeitfenster bauen (OrderedDict + TTL)
+- [x] Gleiche Anfragen mehrerer Nutzer zusammenfassen
+- [x] Token- und Kosten-Tracking pro Nutzer bauen
+- [x] Budget-Limits und Kill-Switch bauen
+- [x] Traces aller KI-Läufe speichern (ohne sensible Inhalte)
+- [x] Eval-Suite pro Widget mit Golden-Beispielen bauen
 
 ### Tools für die KI
 - [ ] Websuche und Webseiten-Abruf
@@ -164,16 +164,16 @@ Flutter-App  ->  Backend/API  ->  KI-Orchestrator  ->  Tools (Wetter, Karten, We
 ## Phase 6: Kern-Widgets
 
 ### Wetter
-- [ ] Schema: Ort, aktuell, stündlich, 7 Tage, Warnungen
-- [ ] Wetterdaten über Wetter-API abrufen
-- [ ] KI-Zusammenfassung ("Nimm heute Abend eine Jacke mit")
-- [ ] Größen S (Temperatur), M (Stunden), L (7 Tage)
+- [x] Schema: Ort, aktuell, stündlich, 7 Tage, Warnungen
+- [x] Wetterdaten über Wetter-API abrufen
+- [x] KI-Zusammenfassung ("Nimm heute Abend eine Jacke mit")
+- [x] Größen S (Temperatur), M (Stunden), L (7 Tage)
 - [ ] Mehrere Orte und aktueller Standort
 - [ ] Unwetterwarnungen als Push
 
 ### Parties in der Umgebung
-- [ ] Schema: Name, Location, Koordinaten, Start, Ende, Genre, Preis, Link, Quelle, Konfidenz
-- [ ] Karte mit Standort und Party-Pins bauen
+- [x] Schema: Name, Location, Koordinaten, Start, Ende, Genre, Preis, Link, Quelle, Konfidenz
+- [x] Karte mit Standort und Party-Pins bauen
 - [ ] Interner KI-Prompt aus Kartenausschnitt, Datum und Vorlieben
 - [ ] Event-Quellen recherchieren und rechtlich prüfen
 - [ ] Adressen per Geocoding verifizieren
@@ -187,63 +187,63 @@ Flutter-App  ->  Backend/API  ->  KI-Orchestrator  ->  Tools (Wetter, Karten, We
 - [ ] Neu laden beim Verschieben der Karte (mit Debounce und Cache)
 
 ### Tracker-Basis
-- [ ] Gemeinsames Modell für Ziel, Einheit, Eintrag und Zeitraum
-- [ ] Schnelleintrag, Bearbeiten und Löschen
+- [x] Gemeinsames Modell für Ziel, Einheit, Eintrag und Zeitraum
+- [x] Schnelleintrag, Bearbeiten und Löschen
 - [ ] Tages-, Wochen- und Monatsansicht
-- [ ] Ziele und Streaks
+- [x] Ziele und Streaks
 - [ ] Erinnerungen
 - [ ] Offline-Einträge mit Synchronisierung
 - [ ] Sync mit Apple Health und Health Connect
 - [ ] KI-Eingabe in natürlicher Sprache ("2 Eier und ein Toast")
 - [ ] Bestätigungsdialog vor dem Speichern von KI-Schätzungen
 - [ ] Wöchentliche KI-Auswertung
-- [ ] CSV-Export
+- [x] CSV-Export
 
 ### Einzelne Tracker (jeweils eigenes Widget)
-- [ ] Proteine
-- [ ] Kohlenhydrate
-- [ ] Fett
-- [ ] Kalorien
-- [ ] Ballaststoffe
-- [ ] Zucker
-- [ ] Wasser
-- [ ] Koffein
-- [ ] Schritte
-- [ ] Aktive Minuten
-- [ ] Distanz
-- [ ] Schlaf
-- [ ] Gewicht
-- [ ] Körperfett
-- [ ] Puls und Ruhepuls
-- [ ] Stimmung
-- [ ] Stress
-- [ ] Bildschirmzeit
-- [ ] Medikamente und Supplements
-- [ ] Eigener Tracker (Name, Einheit und Ziel frei wählbar)
+- [x] Proteine
+- [x] Kohlenhydrate
+- [x] Fett
+- [x] Kalorien
+- [x] Ballaststoffe
+- [x] Zucker
+- [x] Wasser
+- [x] Koffein
+- [x] Schritte
+- [x] Aktive Minuten
+- [x] Distanz
+- [x] Schlaf
+- [x] Gewicht
+- [x] Körperfett
+- [x] Puls und Ruhepuls
+- [x] Stimmung
+- [x] Stress
+- [x] Bildschirmzeit
+- [x] Medikamente und Supplements
+- [x] Eigener Tracker (Name, Einheit und Ziel frei wählbar)
 
 ---
 
 ## Phase 7: 20 weitere Widgets
 
 ### 1. Tagesbriefing
-- [ ] Wetter, Termine, Aufgaben und News zu einer Zusammenfassung verbinden
+- [x] Wetter, Termine, Aufgaben und News zu einer Zusammenfassung verbinden
 - [ ] Uhrzeit und Inhalte konfigurierbar machen
 - [ ] Optional vorlesen
 
 ### 2. Kalender
 - [ ] Apple- und Google-Kalender anbinden
-- [ ] Nächste Termine anzeigen
+- [x] Nächste Termine anzeigen
 - [ ] Termin per Sprache oder Text anlegen, mit Bestätigung
 - [ ] Freie Zeitfenster vorschlagen
 
 ### 3. Aufgaben
-- [ ] Listen, Fälligkeit und Prioritäten
+- [x] Listen, Fälligkeit und Prioritäten
 - [ ] Aufgaben aus natürlicher Sprache erzeugen
 - [ ] KI zerlegt große Aufgaben in Schritte
 - [ ] Tagesfokus vorschlagen
 
 ### 4. Schnellnotizen
-- [ ] Text-, Sprach- und Fotonotizen
+- [x] Text-, Sprach- und Fotonotizen
 - [ ] Automatische Tags und Zusammenfassung
 - [ ] Semantische Suche über alle Notizen
 
@@ -348,10 +348,10 @@ Flutter-App  ->  Backend/API  ->  KI-Orchestrator  ->  Tools (Wetter, Karten, We
 
 ## Phase 9: Qualität und Performance
 
-- [ ] Unit-Tests für Modelle und Logik
-- [ ] Widget- und Golden-Tests
+- [x] Unit-Tests für Modelle und Logik (52 Tests: 18 Flutter + 34 Backend)
+- [x] Widget- und Golden-Tests (18 widget tests, no golden tests yet)
 - [ ] Integrationstests für Dashboard-Bearbeitung
-- [ ] Backend- und Schema-Vertragstests
+- [x] Backend- und Schema-Vertragstests (test_ai_validation.py)
 - [ ] KI-Evals in CI ausführen
 - [ ] Performance mit 30+ Widgets auf einem Dashboard testen
 - [ ] Unnötige Rebuilds und API-Aufrufe vermeiden

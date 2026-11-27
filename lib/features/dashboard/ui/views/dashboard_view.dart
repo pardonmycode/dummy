@@ -973,7 +973,7 @@ class DashboardView extends ConsumerWidget {
                   // Apply fitness template
                   ref.read(dashboardWidgetsProvider.notifier).setWidgets([
                     WidgetInstance(
-                      widgetType: 'steps',
+                      widgetType: 'steps_tracker',
                       config: {},
                     ),
                     WidgetInstance(
@@ -981,7 +981,7 @@ class DashboardView extends ConsumerWidget {
                       config: {'goal': 150},
                     ),
                     WidgetInstance(
-                      widgetType: 'water',
+                      widgetType: 'water_tracker',
                       config: {},
                     ),
                     WidgetInstance(
@@ -997,7 +997,7 @@ class DashboardView extends ConsumerWidget {
               ListTile(
                 leading: const Icon(Icons.work),
                 title: const Text('Arbeit'),
-                subtitle: const Text('Produktivitäts-Widlets'),
+                subtitle: const Text('Produktivitäts-Widgets'),
                 onTap: () {
                   Navigator.pop(ctx);
                   ref.read(dashboardWidgetsProvider.notifier).setWidgets([

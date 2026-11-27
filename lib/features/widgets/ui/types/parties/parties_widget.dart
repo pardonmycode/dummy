@@ -111,9 +111,9 @@ class PartiesWidget extends WidgetDefinition {
               ),
               children: [
                 TileLayer(
-                  urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  subdomains: ['a', 'b', 'c'],
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   maxZoom: 19,
+                  userAgentPackageName: 'com.nousresearch.widgetly',
                 ),
                 MarkerLayer(
                   markers: markers,

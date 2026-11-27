@@ -146,8 +146,12 @@
 - 5.5: Unify imports
 - 5.6: Accessibility improvements
 
-## Phase 6: Quality, Tests & CI — Not Started
-- 6.1: CI on correct Flutter version
+## Phase 6: Quality, Tests & CI — In Progress
+
+### Completed
+- 6.1: CI on correct Flutter version (3.50.1)
+
+### Remaining
 - 6.2: Additional tests for failure-prone areas
 - 6.3: Golden tests per widget and size
 - 6.4: Integration test for edit flow

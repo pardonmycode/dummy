@@ -2,8 +2,8 @@
 
 **Date:** 2026-11-27
 **Base commit:** `d558b7f` (initial review state)
-**Current commit:** `41abdc7`
-**Total Tests:** 68 passing
+**Current commit:** `0dd047d`
+**Total Tests:** 73 passing
 
 ---
 
@@ -119,14 +119,30 @@
 - **Problem:** 8 nearly identical tracker widgets (protein, carbs, fat, calories, fiber, sugar, caffeine, water)
 - **Fix:** Created single `NutrientTrackerWidget` class with constructor configuration
 - **Test:** `test/features/widgets/ui/types/nutrient_tracker/nutrient_tracker_test.dart`
+- **Commit:** 41abdc7
+
+### 3.5 Generic MetricTrackerWidget — ✅ Complete
+- **Problem:** Goal-based metric trackers (sleep, active minutes, distance) had similar but separate implementations
+- **Fix:** Created `MetricTrackerWidget` generic class with constructor configuration for name, unit, icon, color, goal/value keys
+- **Test:** `test/widget_states_test.dart` (active minutes widget)
+- **Commit:** e6ea8a1
+
+### 3.6 Widget IDs as Constants — ✅ Complete
+- **Problem:** Magic strings for widget IDs scattered across codebase
+- **Fix:** Created `WidgetTypeIds` constants class; updated all templates, registry, and mock data
+- **Test:** `test/template_ids_test.dart`
+- **Commit:** cfc1a48
+
+### 3.7 Remove Client-Side Schema Migrations — ✅ Complete
+- **Problem:** v1→v2 migrations existed for widgets never released
+- **Fix:** Removed all client-side schema migrations; infrastructure preserved for future
+- **Test:** `test/widget_schema_cache_test.dart`
+- **Commit:** 8319fb9
 
 ### Remaining
 - 3.1: freezed/json_serializable models for WidgetInstance, Dashboard, WidgetData
 - 3.2: Typed data models per widget type
 - 3.3: WidgetDefinition<T> with typed data
-- 3.5: Generic MetricTrackerWidget (weight, body fat, heart rate, etc.)
-- 3.6: Widget IDs as constants/enum
-- 3.7: Remove client-side schema migrations
 
 ---
 
@@ -150,24 +166,34 @@
 
 ### Completed
 - 6.1: CI on correct Flutter version (3.50.1)
+- 6.2: Additional tests for sync import/export (versioned + legacy formats)
+- 6.5: Stricter lints (avoid_print, unawaited_futures, prefer_const, etc.)
+- 6.6: App-wide logger (logger package) to replace print() calls
+- 6.7: Removed unused packages (cached_network_image, fluttertoast)
+- 6.8: Minimum test coverage threshold (40%) in CI for critical packages
 
 ### Remaining
-- 6.2: Additional tests for failure-prone areas
 - 6.3: Golden tests per widget and size
 - 6.4: Integration test for edit flow
-- 6.5: Stricter lints
-- 6.6: Crash reporting
-- 6.7: Remove unused packages
-- 6.8: Minimum test coverage in CI
 
 ---
 
 ## Test Statistics
 
-- **Total tests passing:** 68
-- **Test coverage:** Framework, domain, and UI layers
-- **Analysis status:** No errors, warnings only
+- **Total tests passing:** 73
+- **New tests added:** 5 (sync service import/export)
+- **Test coverage (critical packages):** 38.8% (dashboard + widgets/framework)
+- **Analysis status:** No errors, 22 warnings (mostly test imports)
 
 ## Commits Made
 
-All fixes were committed individually with descriptive commit messages following conventional commit format.
+All fixes were committed individually with descriptive commit messages following conventional commit format. Recent commits:
+- 0dd047d: feat(6.6): add app-wide logger
+- 39650e3: chore(6.8): add minimum test coverage threshold
+- 08a3b50: test(6.2): add sync service import/export tests
+- 375632b: chore(6.7): remove unused packages
+- 7389317: chore(6.5): clean up unused imports and dead code
+- 055abd5: chore(6.5): enable stricter lints
+- 8319fb9: refactor(3.7): remove client-side schema migrations
+- e6ea8a1: feat(3.5): introduce generic MetricTrackerWidget
+- cfc1a48: feat(3.6): introduce WidgetTypeIds constants

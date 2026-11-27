@@ -2,8 +2,8 @@
 
 **Date:** 2026-11-27
 **Base commit:** `d558b7f` (initial review state)
-**Current commit:** `0dd047d`
-**Total Tests:** 73 passing
+**Current commit:** `21cc0d6`
+**Total Tests:** 81 passing
 
 ---
 
@@ -115,6 +115,23 @@
 
 ## Phase 3: Typed Data & Less Duplication — In Progress
 
+### 3.1 Freezed/json_serializable models — ✅ Complete
+- **Problem:** Manual JSON serialization with type casts that could fail
+- **Fix:** Converted `WidgetInstance`, `Dashboard`, and `WidgetData` to freezed models with json_serializable
+- **Details:**
+  - Added `freezed`, `freezed_annotation`, `json_serializable`, `analyzer` dependencies
+  - Custom JSON converters for `config` (Map type handling) and `gridPosition` (num→int conversion)
+  - Default values for optional fields (`id`, `config`, `gridPosition`)
+  - Clone extension for WidgetInstance
+  - Generated `.freezed.dart` and `.g.dart` files via build_runner
+- **Test:** `test/features/models/freezed_models_test.dart` — copyWith, equality, JSON roundtrip
+- **Commit:** 78d9d8f
+
+### 3.2 Typed data models per widget — Partially Complete
+- **Completed:** WeatherData, HourlyForecast, DailyForecast converted to freezed models
+- **Remaining:** Protein, steps, parties, and other widget types
+- **Commit:** e4b9a2c
+
 ### 3.4 Generic NutrientTrackerWidget — ✅ Complete
 - **Problem:** 8 nearly identical tracker widgets (protein, carbs, fat, calories, fiber, sugar, caffeine, water)
 - **Fix:** Created single `NutrientTrackerWidget` class with constructor configuration
@@ -123,7 +140,7 @@
 
 ### 3.5 Generic MetricTrackerWidget — ✅ Complete
 - **Problem:** Goal-based metric trackers (sleep, active minutes, distance) had similar but separate implementations
-- **Fix:** Created `MetricTrackerWidget` generic class with constructor configuration for name, unit, icon, color, goal/value keys
+- **Fix:** Created `MetricTrackerWidget` generic class with constructor configuration
 - **Test:** `test/widget_states_test.dart` (active minutes widget)
 - **Commit:** e6ea8a1
 
@@ -140,19 +157,35 @@
 - **Commit:** 8319fb9
 
 ### Remaining
-- 3.1: freezed/json_serializable models for WidgetInstance, Dashboard, WidgetData
-- 3.2: Typed data models per widget type
 - 3.3: WidgetDefinition<T> with typed data
+- 3.2 (rest): Typed data models for remaining widget types
 
 ---
 
-## Phase 4: Grid, Navigation & App Structure — Not Started
+## Phase 4: Grid, Navigation & App Structure — In Progress
+
+### 4.3 Enable router — ✅ Complete
+- **Problem:** Used `home:` instead of `MaterialApp.router`, settings and catalog pages unreachable
+- **Fix:** Switched to `routerConfig: appRouter` using existing go_router configuration
+- **Test:** All existing tests pass with router enabled
+- **Commit:** c43767a
+
+### 4.5 Replace background refresh — ✅ Complete
+- **Problem:** Timer-based refresh ran every 5 minutes but nothing registered with it
+- **Fix:** Replaced with WidgetsBindingObserver that refreshes widgets on app resume
+- **Details:**
+  - Simplified `WidgetBackgroundRefresh` to provide `refreshAllOnResume()` API
+  - Added `WidgetsBindingObserver` to `WidgetlyApp` state
+  - Widgets refresh when app returns from background (battery efficient)
+- **Commit:** 21cc0d6
+
+### Remaining
 - 4.1: Real dashboard grid with flutter_staggered_grid_view
 - 4.2: Drag & drop directly in grid
-- 4.3: Enable router (MaterialApp.router)
 - 4.4: Wire up or remove language selection
-- 4.5: Replace background refresh timer with AppLifecycleListener
-- 4.6: Map in scrollable grid — show static image, open full map on tap
+- 4.6: Map in scrollable grid
+
+---
 
 ## Phase 5: Theme, i18n & Accessibility — Not Started
 - 5.1: Theme on ColorScheme and ThemeExtension
@@ -161,6 +194,8 @@
 - 5.4: Fix misused translations
 - 5.5: Unify imports
 - 5.6: Accessibility improvements
+
+---
 
 ## Phase 6: Quality, Tests & CI — In Progress
 
@@ -180,20 +215,16 @@
 
 ## Test Statistics
 
-- **Total tests passing:** 73
-- **New tests added:** 5 (sync service import/export)
+- **Total tests passing:** 81
+- **New tests added this session:** 6 (freezed models test)
 - **Test coverage (critical packages):** 38.8% (dashboard + widgets/framework)
-- **Analysis status:** No errors, 22 warnings (mostly test imports)
+- **Analysis status:** 0 errors, 414 warnings/infos (mostly test imports and style)
 
-## Commits Made
+## Commits Made This Session
 
-All fixes were committed individually with descriptive commit messages following conventional commit format. Recent commits:
-- 0dd047d: feat(6.6): add app-wide logger
-- 39650e3: chore(6.8): add minimum test coverage threshold
-- 08a3b50: test(6.2): add sync service import/export tests
-- 375632b: chore(6.7): remove unused packages
-- 7389317: chore(6.5): clean up unused imports and dead code
-- 055abd5: chore(6.5): enable stricter lints
-- 8319fb9: refactor(3.7): remove client-side schema migrations
-- e6ea8a1: feat(3.5): introduce generic MetricTrackerWidget
-- cfc1a48: feat(3.6): introduce WidgetTypeIds constants
+- `21cc0d6` feat(4.5): replace background refresh timer with lifecycle observer
+- `c43767a` feat(4.3): enable MaterialApp.router with go_router
+- `e4b9a2c` feat(3.2): convert WeatherData to freezed models
+- `78d9d8f` feat(3.1): migrate core models to freezed + json_serializable
+
+All fixes were committed individually with descriptive commit messages following conventional commit format.

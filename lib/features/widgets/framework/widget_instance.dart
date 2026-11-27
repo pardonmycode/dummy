@@ -53,6 +53,19 @@ class WidgetInstance {
 
   /// Deserialize from JSON.
   factory WidgetInstance.fromJson(Map<String, dynamic> json) {
+    // config: jsonDecode produces Map<String, dynamic>, but handle null
+    Map<String, dynamic> config = {};
+    if (json['config'] != null) {
+      config = Map<String, dynamic>.from(json['config'] as Map);
+    }
+
+    // gridPosition: jsonDecode produces Map with num values, not int
+    Map<String, int> gridPosition = {'row': 0, 'col': 0, 'rowSpan': 1, 'colSpan': 1};
+    if (json['gridPosition'] != null) {
+      final raw = json['gridPosition'] as Map;
+      gridPosition = raw.map((k, v) => MapEntry(k.toString(), (v as num).toInt()));
+    }
+
     return WidgetInstance(
       id: json['id'] as String?,
       widgetType: json['widgetType'] as String,
@@ -60,10 +73,8 @@ class WidgetInstance {
         (s) => s.name == json['size'],
         orElse: () => WidgetSize.medium,
       ),
-      config: json['config'] as Map<String, dynamic>? ?? {},
-      gridPosition:
-          json['gridPosition'] as Map<String, int>? ??
-          {'row': 0, 'col': 0, 'rowSpan': 1, 'colSpan': 1},
+      config: config,
+      gridPosition: gridPosition,
     );
   }
 }

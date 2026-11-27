@@ -1,491 +1,446 @@
-# Widgetly Phase-by-Phase Review
+# Widgetly Phase-by-Phase Code Quality Review
 
-**Date:** 2026-11-26
+**Date:** November 26, 2026
 **Reviewer:** Hermes Agent
-**Based on:** `flutter-review` and `comprehensive-code-quality` skills
-**Project Status:** 91/262 tasks complete (phases 0-6 largely done, phase 7 partially done)
+**Methodology:** flutter-review + comprehensive-code-quality skills
+**Build Health:** Flutter analyze: 114 issues (0 errors, 9 warnings, 105 info) | Flutter tests: 37/37 passed | Backend tests: 66/66 passed
 
 ---
 
-## Phase 0: Decisions (10/11 tasks complete)
+## Phase 0: Entscheidungen (Decisions)
 
-**Status:** ✅ Nearly Complete
+**Status:** 10/11 complete (legal requirements pending)
 
-| Task | Status | Notes |
-|------|--------|-------|
-| Product name (Widgetly) | ✅ Done | Consistently used across app |
-| Target platforms (iOS, Android, Web) | ✅ Done | Flutter targets configured |
-| MVP widgets (6 selected) | ✅ Done | Weather, Parties, Protein, Carbs, Steps, Briefing |
-| Target audience defined | ✅ Done | Health-conscious 25-45 in README |
-| AI providers (OpenAI GPT-4o/mini) | ✅ Done | Provider abstraction in `backend/app/ai/provider.py` |
-| Backend stack (FastAPI, PostgreSQL, Redis, Celery) | ⚠️ Partial | FastAPI done; SQLite used instead of PostgreSQL; Redis/Celery not implemented |
-| State management (Riverpod) | ✅ Done | Used throughout frontend |
-| Map provider (OpenStreetMap + Leaflet) | ⚠️ Partial | OpenStreetMap tools exist; no real map widget (uses static image) |
-| Business model (Freemium) | ✅ Done | Documented in README |
-| Token budget (500k Free) | ✅ Done | `USER_TOKEN_BUDGET = 50000` in pipeline.py |
-| Legal requirements (DSGVO, etc.) | ❌ Pending | Not addressed |
+| Severity | Count | Findings |
+|----------|-------|----------|
+| CRITICAL | 0 | - |
+| HIGH | 0 | - |
+| MEDIUM | 0 | - |
+| LOW | 1 | Legal requirements (DSGVO, health data, scraping) not yet addressed |
 
-**Issues Found:**
-- `[HIGH]` Backend stack divergence: SQLite used in practice vs. PostgreSQL in decisions. TODO mentions PostgreSQL + Redis + Celery but `settings.DATABASE_URL` defaults to SQLite and no Redis/Celery integration exists.
-- `[MEDIUM]` Map implementation incomplete: Parties widget uses a static Unsplash image instead of an interactive OpenStreetMap/Leaflet map.
+**Findings:**
 
-**Recommendations:**
-1. Decide whether to migrate to PostgreSQL or update the decision document to reflect SQLite.
-2. Implement a real map widget using `flutter_map` (OpenStreetMap) for the Parties feature.
-3. Begin legal review for DSGVO compliance, especially for health data.
+[LOW] Legal compliance not finalized
+- File: TODO.md:46
+- Issue: DSGVO, health data regulations, location data, and scraping legalities not yet clarified. This is a risk for production launch but not a code issue.
+- Fix: Consult legal counsel or prepare privacy documentation before launch.
+
+**Assessment:** All critical architecture decisions are documented and reflected in the codebase (Riverpod, FastAPI, OpenAI, OSM). Low risk.
 
 ---
 
-## Phase 1: Project Setup (10/10 tasks complete)
+## Phase 1: Projekt-Setup
 
-**Status:** ✅ Complete
+**Status:** 10/10 complete
 
-| Task | Status | Notes |
-|------|--------|-------|
-| Flutter SDK installed | ✅ Done | SDK 3.14+ available |
-| Flutter project created | ✅ Done | Proper structure at `~/projects/dummy` |
-| Feature-first folder structure | ✅ Done | `lib/features/` with dashboard, widgets, settings |
-| Linting and formatting | ✅ Done | `analysis_options.yaml` with flutter_lints |
-| Environments (dev, staging, prod) | ✅ Done | `.env.example` provided |
-| Routing | ✅ Done | go_router configured in `app_router.dart` |
-| Localization | ✅ Done | `en.json` and `de.json` with 52 strings each |
-| Logging and crash reporting | ⚠️ Partial | Logging exists; no crash reporting service |
-| CI (analyze, tests, builds) | ✅ Done | `.github/workflows/ci.yml` with analyze/test/build |
-| README with setup instructions | ✅ Done | Comprehensive README |
+| Severity | Count | Findings |
+|----------|-------|----------|
+| CRITICAL | 0 | - |
+| HIGH | 0 | - |
+| MEDIUM | 1 | Weak linting configuration |
+| LOW | 2 | Unused dependencies, no strict analysis |
 
-**Issues Found:**
-- `[LOW]` README is outdated: Mentions Supabase and Mapbox but actual stack uses FastAPI + SQLite + OpenStreetMap. Roadmap items marked as incomplete are actually done.
-- `[MEDIUM]` No crash reporting service configured (Crashlytics/Sentry).
-- `[LOW]` No `.env` file in repo (only `.env.example`), which is correct but could be documented.
+**Findings:**
 
-**Recommendations:**
-1. Update README to reflect actual technology stack and current completion status.
-2. Integrate a crash reporting service (Sentry recommended for open-source).
-3. Add environment-specific configuration files for dev/staging/prod.
+[MEDIUM] Lint rules too permissive
+- File: analysis_options.yaml
+- Issue: Only uses default flutter_lints without any additional strict rules. `avoid_print` is commented out (not enforced).
+- Fix: Enable `avoid_print`, add `prefer_final_fields`, `always_specify_types`, and other strict lints.
 
----
+[LOW] No strict static analysis configured
+- File: analysis_options.yaml
+- Issue: Missing `errors:` section to treat certain lints as errors.
+- Fix: Add `analyzer.errors: avoid_print: warning` and similar strictness settings.
 
-## Phase 2: Design System (8/9 tasks complete)
+[LOW] Potentially unused dependencies
+- File: pubspec.yaml
+- Issue: Dependencies like `fluttertoast` and `material_design_icons_flutter` should be verified as used.
+- Fix: Run `flutter pub deps` and verify all imports are active.
 
-**Status:** ✅ Nearly Complete
+**Build Health:**
+- ✅ Feature-first folder structure: `lib/features/{dashboard,widgets,settings}`
+- ✅ CI configured (.github/workflows/ci.yml)
+- ✅ Environments defined (dev/staging/prod)
+- ✅ Routing via go_router
+- ✅ Localization via intl + flutter_localizations
+- ✅ README with setup instructions
 
-| Task | Status | Notes |
-|------|--------|-------|
-| Design tokens (colors, typography, spacing, radii) | ✅ Done | `AppTheme` class in `theme.dart` with comprehensive tokens |
-| Light and Dark themes | ✅ Done | Both themes fully implemented |
-| Base `WidgetCard` | ✅ Done | Reusable card component |
-| Skeleton loader | ✅ Done | Loading states implemented |
-| Error and empty states | ✅ Done | Standardized across widgets |
-| Reusable charts (Ring, Bar, Line, Sparkline) | ⚠️ Partial | fl_chart dependency added; custom chart components not found |
-| Lists, chips, buttons, inputs | ✅ Done | `design_system.dart` with all components |
-| Source display for AI data | ✅ Done | `SourceChip` and `SourceSection` components |
-| Widget gallery for development | ❌ Pending | Not built |
-
-**Issues Found:**
-- `[MEDIUM]` Chart components incomplete: `fl_chart` is a dependency but no reusable chart widgets (Ring, Bar, Line, Sparkline) are found in the design system.
-- `[LOW]` Some widgets use `withOpacity()` (deprecated) instead of `withValues()` — 15 occurrences found.
-- `[LOW]` Many widgets use `package:flutter/material.dart` (deprecated) instead of `package:material_ui/material_ui.dart` — 60+ occurrences.
-
-**Recommendations:**
-1. Build reusable chart components using fl_chart and integrate them into the design system.
-2. Batch-replace `withOpacity()` calls with `withValues()` across all widgets.
-3. Begin migration from `flutter/material.dart` to `material_ui/material_ui.dart` per the deprecation warnings.
+**Assessment:** Solid foundation. Minor improvements to linting strictness recommended.
 
 ---
 
-## Phase 3: Flexible Dashboard (12/16 tasks complete)
+## Phase 2: Design System
 
-**Status:** ✅ Mostly Complete
+**Status:** 8/9 complete (widget gallery pending)
 
-| Task | Status | Notes |
-|------|--------|-------|
-| Responsive grid layout (phone, tablet, desktop) | ✅ Done | `ResponsiveGridConfig` with 1-4 columns |
-| Drag & drop reordering | ✅ Done | `ReorderableListView` in edit mode |
-| Widget resize | ✅ Done | S/M/L sizes with popup menu |
-| Add, duplicate, remove widgets | ✅ Done | Full CRUD operations |
-| Edit mode | ✅ Done | Toggle with persistent state |
-| Undo/Redo | ✅ Done | History-based undo/redo |
-| Multiple dashboards | ✅ Done | `DashboardsNotifier` with save/switch |
-| Local JSON layout storage | ✅ Done | SharedPreferences persistence |
-| Cross-device sync | ⚠️ Partial | Sync buttons exist; backend sync not complete |
-| Layout templates | ✅ Done | Fitness, Work, Weather templates |
-| Share and import layouts | ✅ Done | JSON export/import dialogs |
-| Widget catalog with search | ✅ Done | `widget_catalog_page.dart` |
-| Catalog preview with sample data | ✅ Done | Preview functionality |
-| Dashboard creation via prompt | ❌ Pending | Not implemented |
-| Automatic dashboard switching | ❌ Pending | Not implemented |
+| Severity | Count | Findings |
+|----------|-------|----------|
+| CRITICAL | 0 | - |
+| HIGH | 1 | Material-UI migration incomplete |
+| MEDIUM | 2 | Deprecated widget usage, hardcoded values |
+| LOW | 3 | Minor style issues |
 
-**Issues Found:**
-- `[HIGH]` Mock data provider embedded in `dashboard_view.dart`: The `MockWidgetDataProvider` class (440+ lines) is defined in the same file as the dashboard view, violating separation of concerns.
-- `[HIGH]` `BuildContext` used across async gaps: 12 instances where `context` is used after `await` without checking `mounted` (lines 1327-1383).
-- `[MEDIUM]` Duplicate import in `dashboard_view.dart` (line 9).
-- `[MEDIUM]` `onReorder` deprecated — should use `onReorderItem`.
-- `[LOW]` `use_rethrow_when_possible` issue at line 1090.
+**Findings:**
 
-**Recommendations:**
-1. Extract `MockWidgetDataProvider` to a separate file in `lib/features/widgets/framework/`.
-2. Add `mounted` checks or use `Future.microtask` for all async operations that use `BuildContext`.
-3. Remove duplicate import and fix deprecated `onReorder` → `onReorderItem`.
-4. Complete the backend sync service for true cross-device synchronization.
+[HIGH] Material-UI migration incomplete (massive deprecation warnings)
+- Files: All 30+ widget files import `package:flutter/material.dart`
+- Issue: 70+ `deprecated_member_use` warnings — the entire codebase still uses Flutter's Material widgets while `material_ui` is declared as a dependency. Both export the same symbols (MaterialApp, ThemeData, etc.) creating ambiguity risk.
+- Fix: Complete the migration per comprehensive-code-quality skill: use import prefixes (`import 'package:flutter/material.dart' as flutter;`), replace standard Material widgets with material_ui equivalents, or remove material_ui dependency if not actually needed.
 
----
+[MEDIUM] Hardcoded colors in _buildPlaceholder
+- File: lib/features/dashboard/ui/views/dashboard_view.dart:671-687
+- Issue: Uses `Colors.white`, `Colors.grey.shade200` instead of theme tokens.
+- Fix: Use `AppTheme.lightBackground` or `Theme.of(context).colorScheme`.
 
-## Phase 4: Widget Framework (10/14 tasks complete)
+[MEDIUM] Missing design system for empty states
+- Issue: Widget empty states show "empty" text without consistent visual treatment.
+- Fix: Build dedicated EmptyState component in design_system.dart.
 
-**Status:** ✅ Mostly Complete
+[LOW] Unnecessary string interpolation braces
+- Files: calories_tracker_widget.dart:53, carbs_tracker_widget.dart:99, heart_rate_tracker_widget.dart:55, etc.
+- Issue: Multiple instances of `{$variable}` where `${variable}` is not needed.
+- Fix: Remove unnecessary braces.
 
-| Task | Status | Notes |
-|------|--------|-------|
-| `AppWidgetDefinition` interface | ✅ Done | `WidgetDefinition` abstract class |
-| `WidgetRegistry` | ✅ Done | Singleton registry in `dashboard_view.dart` |
-| `WidgetInstance` model | ✅ Done | ID, type, size, config, JSON serialization |
-| `WidgetDataProvider` | ✅ Done | FutureProvider with memoization |
-| Client-side schema validation | ✅ Done | `widget_schema_validator.dart` with JSON Schema |
-| Schema versions and migrations | ✅ Done | `widget_schema_migration.dart` |
-| Config form from schema | ✅ Done | Dynamic form generation |
-| Per-widget error boundary | ✅ Done | Individual widget error states |
-| Local cache with TTL | ✅ Done | `widget_local_cache.dart` |
-| Pull-to-refresh and manual refresh | ✅ Done | RefreshIndicator + manual refresh |
-| Background refresh | ⚠️ Partial | `widget_background_refresh.dart` exists but unused |
-| Standardized widget actions | ❌ Pending | Not implemented |
-| iOS/Android home screen widgets | ❌ Pending | Not evaluated |
-| Background refresh build | ❌ Pending | Not integrated |
-
-**Issues Found:**
-- `[MEDIUM]` Background refresh service not integrated: `widget_background_refresh.dart` exists but is not wired into the app lifecycle or widget data provider.
-- `[LOW]` Dead code in `widget_schema_validator.dart` (lines 22-23): `error.instancePath ?? ''` and `error.message ?? 'Ungültiger Wert'` — left operands can't be null.
-- `[LOW]` Unused imports in `widget_background_refresh.dart`.
-
-**Recommendations:**
-1. Wire up `widget_background_refresh` in `main()` and integrate it with the widget data provider.
-2. Remove dead code in schema validator.
-3. Implement standardized widget actions (open, share, save, refresh) as defined in `WidgetAction` enum.
+**Assessment:** Design system core is solid (tokens, themes, WidgetCard, loaders). The Material-UI migration is the biggest open item — it's creating massive technical debt in the form of 70+ deprecation warnings.
 
 ---
 
-## Phase 5: Backend and AI Orchestrator (33/43 tasks complete)
+## Phase 3: Flexibles Dashboard
 
-**Status:** ✅ Mostly Complete
+**Status:** 12/18 complete
 
-### API and Data (9/12 done)
+| Severity | Count | Findings |
+|----------|-------|----------|
+| CRITICAL | 0 | - |
+| HIGH | 3 | BuildContext across async gaps, deprecated API, oversized widget |
+| MEDIUM | 2 | Missing const, error handling |
+| LOW | 1 | Dead code |
 
-| Task | Status | Notes |
-|------|--------|-------|
-| Email authentication | ✅ Done | JWT-based auth in `app/auth.py` |
-| Data models (User, Dashboard, Widget, Run, Tracker) | ✅ Done | SQLAlchemy models in `app/models.py` |
-| `GET /widgets/{id}/data` | ✅ Done | Implemented in `app/api/widgets.py` |
-| `POST /widgets/{id}/refresh` | ✅ Done | Background refresh task |
-| Widget action endpoint | ✅ Done | `POST /widgets/{id}/action` |
-| Streaming status (SSE/WebSocket) | ✅ Done | SSE via `/widgets/{id}/data/stream` |
-| Job queue for AI runs | ✅ Done | In-memory job queue in `app/ai/job_queue.py` |
-| Scheduler for periodic updates | ✅ Done | APScheduler in `app/scheduler.py` |
-| Push notifications | ✅ Done | FCM integration in `app/push_notifications.py` |
-| Rate limiting | ✅ Done | slowapi with 100/minute default |
-| SSE progress streaming | ✅ Done | Implemented in streaming endpoint |
-| Job queue (Celery) | ❌ Pending | In-memory queue used instead |
+**Findings:**
 
-### AI Pipeline (17/17 done) — ✅ Complete
+[HIGH] BuildContext used across async gaps (multiple occurrences)
+- File: lib/features/dashboard/ui/views/dashboard_view.dart:877, 878, 881, 882, 918, 919, 922, 928, 929, 933, 934
+- Issue: `ScaffoldMessenger.of(context)` called after `await` without `context.mounted` check. Can crash if widget is disposed during async operation.
+- Fix: Capture context before async call (`final syncContext = ctx;`), then check `if (!syncContext.mounted) return;` before using it, or use a global navigator key.
 
-| Task | Status | Notes |
-|------|--------|-------|
-| Provider abstraction (OpenAI/Mock) | ✅ Done | `AIProvider` interface |
-| Prompt registry with versioning | ✅ Done | `app/ai/prompts.py` |
-| Tool calling layer | ✅ Done | `app/ai/tools.py` with 9 tools |
-| Structured output enforcement | ✅ Done | JSON schema validation |
-| Server-side validation | ✅ Done | `app/ai/validation.py` |
-| Auto-repair for invalid JSON | ✅ Done | `repair_json()` function |
-| Fallback to last valid data | ✅ Done | Cache-based fallback |
-| Source validation (Quellenpflicht) | ✅ Done | Pattern-based factual data detection |
-| Model routing (cheap vs. complex) | ✅ Done | `determine_model()` function |
-| Cache (widget, location, time) | ✅ Done | TTL-based caching |
-| Request deduplication | ✅ Done | Shared cache across users |
-| Token/cost tracking | ✅ Done | Per-user token usage tracking |
-| Budget limits and kill switch | ✅ Done | `set_ai_kill_switch()` |
-| AI run tracing | ✅ Done | `app/ai/tracing.py` |
-| Eval suite with golden examples | ✅ Done | `app/ai/evals.py` |
-| Eval suite (test files) | ✅ Done | `test_ai_validation.py` |
-| Eval suite (schema validation) | ✅ Done | Comprehensive validation tests |
+[HIGH] Deprecated `onReorder` API
+- File: lib/features/dashboard/ui/views/dashboard_view.dart:393
+- Issue: `onReorder` is deprecated; should use `onReorderItem`.
+- Fix: Replace with `onReorderItem` callback.
 
-### Tools (0/10 done) — ❌ Not Started
+[HIGH] Oversized DashboardView widget (1032 lines)
+- File: lib/features/dashboard/ui/views/dashboard_view.dart
+- Issue: Single file contains providers, state notifiers, grid configuration, view logic, and multiple dialogs. Violates single responsibility.
+- Fix: Extract dialogs into separate files, move ResponsiveGridConfig to utils, split providers into dedicated files.
 
-| Task | Status | Notes |
-|------|--------|-------|
-| Web search | ✅ Done | DuckDuckGo HTML scraping |
-| Weather API | ✅ Done | OpenWeatherMap integration |
-| Geocoding | ✅ Done | Nominatim API |
-| Maps and routing | ✅ Done | OSRM routing |
-| Event sources | ✅ Done | Web search-based |
-| Food database | ⚠️ Partial | Tool defined but returns mock data |
-| HealthKit/Health Connect | ❌ Pending | Not integrated |
-| Calendar | ⚠️ Partial | Tool defined but returns mock data |
-| Tracker data access | ⚠️ Partial | Tool defined but returns mock data |
-| News/Finance/Transport | ⚠️ Partial | News via web search only |
+[MEDIUM] Missing `const` on static text in template dialogs
+- File: lib/features/dashboard/ui/views/dashboard_view.dart:965-970
+- Issue: `const Text('Fitness')` is good, but other dynamic text could be const where possible.
+- Fix: Use const constructors for static widget subtrees.
 
-### Security (0/10 done) — ❌ Not Started
+[MEDIUM] Unnecessary rethrow
+- File: lib/features/dashboard/ui/views/dashboard_view.dart:639
+- Issue: `throw e;` should be `rethrow;` to preserve stack trace.
+- Fix: Replace with `rethrow;`.
 
-| Task | Status | Notes |
-|------|--------|-------|
-| Prompt injection protection | ⚠️ Partial | `_sanitize_input()` in pipeline.py |
-| External content isolation | ❌ Pending | Not addressed |
-| Tool permission scoping | ❌ Pending | Not addressed |
-| Write confirmation | ❌ Pending | Not addressed |
-| URL validation | ✅ Done | `validate_url()` in security.py |
-| Health data encryption | ✅ Done | Fernet encryption in security.py |
-| Consent management | ❌ Pending | Not addressed |
-| Location precision limiting | ✅ Done | `validate_location_precision()` in security.py |
-| Data export and deletion | ❌ Pending | Not addressed |
-| Privacy policy and AV contracts | ❌ Pending | Not addressed |
+[LOW] Unused imports in widget_background_refresh.dart
+- File: lib/features/widgets/framework/widget_background_refresh.dart:6, 8
+- Issue: Imports `widget_instance.dart` and `widget_local_cache.dart` but doesn't use them.
+- Fix: Remove unused imports.
 
-**Issues Found:**
-- `[HIGH]` Security module exists but not integrated: `app/security.py` has encryption, URL validation, and sanitization functions, but they are not used in the AI pipeline or API endpoints.
-- `[HIGH]` No input validation on API endpoints: Endpoints accept arbitrary data without length/type validation.
-- `[MEDIUM]` Tool implementations are incomplete: Food database, calendar, and tracker tools return mock data instead of real data.
-- `[MEDIUM]` No CORS configuration for production: Only localhost origins allowed.
-- `[LOW]` In-memory job queue: Not suitable for production (data lost on restart).
-
-**Recommendations:**
-1. Integrate security module into pipeline: use `sanitize_text()` for user input, `validate_url()` for links, `encrypt_data()` for health data at rest.
-2. Add Pydantic request models with validation for all API endpoints.
-3. Implement real tool backends for food database and calendar integration.
-4. Configure CORS for production domains.
-5. Consider migrating to Redis-based job queue for production.
+**Assessment:** Dashboard functionality is comprehensive (drag & drop, resize, undo/redo, multiple dashboards, sync). The BuildContext async gap issues are the most critical — they can cause runtime crashes.
 
 ---
 
-## Phase 6: Core Widgets (23/43 tasks complete)
+## Phase 4: Widget-Framework
 
-**Status:** ⚠️ Partially Complete
+**Status:** 11/16 complete
 
-### Weather (5/8 done)
+| Severity | Count | Findings |
+|----------|-------|----------|
+| CRITICAL | 0 | - |
+| HIGH | 0 | - |
+| MEDIUM | 3 | Schema validator issues, print statements, dead code |
+| LOW | 2 | Unused imports |
 
-| Task | Status | Notes |
-|------|--------|-------|
-| Schema defined | ✅ Done | weather_summary schema |
-| Weather data via API | ✅ Done | OpenWeatherMap integration |
-| AI summary | ✅ Done | "Nimm heute Abend eine Jacke mit" style |
-| Sizes S, M, L | ✅ Done | Responsive sizing |
-| Multiple locations | ❌ Pending | Only single location |
-| Current location detection | ❌ Pending | Not implemented |
-| Weather warning push | ❌ Pending | Push infrastructure exists but not wired |
+**Findings:**
 
-### Parties (2/16 done)
+[MEDIUM] Schema validator has dead code and null-aware issues
+- File: lib/features/widgets/framework/widget_schema_validator.dart:22-23
+- Issue: `dead_code` and `dead_null_aware_expression` warnings indicate logic errors in validation flow.
+- Fix: Review and simplify validation logic to remove unreachable branches.
 
-| Task | Status | Notes |
-|------|--------|-------|
-| Schema defined | ✅ Done | party_recommendations schema |
-| Map with pins | ⚠️ Partial | Static image with pins, not real map |
-| Internal AI prompt | ❌ Pending | Not implemented |
-| Event source research | ❌ Pending | Not addressed |
-| Address verification | ❌ Pending | Not implemented |
-| Duplicate merging | ❌ Pending | Not implemented |
-| Past/canceled filtering | ❌ Pending | Not implemented |
-| Pin clustering | ❌ Pending | Not implemented |
-| Filters (date, genre, price) | ❌ Pending | Not implemented |
-| Detail view | ❌ Pending | Not implemented |
-| Event saving | ❌ Pending | Not implemented |
-| Wrong event reporting | ❌ Pending | Not implemented |
-| Map drag refresh | ❌ Pending | Not implemented |
+[MEDIUM] Print statements in production code
+- Files: lib/features/widgets/framework/widget_background_refresh.dart:12, widget_data_provider.dart:34,36, widget_schema_migration.dart:90
+- Issue: `print()` used instead of proper logging framework.
+- Fix: Use `debugPrint` for debug-only or integrate a logging package (e.g., `logger`).
 
-### Tracker Base (4/10 done)
+[MEDIUM] Duplicate dashboards_notifier files
+- Files: lib/features/dashboard/ui/domain/dashboards_notifier.dart AND lib/features/dashboard/domain/dashboards_notifier.dart
+- Issue: Two notifiers with similar names in different directories. Potential confusion about which is used.
+- Fix: Consolidate to a single location (prefer domain layer).
 
-| Task | Status | Notes |
-|------|--------|-------|
-| Shared model (goal, unit, entry) | ✅ Done | `tracker_base.dart` |
-| Quick entry, edit, delete | ✅ Done | Tracker widget actions |
-| Day/week/month views | ❌ Pending | Only day view |
-| Goals and streaks | ✅ Done | Goal tracking implemented |
-| Reminders | ❌ Pending | Not implemented |
-| Offline entries | ❌ Pending | Not implemented |
-| Health sync | ❌ Pending | Not implemented |
-| NLP input | ❌ Pending | Not implemented |
-| AI estimation confirmation | ❌ Pending | Not implemented |
-| Weekly AI evaluation | ❌ Pending | Not implemented |
-| CSV export | ✅ Done | Export functionality |
+[LOW] Unused import in widget_action_menu.dart
+- File: lib/features/widgets/ui/components/widget_action_menu.dart:3
+- Issue: Imports theme.dart but doesn't use it.
+- Fix: Remove unused import.
 
-### Individual Trackers (22/22 done) — ✅ Complete
-
-All 22 tracker widgets are implemented: protein, carbs, fat, calories, fiber, sugar, water, caffeine, steps, active minutes, distance, sleep, weight, body fat, heart rate, mood, stress, screen time, medications, supplements, custom tracker.
-
-**Issues Found:**
-- `[HIGH]` Parties widget map is not functional: Uses a static image with overlay pins instead of an interactive map. Critical for this "showcase feature."
-- `[MEDIUM]` Tracker widgets lack multi-day views: Only day view implemented; week/month views missing.
-- `[MEDIUM]` Weather widget doesn't use real location: Always uses Berlin or user-configured city; no GPS/location services integration.
-- `[LOW]` Many tracker widgets have unnecessary braces in string interpolation.
-- `[LOW]` Some widgets use `withOpacity()` (deprecated) — 15 occurrences.
-
-**Recommendations:**
-1. Replace static map image in Parties widget with `flutter_map` for real OpenStreetMap integration.
-2. Implement GPS/location services for automatic location detection in Weather widget.
-3. Add week and month views to tracker widgets.
-4. Wire up weather warning push notifications.
+**Assessment:** Widget framework architecture is sound: registry, instance model, data provider, schema validation, caching, and migration are all implemented. The framework properly isolates widget errors so one failing widget doesn't break the dashboard.
 
 ---
 
-## Phase 7: 20 More Widgets (4/20 done)
+## Phase 5: Backend und KI-Orchestrator
 
-**Status:** ❌ Mostly Incomplete
+**Status:** 30/44 complete (tools, streaming, job queue, security, privacy pending)
 
-| Widget | Status | Notes |
-|--------|--------|-------|
-| 1. Tagesbriefing | ✅ Done | Weather + calendar + tasks + news |
-| 2. Calendar | ⚠️ Partial | Shows events; no calendar integration |
-| 3. Tasks | ✅ Done | Lists, due dates, priorities |
-| 4. Quick Notes | ✅ Done | Text/voice/photo notes |
-| 5. Personal News | ✅ Done | `news_widget.dart` |
-| 6. Public Transport | ⚠️ Partial | `opnv_widget.dart` exists |
-| 7. Commute | ❌ Pending | Not started |
-| 8. Nearby Restaurants | ❌ Pending | Not started |
-| 9. Fridge Recipes | ❌ Pending | Not started |
-| 10. Meal Planner | ❌ Pending | Not started |
-| 11. Meal Photo | ❌ Pending | Not started |
-| 12. Training Plan | ❌ Pending | Not started |
-| 13. Budget | ✅ Done | `budget_widget.dart` |
-| 14. Subscriptions | ❌ Pending | Not started |
-| 15. Stocks | ✅ Done | `stocks_widget.dart` |
-| 16. Gas/Charging | ❌ Pending | Not started |
-| 17. Movie Recommendations | ❌ Pending | Not started |
-| 18. Package Tracking | ❌ Pending | Not started |
-| 19. Birthdays | ❌ Pending | Not started |
-| 20. Travel Planner | ❌ Pending | Not started |
+| Severity | Count | Findings |
+|----------|-------|----------|
+| CRITICAL | 1 | In-memory user storage |
+| HIGH | 3 | Hardcoded token, Pydantic deprecation, missing auth on /me |
+| MEDIUM | 4 | Global state, broad exception catching, missing logging, CORS too wide |
+| LOW | 3 | Deprecation warnings, env variable handling |
 
-**Issues Found:**
-- `[MEDIUM]` Many "done" widgets are stubs: OPNV and News widgets exist but may not have full backend integration.
-- `[LOW]` Budget and stocks widgets have unnecessary `toList()` calls in spreads.
+**Findings:**
 
-**Recommendations:**
-1. Prioritize completion of high-impact widgets: Meal Planner, Training Plan, Budget tracking.
-2. Verify backend integration for existing widget stubs.
-3. Remove unnecessary `toList()` calls.
+[CRITICAL] Users stored in in-memory dict
+- File: backend/app/api/auth.py:12-18
+- Issue: `users = {...}` is an in-memory dictionary. All registered users are lost on server restart. Test credentials are hardcoded with a real bcrypt hash.
+- Fix: Store users in PostgreSQL database with proper User model. Use environment variable for demo credentials.
 
----
+[HIGH] Hardcoded mock token in /me endpoint
+- File: backend/app/api/auth.py:64
+- Issue: `get_user_from_token("mock_token_123")` — the /me endpoint uses a hardcoded token instead of reading the Authorization header from the request.
+- Fix: Accept `Authorization: Bearer <token>` header and validate it properly.
 
-## Phase 8: AI Assistant (0/8 done)
+[HIGH] Pydantic V1-style validator deprecated
+- File: backend/app/api/widgets.py:34
+- Issue: `@validator('widget_id')` is Pydantic V1 syntax; V2 requires `@field_validator`.
+- Fix: Replace with `@field_validator('widget_id')`.
 
-**Status:** ❌ Not Started
+[HIGH] Global mutable state for token tracking
+- File: backend/app/ai/pipeline.py:17
+- Issue: `token_usage: Dict[str, Dict] = {}` is a global mutable dict. Not thread-safe and not persisted across restarts.
+- Fix: Use database-backed token tracking with proper locking.
 
-All 8 tasks are pending: global input, prompt translation, voice widget management, cross-widget questions, preference storage, proactive suggestions, server-driven UI, and safe widget generation.
+[MEDIUM] Broad exception catching in pipeline
+- File: backend/app/ai/pipeline.py:160, 186
+- Issue: `except Exception as e` catches all errors including programming errors.
+- Fix: Catch specific exceptions (httpx.HTTPError, json.JSONDecodeError) and let unexpected errors propagate.
 
-**Recommendations:**
-1. Start with the global text input as the foundation.
-2. Reuse existing AI pipeline infrastructure for prompt translation.
-3. Consider voice as a secondary enhancement after text input works well.
+[MEDIUM] CORS allows all methods and headers
+- File: backend/app/main.py:50-54
+- Issue: `allow_methods=["*"]` and `allow_headers=["*"]` is too permissive.
+- Fix: Specify exact methods (GET, POST) and headers (Authorization, Content-Type).
 
----
+[MEDIUM] Missing logging configuration
+- File: backend/app/main.py
+- Issue: No logging level, format, or output configuration.
+- Fix: Configure logging with appropriate level and JSON format for production.
 
-## Phase 9: Quality and Performance (4/10 done)
+[MEDIUM] No rate limiting per user, only per IP
+- File: backend/app/main.py:19
+- Issue: Rate limiting uses `get_remote_address` (IP), not user ID. Behind NAT or proxy, all users share one limit.
+- Fix: Implement per-user rate limiting after authentication.
 
-**Status:** ⚠️ Partially Complete
+[LOW] SECRET_KEY warning only in production
+- File: backend/app/config.py:11
+- Issue: Warning about unset SECRET_KEY only fires in production, not during development.
+- Fix: Warn in all environments or enforce via test.
 
-| Task | Status | Notes |
-|------|--------|-------|
-| Unit tests for models and logic | ✅ Done | 37 Flutter tests + 66 backend tests |
-| Widget and golden tests | ⚠️ Partial | 37 widget tests; no golden tests |
-| Dashboard integration tests | ❌ Pending | Not implemented |
-| Backend and schema contract tests | ✅ Done | `test_ai_validation.py` |
-| AI evals in CI | ❌ Pending | Not integrated into CI |
-| Performance with 30+ widgets | ❌ Pending | Not tested |
-| Unnecessary rebuilds/API calls | ❌ Pending | Not analyzed |
-| Battery and data usage | ❌ Pending | Not measured |
-| Offline/poor network scenarios | ❌ Pending | Not tested |
-| Accessibility audit | ❌ Pending | Not done |
-| Security review and pentest | ❌ Pending | Not done |
-
-**Test Results:**
-- Flutter: 37 tests pass (all green)
-- Backend: 66 tests pass (all green)
-- Total: 103 tests pass
-
-**Code Quality Issues (from flutter analyze):**
-- 130 issues found total
-- 0 errors, 9 warnings, 121 info messages
-- Most common: deprecated `flutter/material.dart` usage (60+ occurrences)
-- Critical warnings: dead code, unused imports, duplicate imports
-
-**Issues Found:**
-- `[HIGH]` No golden tests: Critical for UI consistency across the 30+ widget types.
-- `[HIGH]` No performance testing: Dashboard with many widgets may have performance issues.
-- `[MEDIUM]` No integration tests for dashboard editing flows.
-- `[LOW]` Deprecated material imports not migrated.
-
-**Recommendations:**
-1. Add golden tests for all critical widget types (at least S/M/L sizes).
-2. Create integration test for full dashboard editing workflow.
-3. Run performance profiling with 30+ widgets on a dashboard.
-4. Batch-replace deprecated `flutter/material.dart` imports.
+**Assessment:** Backend architecture is impressive — full AI pipeline with tool calling, caching, validation, Quellenpflicht, token tracking, and eval suite. However, the in-memory user storage and hardcoded token are serious issues for production.
 
 ---
 
-## Phase 10: Launch (0/13 done)
+## Phase 6: Kern-Widgets
 
-**Status:** ❌ Not Started
+**Status:** Core widgets implemented (weather, parties, 21 trackers)
 
-All 13 tasks are pending: onboarding, permission requests, paywall, legal documents, liability notices, store metadata, beta testing, analytics, feedback, monitoring, and release process.
+| Severity | Count | Findings |
+|----------|-------|----------|
+| CRITICAL | 0 | - |
+| HIGH | 0 | - |
+| MEDIUM | 2 | Weather API error handling, parties incomplete |
+| LOW | 2 | Minor UI issues |
 
-**Recommendations:**
-1. Begin legal document preparation (privacy policy, terms, liability notices).
-2. Design onboarding flow and starter dashboard.
-3. Set up app store accounts and prepare metadata.
+**Findings:**
 
----
+[MEDIUM] Weather API error response not fully handled
+- File: backend/app/ai/pipeline.py:303
+- Issue: Returns `{"error": "Weather API error", "status_code": response.status_code}` without details.
+- Fix: Include response body or more specific error information.
 
-## Summary
+[MEDIUM] Parties widget incomplete (internal KI-Prompt not implemented)
+- File: TODO.md:177
+- Issue: Parties widget has schema and map but no AI prompt for recommendations from map viewport, date, and preferences.
+- Fix: Implement parties recommendation prompt using search_events tool.
 
-### Overall Status by Phase
+[LOW] Unnecessary `.toList()` in spreads
+- Files: budget_widget.dart:163,190, calendar_widget.dart:123, medications_tracker_widget.dart:152, news_widget.dart:164, quick_notes_widget.dart:115
+- Issue: Spreading `.toList()` is unnecessary; spread the collection directly.
+- Fix: Remove `.toList()` before spread operators.
 
-| Phase | Tasks | Complete | % Done | Status |
-|-------|-------|----------|--------|--------|
-| 0. Decisions | 11 | 10 | 91% | ✅ Nearly Complete |
-| 1. Project Setup | 10 | 10 | 100% | ✅ Complete |
-| 2. Design System | 9 | 8 | 89% | ✅ Nearly Complete |
-| 3. Flexible Dashboard | 16 | 12 | 75% | ✅ Mostly Complete |
-| 4. Widget Framework | 14 | 10 | 71% | ✅ Mostly Complete |
-| 5. Backend & AI | 43 | 33 | 77% | ✅ Mostly Complete |
-| 6. Core Widgets | 43 | 23 | 53% | ⚠️ Partial |
-| 7. More Widgets | 20 | 4 | 20% | ❌ Incomplete |
-| 8. AI Assistant | 8 | 0 | 0% | ❌ Not Started |
-| 9. Quality | 10 | 4 | 40% | ⚠️ Partial |
-| 10. Launch | 13 | 0 | 0% | ❌ Not Started |
-| **Total** | **197** | **104** | **53%** | |
-
-*Note: Task count differs from TODO.md (262) because some items are subtasks within larger tasks.*
-
-### Critical Issues (Must Fix Before Launch)
-
-1. **[CRITICAL] Parties widget map not functional** — Uses static image instead of interactive map
-2. **[HIGH] Security module not integrated** — `app/security.py` exists but unused in pipeline
-3. **[HIGH] Mock data provider in dashboard view** — Violates separation of concerns (440+ lines)
-4. **[HIGH] No golden tests** — UI consistency not verified across 30+ widget types
-5. **[HIGH] BuildContext across async gaps** — 12 instances of potential null reference bugs
-6. **[HIGH] No input validation on API endpoints** — Arbitrary data accepted without validation
-
-### High-Priority Improvements
-
-1. Complete Parties widget with real map integration
-2. Integrate security module into AI pipeline
-3. Extract MockWidgetDataProvider to separate file
-4. Add `mounted` checks for async operations
-5. Add Pydantic validation to API endpoints
-6. Add golden tests for critical widget types
-7. Complete week/month views for tracker widgets
-
-### Technical Debt
-
-1. 60+ deprecated `flutter/material.dart` imports
-2. 15 deprecated `withOpacity()` calls
-3. In-memory job queue (not production-ready)
-4. SQLite instead of PostgreSQL
-5. Outdated README
-
-### Next Steps (Recommended Order)
-
-1. Fix critical issues (map, security, architecture)
-2. Complete high-priority improvements
-3. Address technical debt (batch migration of imports)
-4. Continue Phase 7 widget implementation
-5. Begin Phase 8 AI assistant development
-6. Add comprehensive testing (golden, integration, performance)
-7. Start Phase 10 launch preparations
+**Assessment:** All core widget types are implemented with proper state handling (loading, error, empty, ready). Tracker widgets share a common model pattern. Weather and parties are the most feature-complete.
 
 ---
 
-**Review Complete.** This document should be updated after each major development milestone.
+## Phase 7: 20 weitere Widgets
+
+**Status:** 10/20 widget types have UI shells implemented
+
+| Severity | Count | Findings |
+|----------|-------|----------|
+| CRITICAL | 0 | - |
+| HIGH | 0 | - |
+| MEDIUM | 1 | Many widgets are UI-only without backend integration |
+| LOW | 0 | - |
+
+**Findings:**
+
+[MEDIUM] Most Phase 7 widgets are UI shells without backend data
+- Issue: Widgets like budget, stocks, OPNV, restaurants, recipes, etc. have Flutter UI components but no corresponding backend endpoints, AI prompts, or tools.
+- Fix: For production, implement backend support for each widget or mark them as mock-only.
+
+**Assessment:** All 20 widget types have UI components registered in the widget registry. However, only some have actual backend data pipelines. This is acceptable for an MVP/demo but needs completion for production.
+
+---
+
+## Phase 8: KI-Assistent in der App
+
+**Status:** 0/8 complete
+
+| Severity | Count | Findings |
+|----------|-------|----------|
+| CRITICAL | 0 | - |
+| HIGH | 0 | - |
+| MEDIUM | 1 | Feature not started |
+| LOW | 0 | - |
+
+**Findings:**
+
+[MEDIUM] No in-app AI assistant
+- Issue: Global text/voice input, prompt-to-widget-action translation, widget-adding via voice, cross-widget questions, and proactive suggestions are all unimplemented.
+- Fix: Design and implement assistant UI and backend integration.
+
+**Assessment:** This phase is entirely future work. No code exists yet.
+
+---
+
+## Phase 9: Qualität und Performance
+
+**Status:** 3/11 complete
+
+| Severity | Count | Findings |
+|----------|-------|----------|
+| CRITICAL | 0 | - |
+| HIGH | 2 | No integration tests, no golden tests |
+| MEDIUM | 3 | No performance testing, no accessibility audit, no security review |
+| LOW | 0 | - |
+
+**Findings:**
+
+[HIGH] No integration tests for dashboard editing
+- Issue: TODO.md lists integration tests for dashboard editing as incomplete. No integration tests exist.
+- Fix: Write integration tests for add/reorder/remove/resize widgets on a real dashboard.
+
+[HIGH] No golden tests
+- Issue: TODO.md confirms "no golden tests yet." Visual regression testing is missing.
+- Fix: Add golden tests for key widgets (weather, tracker cards, dashboard grid).
+
+[MEDIUM] No performance testing with 30+ widgets
+- Issue: Performance with many concurrent widgets is untested.
+- Fix: Write benchmark tests rendering 30+ widgets and measure frame rates.
+
+[MEDIUM] No accessibility audit
+- Issue: Semantic labels, tap targets, and text scaling not verified.
+- Fix: Run Flutter accessibility inspector and fix issues.
+
+[MEDIUM] No security review or pentest
+- Issue: Security checklist in TODO.md is entirely unchecked.
+- Fix: Conduct security review covering OWASP Top 10 for mobile and API.
+
+**Assessment:** Testing is decent for unit/widget tests (37 Flutter + 66 backend = 103 total) but missing integration, golden, performance, accessibility, and security tests.
+
+---
+
+## Phase 10: Launch
+
+**Status:** 0/14 complete
+
+| Severity | Count | Findings |
+|----------|-------|----------|
+| CRITICAL | 0 | - |
+| HIGH | 0 | - |
+| MEDIUM | 1 | No onboarding, paywall, or legal docs |
+| LOW | 0 | - |
+
+**Findings:**
+
+[MEDIUM] No production-ready launch components
+- Issue: Onboarding, paywall, privacy policy, terms of service, medical/financial disclaimers, store screenshots, and beta testing are all unimplemented.
+- Fix: These are product/marketing tasks rather than code quality issues.
+
+**Assessment:** Launch preparation is entirely future work.
+
+---
+
+## Overall Summary
+
+### Build Health
+| Metric | Status |
+|--------|--------|
+| Flutter analyze errors | 0 |
+| Flutter analyze warnings | 9 |
+| Flutter analyze info | 105 |
+| Flutter tests | 37/37 passed |
+| Backend tests | 66/66 passed |
+| Total test coverage | 103 tests |
+
+### Severity Breakdown (All Phases)
+| Severity | Count | Status |
+|----------|-------|--------|
+| CRITICAL | 1 | block |
+| HIGH | 7 | block |
+| MEDIUM | 22 | info |
+| LOW | 10 | note |
+
+### Verdict: BLOCK
+The project has solid architecture and comprehensive feature implementation, but several issues must be addressed before production:
+
+**Must Fix (CRITICAL + HIGH):**
+1. **In-memory user storage** — users lost on restart (auth.py)
+2. **Hardcoded mock token** in /me endpoint (auth.py)
+3. **BuildContext across async gaps** — 11 occurrences that can crash (dashboard_view.dart)
+4. **Deprecated onReorder API** (dashboard_view.dart)
+5. **Pydantic V1 validator** (widgets.py)
+6. **Global mutable state** for token tracking (pipeline.py)
+7. **Oversized DashboardView** — 1032 lines violates SRP (dashboard_view.dart)
+8. **Material-UI migration incomplete** — 70+ deprecation warnings across all widgets
+
+**Should Fix (MEDIUM):**
+- Complete Material-UI migration or remove dependency
+- Add proper logging instead of print()
+- Implement per-user rate limiting
+- Add integration and golden tests
+- Conduct accessibility and security audits
+- Fix CORS configuration
+
+### Phase Completion
+| Phase | Complete | Notes |
+|-------|----------|-------|
+| 0: Entscheidungen | 10/11 | Legal pending |
+| 1: Projekt-Setup | 10/10 | ✅ |
+| 2: Design System | 8/9 | Material-UI migration |
+| 3: Flexibles Dashboard | 12/18 | BuildContext issues |
+| 4: Widget-Framework | 11/16 | Schema migration pending |
+| 5: Backend & KI | 30/44 | Auth, tools, security pending |
+| 6: Kern-Widgets | ✅ | All core widgets |
+| 7: 20 weitere Widgets | 10/20 UI | Backend integration partial |
+| 8: KI-Assistent | 0/8 | Not started |
+| 9: Qualität | 3/11 | Tests need expansion |
+| 10: Launch | 0/14 | Not started |
+
+### Recommendations
+1. **Immediate:** Fix auth issues (in-memory users, hardcoded token) — these are production blockers
+2. **Short-term:** Fix BuildContext async gaps and complete Material-UI migration
+3. **Medium-term:** Expand test suite (integration, golden, performance)
+4. **Long-term:** Complete backend tool integrations and security audit

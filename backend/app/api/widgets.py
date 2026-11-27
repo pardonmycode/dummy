@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
 from fastapi.responses import StreamingResponse
 from typing import Optional
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 from sqlalchemy.orm import Session
 
 from app.models import WidgetInstance, get_db
@@ -31,7 +31,8 @@ class WidgetIdRequest(BaseModel):
     """Request model with validated widget_id."""
     widget_id: str = Field(..., min_length=1, max_length=100, pattern=r'^[a-zA-Z0-9_-]+$')
 
-    @validator('widget_id')
+    @field_validator('widget_id')
+    @classmethod
     def validate_widget_id(cls, v):
         """Validate widget_id is a known type or matches the pattern."""
         allowed_widgets = {

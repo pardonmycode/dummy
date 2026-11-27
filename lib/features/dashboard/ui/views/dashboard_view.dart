@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -763,8 +764,8 @@ class DashboardView extends ConsumerWidget {
           TextButton.icon(
             icon: const Icon(Icons.copy),
             label: Text(context.l10n.add),
-            onPressed: () {
-              // Copy to clipboard (simplified)
+            onPressed: () async {
+              await Clipboard.setData(ClipboardData(text: layoutJson));
               Navigator.pop(ctx);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(context.l10n.layoutCopied)),
@@ -856,8 +857,8 @@ class DashboardView extends ConsumerWidget {
                 title: Text(context.l10n.uploadToServer),
                 subtitle: Text(context.l10n.uploadDescription),
                 onTap: () async {
-                  final syncContext = ctx;
-                  Navigator.pop(syncContext);
+                  final messenger = ScaffoldMessenger.of(context);
+                  Navigator.pop(ctx);
                   ref.read(isSyncingProvider.notifier).update((s) => true);
                   try {
                     final syncService = DashboardSyncService();
@@ -872,16 +873,18 @@ class DashboardView extends ConsumerWidget {
                         },
                       ]);
                       if (syncResult.isSuccess) {
-                      if (!syncContext.mounted) return;
-                      ScaffoldMessenger.of(syncContext).showSnackBar(
-                        SnackBar(content: Text(context.l10n.layoutSynced)),
-                      );
-                    } else {
-                      if (!syncContext.mounted) return;
-                      ScaffoldMessenger.of(syncContext).showSnackBar(
-                        SnackBar(content: Text(syncResult.error ?? context.l10n.syncFailed)),
-                      );
-                    }
+                        messenger.showSnackBar(
+                          SnackBar(content: Text(context.l10n.layoutSynced)),
+                        );
+                      } else {
+                        messenger.showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              syncResult.error ?? context.l10n.syncFailed,
+                            ),
+                          ),
+                        );
+                      }
                     }
                   } finally {
                     ref.read(isSyncingProvider.notifier).update((s) => false);
@@ -893,8 +896,8 @@ class DashboardView extends ConsumerWidget {
                 title: Text(context.l10n.downloadFromServer),
                 subtitle: Text(context.l10n.downloadDescription),
                 onTap: () async {
-                  final syncContext = ctx;
-                  Navigator.pop(syncContext);
+                  final messenger = ScaffoldMessenger.of(context);
+                  Navigator.pop(ctx);
                   ref.read(isSyncingProvider.notifier).update((s) => true);
                   try {
                     final syncService = DashboardSyncService();
@@ -915,27 +918,33 @@ class DashboardView extends ConsumerWidget {
                             ref
                                 .read(dashboardWidgetsProvider.notifier)
                                 .setWidgets(widgets);
-                            if (!syncContext.mounted) return;
-                            ScaffoldMessenger.of(syncContext).showSnackBar(
-                              SnackBar(content: Text(context.l10n.layoutDownloaded)),
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: Text(context.l10n.layoutDownloaded),
+                              ),
                             );
                           } catch (e) {
-                            if (!syncContext.mounted) return;
-                            ScaffoldMessenger.of(syncContext).showSnackBar(
-                              SnackBar(content: Text('Download fehlgeschlagen: $e')),
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: Text('Download fehlgeschlagen: $e'),
+                              ),
                             );
                           }
                         }
                       } else {
-                        if (!syncContext.mounted) return;
-                        ScaffoldMessenger.of(syncContext).showSnackBar(
-                          SnackBar(content: Text(context.l10n.noLayoutOnServer)),
+                        messenger.showSnackBar(
+                          SnackBar(
+                            content: Text(context.l10n.noLayoutOnServer),
+                          ),
                         );
                       }
                     } else {
-                      if (!syncContext.mounted) return;
-                      ScaffoldMessenger.of(syncContext).showSnackBar(
-                        SnackBar(content: Text(syncResult.error ?? context.l10n.downloadFailed)),
+                      messenger.showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            syncResult.error ?? context.l10n.downloadFailed,
+                          ),
+                        ),
                       );
                     }
                   } finally {

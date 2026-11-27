@@ -112,120 +112,16 @@ class WidgetMigrationRegistry {
 final widgetMigrationRegistry = WidgetMigrationRegistry();
 
 /// Register built-in schema migrations.
+/// Currently no migrations needed — schema versioning happens at the API boundary.
 void registerDefaultMigrations([WidgetMigrationRegistry? registry]) {
-  final reg = registry ?? widgetMigrationRegistry;
-  
-  // Weather widget: v1 -> v2 (added feelsLike field)
-  reg.addMigration(MigrationEntry(
-    widgetType: 'weather',
-    fromVersion: 1,
-    toVersion: 2,
-    description: 'Add feelsLike to current weather data',
-    migrate: (data) {
-      final updated = jsonDecode(jsonEncode(data)) as Map<String, dynamic>;
-      final current = updated['data'] as Map<String, dynamic>?;
-      if (current != null && current['feelsLike'] == null) {
-        current['feelsLike'] = current['temperature'];
-      }
-      updated['schemaVersion'] = 2;
-      return updated;
-    },
-  ));
-
-  // Protein tracker: v1 -> v2 (added meals array)
-  widgetMigrationRegistry.addMigration(MigrationEntry(
-    widgetType: 'protein_tracker',
-    fromVersion: 1,
-    toVersion: 2,
-    description: 'Add meals array to protein tracker',
-    migrate: (data) {
-      final updated = jsonDecode(jsonEncode(data)) as Map<String, dynamic>;
-      final proteinData = updated['data'] as Map<String, dynamic>?;
-      if (proteinData != null && proteinData['meals'] == null) {
-        proteinData['meals'] = [];
-      }
-      updated['schemaVersion'] = 2;
-      return updated;
-    },
-  ));
-
-  // Tasks widget: v1 -> v2 (added priority field support)
-  widgetMigrationRegistry.addMigration(MigrationEntry(
-    widgetType: 'tasks',
-    fromVersion: 1,
-    toVersion: 2,
-    description: 'Add priority field support to tasks',
-    migrate: (data) {
-      final updated = jsonDecode(jsonEncode(data)) as Map<String, dynamic>;
-      final tasksData = updated['data'] as Map<String, dynamic>?;
-      if (tasksData != null) {
-        final tasks = tasksData['tasks'] as List<dynamic>?;
-        if (tasks != null) {
-          for (var i = 0; i < tasks.length; i++) {
-            final task = tasks[i] as Map<String, dynamic>;
-            if (task['priority'] == null) {
-              task['priority'] = 'normal';
-            }
-          }
-        }
-      }
-      updated['schemaVersion'] = 2;
-      return updated;
-    },
-  ));
-
-  // Calendar widget: v1 -> v2 (added freeSlots)
-  widgetMigrationRegistry.addMigration(MigrationEntry(
-    widgetType: 'calendar',
-    fromVersion: 1,
-    toVersion: 2,
-    description: 'Add freeSlots to calendar data',
-    migrate: (data) {
-      final updated = jsonDecode(jsonEncode(data)) as Map<String, dynamic>;
-      final calData = updated['data'] as Map<String, dynamic>?;
-      if (calData != null && calData['freeSlots'] == null) {
-        calData['freeSlots'] = [];
-      }
-      updated['schemaVersion'] = 2;
-      return updated;
-    },
-  ));
-
-  // Medications widget: v1 -> v2 (added type field)
-  widgetMigrationRegistry.addMigration(MigrationEntry(
-    widgetType: 'medications_tracker',
-    fromVersion: 1,
-    toVersion: 2,
-    description: 'Add type field to medications',
-    migrate: (data) {
-      final updated = jsonDecode(jsonEncode(data)) as Map<String, dynamic>;
-      final medData = updated['data'] as Map<String, dynamic>?;
-      if (medData != null) {
-        final meds = medData['medications'] as List<dynamic>?;
-        if (meds != null) {
-          for (var i = 0; i < meds.length; i++) {
-            final med = meds[i] as Map<String, dynamic>;
-            if (med['type'] == null) {
-              med['type'] = 'medication';
-            }
-          }
-        }
-      }
-      updated['schemaVersion'] = 2;
-      return updated;
-    },
-  ));
+  // No client-side migrations needed.
+  // Schema versioning belongs at the API boundary (see issue 3.7).
 }
 
 /// Expected schema version for each widget type.
+/// All widgets use schema version 1 — no client-side migrations needed.
 Map<String, int> getExpectedSchemaVersions() {
-  return {
-    'weather': 2,
-    'protein_tracker': 2,
-    'tasks': 2,
-    'calendar': 2,
-    'medications_tracker': 2,
-  };
+  return {};
 }
 
 /// Get expected schema version for a widget type.

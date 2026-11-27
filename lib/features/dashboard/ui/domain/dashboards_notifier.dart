@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
@@ -46,12 +47,18 @@ class Dashboard {
 /// State notifier for managing multiple dashboards.
 class DashboardsNotifier extends Notifier<List<Dashboard>> {
   static const String _storageKey = 'dashboards';
+  static const String _activeIdKey = 'active_dashboard_id';
+
+  String? _activeId;
 
   @override
   List<Dashboard> build() {
-    return [
-      Dashboard(name: 'Mein Dashboard'),
-    ];
+    _loadActiveId();
+    return [_loadDefaultDashboard()];
+  }
+
+  Dashboard _loadDefaultDashboard() {
+    return Dashboard(name: 'Mein Dashboard');
   }
 
   // Expose dashboards list
@@ -59,10 +66,9 @@ class DashboardsNotifier extends Notifier<List<Dashboard>> {
 
   // Active dashboard (nullable)
   Dashboard? get active {
-    final activeId = _getActiveId();
-    if (activeId == null) return null;
+    if (_activeId == null) return null;
     try {
-      return state.firstWhere((d) => d.id == activeId);
+      return state.firstWhere((d) => d.id == _activeId);
     } catch (e) {
       return null;
     }
@@ -74,15 +80,16 @@ class DashboardsNotifier extends Notifier<List<Dashboard>> {
   }
 
   void setActive(String id) {
-    _setActiveId(id);
+    _activeId = id;
+    _saveActiveId();
     state = List<Dashboard>.from(state); // Trigger rebuild
   }
 
   Future<Dashboard> create(String name) async {
     final dashboard = Dashboard(name: name);
     state = [...state, dashboard];
-    _setActiveId(dashboard.id);
-    _saveDashboards();
+    setActive(dashboard.id);
+    await _saveDashboards();
     return dashboard;
   }
 
@@ -100,32 +107,34 @@ class DashboardsNotifier extends Notifier<List<Dashboard>> {
   }
 
   Future<void> saveActive(List<WidgetInstance> widgets) async {
-    final activeId = _getActiveId() ?? _activeOrFirst.id;
+    final activeDash = _activeOrFirst;
     state = state
-        .map((d) => d.id == activeId ? Dashboard(id: d.id, name: d.name, widgets: widgets) : d)
+        .map((d) => d.id == activeDash.id ? Dashboard(id: d.id, name: d.name, widgets: widgets) : d)
         .toList();
-    _saveDashboards();
+    await _saveDashboards();
   }
 
   void loadActiveWidgets(List<WidgetInstance> currentWidgets) {
     // No-op for now — would load into the dashboardWidgetsProvider
   }
 
-  String? _getActiveId() {
-    return null; // Simplified — would read from prefs
+  void _loadActiveId() {
+    // Simplified — would read from prefs
+    _activeId = null;
   }
 
-  void _setActiveId(String id) {
-    // Would write to prefs
-  }
-
-  void _saveDashboards() {
+  void _saveActiveId() {
     // Simplified — would write to prefs
-    SharedPreferences.getInstance().then((prefs) {
+  }
+
+  Future<void> _saveDashboards() async {
+    // Simplified — would write to prefs
+    try {
+      final prefs = await SharedPreferences.getInstance();
       final json = jsonEncode(state.map((d) => d.toJson()).toList());
-      prefs.setString(_storageKey, json);
-    }).catchError((e) {
-      print('Failed to save dashboards: $e');
-    });
+      await prefs.setString(_storageKey, json);
+    } catch (e) {
+      debugPrint('Failed to save dashboards: $e');
+    }
   }
 }

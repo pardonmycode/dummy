@@ -92,9 +92,9 @@ final undoHistoryProvider = StateProvider<List<List<WidgetInstance>>>((ref) => [
 final redoHistoryProvider = StateProvider<List<List<WidgetInstance>>>((ref) => []);
 
 // Dashboard management
-final dashboardsProvider = Provider<DashboardsNotifier>((ref) {
-  return DashboardsNotifier();
-});
+final dashboardsProvider = NotifierProvider<DashboardsNotifier, List<Dashboard>>(
+  DashboardsNotifier.new,
+);
 
 final activeDashboardProvider = StateProvider<String?>((ref) => null);
 
@@ -311,7 +311,7 @@ class DashboardView extends ConsumerWidget {
               if (isEditing) {
                 // Save when exiting edit mode
                 ref
-                    .read(dashboardsProvider)
+                    .read(dashboardsProvider.notifier)
                     .saveActive(ref.read(dashboardWidgetsProvider));
               }
             },
@@ -734,7 +734,7 @@ class DashboardView extends ConsumerWidget {
   void _shareLayout(BuildContext context, WidgetRef ref) {
     final syncService = DashboardSyncService();
     final widgets = ref.read(dashboardWidgetsProvider);
-    final dashboard = ref.read(dashboardsProvider).active;
+    final dashboard = ref.read(dashboardsProvider.notifier).active;
 
     if (dashboard == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -863,7 +863,7 @@ class DashboardView extends ConsumerWidget {
                   try {
                     final syncService = DashboardSyncService();
                     final widgets = ref.read(dashboardWidgetsProvider);
-                    final dashboard = ref.read(dashboardsProvider).active;
+                    final dashboard = ref.read(dashboardsProvider.notifier).active;
                     if (dashboard != null) {
                       final syncResult = await syncService.syncToServer([
                         {

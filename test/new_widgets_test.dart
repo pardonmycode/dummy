@@ -72,9 +72,9 @@ void main() {
       MaterialApp(
         localizationsDelegates: const [
           AppLocalizationsDelegate(),
-          GlobalMaterialLocalizations.delegate,
+          fl.GlobalMaterialLocalizations.delegate,
           fl.GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
+          fl.GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: const [Locale('en')],
         home: Builder(
@@ -118,9 +118,9 @@ void main() {
       MaterialApp(
         localizationsDelegates: const [
           AppLocalizationsDelegate(),
-          GlobalMaterialLocalizations.delegate,
+          fl.GlobalMaterialLocalizations.delegate,
           fl.GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
+          fl.GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: const [Locale('en')],
         home: Builder(
@@ -168,9 +168,9 @@ void main() {
       MaterialApp(
         localizationsDelegates: const [
           AppLocalizationsDelegate(),
-          GlobalMaterialLocalizations.delegate,
+          fl.GlobalMaterialLocalizations.delegate,
           fl.GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
+          fl.GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: const [Locale('en')],
         home: Builder(

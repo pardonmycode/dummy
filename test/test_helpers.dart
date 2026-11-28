@@ -29,9 +29,9 @@ Future<void> pumpApp(WidgetTester tester, Widget widget) async {
     MaterialApp(
       localizationsDelegates: const [
         AppLocalizationsDelegate(),
-        GlobalMaterialLocalizations.delegate,
+        fl.GlobalMaterialLocalizations.delegate,
         fl.GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
+        fl.GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: const [Locale('en')],
       home: Scaffold(body: widget),

@@ -40,10 +40,8 @@ class WidgetTypeIds {
   static const String stressTracker = 'stress_tracker';
   static const String screenTimeTracker = 'screen_time_tracker';
   static const String medicationsTracker = 'medications_tracker';
-  static const String budget = 'budget';
-  static const String stocks = 'stocks';
-  static const String news = 'news';
+
   static const String briefing = 'tagesbriefing';
-  static const String opnv = 'opnv';
+
   static const String customTracker = 'custom_tracker';
 }

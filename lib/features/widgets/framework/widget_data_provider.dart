@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+
 import './widget_definition.dart';
 import './widget_data.dart';
 import './widget_schema_validator.dart';
@@ -32,9 +34,9 @@ class WidgetDataProvider {
     bool validateAndReport(Map<String, dynamic> data) {
       final errors = validateWidgetData(widgetType, data);
       if (errors != null && errors.isNotEmpty) {
-        print('Widget schema validation failed for $widgetType:');
+        debugPrint('Widget schema validation failed for $widgetType:');
         for (final error in errors) {
-          print('  - $error');
+          debugPrint('  - $error');
         }
         onComplete(WidgetData.fromJson(data), WidgetDataState.ready, errors);
         return true;

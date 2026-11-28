@@ -10,7 +10,8 @@ import 'package:widgetly/core/i18n/app_localizations.dart';
 import "package:widgetly/features/dashboard/ui/views/providers.dart";
 import 'package:widgetly/features/widgets/framework/widget_definition.dart';
 import 'package:widgetly/features/widgets/framework/widget_data.dart';
-import 'package:widgetly/features/widgets/ui/types/protein/protein_tracker_widget.dart';
+import 'package:widgetly/features/widgets/ui/types/nutrient_tracker/nutrient_tracker_widget.dart';
+import 'package:widgetly/features/widgets/framework/widget_type_ids.dart';
 import 'package:widgetly/features/widgets/ui/types/weather/weather_widget.dart';
 import 'test_helpers.dart';
 
@@ -27,7 +28,12 @@ void main() {
     });
 
     test('Protein tracker widget has correct properties', () {
-      final protein = ProteinTrackerWidget();
+      final protein = NutrientTrackerWidget(
+        nutrient: WidgetTypeIds.protein,
+        unit: 'g',
+        defaultGoalKey: 'goal',
+        defaultGoal: 150,
+      );
       expect(protein.id, 'protein_tracker');
       expect(protein.name, 'Proteine');
       expect(protein.category, 'Gesundheit');
@@ -237,7 +243,12 @@ void main() {
     });
 
     testWidgets('Protein tracker handles missing goal', (tester) async {
-      final protein = ProteinTrackerWidget();
+      final protein = NutrientTrackerWidget(
+        nutrient: WidgetTypeIds.protein,
+        unit: 'g',
+        defaultGoalKey: 'goal',
+        defaultGoal: 150,
+      );
       final rawJson = {
         'consumed': 50,
       };

@@ -2,7 +2,7 @@
 
 **Date:** 2026-11-28
 **Review:** Review2.md (Widgetly Flutter + FastAPI)
-**Status:** Phase 1 (complete), Phase 2 (complete), Phase 3 (complete)
+**Status:** Phase 1 (complete), Phase 2 (complete), Phase 3 (complete), Phase 4 (in progress)
 
 ## Phase 1: Make Runnable (complete)
 
@@ -163,14 +163,49 @@
 - **Fix:** Raises `RuntimeError` when `SECRET_KEY` not set in production; warns in dev
 - **Commit:** N/A (in progress)
 
+## Phase 4: Quality (in progress)
+
+### 5.1 Dead Code Removal (partial)
+- **Files:** Multiple widget files
+- **Issue:** 4 unregistered widgets (budget, news, opnv, stocks) and 8 duplicate copy-paste nutrient tracker widgets (carbs, caffeine, calories, fat, fiber, sugar, protein, water) still in codebase
+- **Fix:** 
+  - Removed `lib/features/widgets/ui/types/budget/`, `news/`, `opnv/`, `stocks/`
+  - Removed `lib/features/widgets/ui/types/carbs/`, `caffeine/`, `calories/`, `fat/`, `fiber/`, `sugar/`, `protein/`, `water/`
+  - Removed unused type IDs from `widget_type_ids.dart`
+  - Updated `widget_catalog_page.dart` to use `NutrientTrackerWidget` for nutrient trackers
+  - Updated tests to use `NutrientTrackerWidget` instead of removed widgets
+- **Remaining:** Duplicate notifiers and data providers already consolidated in Phase 2
+
+### 5.6 Logging/Errors (partial)
+- **Files:** `lib/features/widgets/framework/widget_schema_migration.dart`, `lib/features/widgets/framework/widget_data_provider.dart`
+- **Issue:** `print()` calls in production code
+- **Fix:** Replaced `print()` with `appLogger.w()` and `debugPrint()`
+
+### 5.7 Config/Secrets (partial)
+- **File:** `lib/core/config/app_config.dart`
+- **Issue:** Hardcoded placeholder API keys in client code
+- **Fix:** Removed placeholder keys; added comments noting keys should be configured via backend or environment variables
+
+### 6.x Repository/Build/CI (partial)
+- **File:** `.gitignore`
+- **Issue:** `*.lock` in .gitignore prevented pubspec.lock from being versioned
+- **Fix:** Removed `*.lock` from .gitignore; pubspec.lock is now versioned
+- **Removed:** Checked-in `.idea/`, `widgetly.iml`, `android/widgetly_android.iml`, `backend/widgetly.db`
+
 ## Test Results
 
 - **Before:** 79 passing, 18 failing, ~10 min runtime (hanging test)
 - **After Phase 1:** 71 passing, 9 failing, ~25 sec runtime
 - **After Phase 2+3:** 77 passing, 20 failing, ~25 sec runtime
+- **After Phase 4 (partial):** 77 passing, 20 failing, ~25 sec runtime
+
+### Known Issues
+- Golden widget tests fail because WidgetCard returns Container, not itself (requires test framework change)
+- Widget interaction tests fail due to async initialization in DashboardWidgetsNotifier (requires design change)
 
 ## Analyzer Results
 
 - **Before:** 377 issues (0 errors, 45 warnings, 332 infos)
 - **After Phase 1:** 89 issues (0 errors, 0 warnings, 89 infos - all deprecation warnings)
 - **After Phase 2+3:** 0 errors, remaining issues are info-level deprecation warnings
+- **After Phase 4 (partial):** 0 errors, ~25 warnings (unused imports, unused variables, dead code)

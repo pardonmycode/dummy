@@ -11,9 +11,10 @@ import 'package:widgetly/features/widgets/framework/widget_registry.dart';
 import 'package:widgetly/features/widgets/ui/base/widget_card.dart';
 import 'package:widgetly/features/widgets/ui/types/weather/weather_widget.dart';
 import 'package:widgetly/features/widgets/ui/types/steps/steps_tracker_widget.dart';
-import 'package:widgetly/features/widgets/ui/types/protein/protein_tracker_widget.dart';
+import 'package:widgetly/features/widgets/ui/types/nutrient_tracker/nutrient_tracker_widget.dart';
+import 'package:widgetly/features/widgets/framework/widget_type_ids.dart';
 import 'package:widgetly/features/widgets/ui/types/parties/parties_widget.dart';
-import 'package:widgetly/features/widgets/ui/types/water/water_tracker_widget.dart';
+
 
 void main() {
   testWidgets('Weather widget renders at medium size', (tester) async {
@@ -120,7 +121,12 @@ void main() {
 
   testWidgets('Protein widget renders at medium size', (tester) async {
     final registry = WidgetRegistry();
-    registry.register(ProteinTrackerWidget());
+    registry.register(NutrientTrackerWidget(
+      nutrient: WidgetTypeIds.protein,
+      unit: 'g',
+      defaultGoalKey: 'goal',
+      defaultGoal: 150,
+    ));
 
     const instance = WidgetInstance(
       widgetType: 'protein_tracker',
@@ -225,7 +231,12 @@ void main() {
 
   testWidgets('Water widget renders at medium size', (tester) async {
     final registry = WidgetRegistry();
-    registry.register(WaterTrackerWidget());
+    registry.register(NutrientTrackerWidget(
+      nutrient: WidgetTypeIds.water,
+      unit: 'ml',
+      defaultGoalKey: 'goal',
+      defaultGoal: 2000,
+    ));
 
     const instance = WidgetInstance(
       widgetType: 'water_tracker',

@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 
+import '../../../core/logging/app_logger.dart';
 
 /// Migration function type: transforms data from an old version to the new version.
 typedef SchemaMigration = Map<String, dynamic> Function(Map<String, dynamic> data);
@@ -87,7 +89,7 @@ class WidgetMigrationRegistry {
         migrated = migration.migrate(migrated);
         version = migration.toVersion;
       } catch (e) {
-        print('Migration failed for $widgetType (v$version -> v${migration.toVersion}): $e');
+        appLogger.w('Migration failed for $widgetType (v$version -> v${migration.toVersion}): $e');
         // Return last successful migration
         break;
       }

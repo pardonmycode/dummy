@@ -4,12 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../framework/widget_registry.dart';
 import '../../framework/widget_definition.dart';
 import '../../framework/widget_data.dart';
+import '../../framework/widget_type_ids.dart';
 import '../../../dashboard/ui/views/providers.dart';
 import '../../ui/types/weather/weather_widget.dart';
-import '../../ui/types/protein/protein_tracker_widget.dart';
 import '../../ui/types/parties/parties_widget.dart';
-import '../../ui/types/carbs/carbs_tracker_widget.dart';
-import '../../ui/types/water/water_tracker_widget.dart';
 import '../../ui/types/steps/steps_tracker_widget.dart';
 import '../../ui/types/sleep/sleep_tracker_widget.dart';
 import '../../ui/types/weight/weight_tracker_widget.dart';
@@ -23,14 +21,11 @@ import '../../ui/types/screen_time/screen_time_tracker_widget.dart';
 import '../../ui/types/medications/medications_tracker_widget.dart';
 import '../../ui/types/calendar/calendar_widget.dart';
 import '../../ui/types/quick_notes/quick_notes_widget.dart';
-import '../../ui/types/fat/fat_tracker_widget.dart';
-import '../../ui/types/calories/calorie_tracker_widget.dart';
-import '../../ui/types/fiber/fiber_tracker_widget.dart';
-import '../../ui/types/sugar/sugar_tracker_widget.dart';
-import '../../ui/types/caffeine/caffeine_tracker_widget.dart';
 import '../../ui/types/active_minutes/active_minutes_tracker_widget.dart';
 import '../../ui/types/distance/distance_tracker_widget.dart';
 import '../../ui/types/custom/custom_tracker_widget.dart';
+
+import '../../ui/types/nutrient_tracker/nutrient_tracker_widget.dart';
 
 class WidgetCatalogPage extends ConsumerStatefulWidget {
   const WidgetCatalogPage({super.key});
@@ -50,10 +45,7 @@ class _WidgetCatalogPageState extends ConsumerState<WidgetCatalogPage> {
     super.initState();
     registry = WidgetRegistry()
       ..register(WeatherWidget())
-      ..register(ProteinTrackerWidget())
       ..register(PartiesWidget())
-      ..register(CarbsTrackerWidget())
-      ..register(WaterTrackerWidget())
       ..register(StepsTrackerWidget())
       ..register(SleepTrackerWidget())
       ..register(WeightTrackerWidget())
@@ -67,14 +59,58 @@ class _WidgetCatalogPageState extends ConsumerState<WidgetCatalogPage> {
       ..register(MedicationsTrackerWidget())
       ..register(CalendarWidget())
       ..register(QuickNotesWidget())
-      ..register(FatTrackerWidget())
-      ..register(CalorieTrackerWidget())
-      ..register(FiberTrackerWidget())
-      ..register(SugarTrackerWidget())
-      ..register(CaffeineTrackerWidget())
       ..register(ActiveMinutesTrackerWidget())
       ..register(DistanceTrackerWidget())
-      ..register(CustomTrackerWidget());
+      ..register(CustomTrackerWidget())
+      // Nutrient trackers use generic NutrientTrackerWidget
+      ..register(NutrientTrackerWidget(
+        nutrient: WidgetTypeIds.protein,
+        unit: 'g',
+        defaultGoalKey: 'goal',
+        defaultGoal: 150,
+      ))
+      ..register(NutrientTrackerWidget(
+        nutrient: WidgetTypeIds.carbs,
+        unit: 'g',
+        defaultGoalKey: 'goal',
+        defaultGoal: 250,
+      ))
+      ..register(NutrientTrackerWidget(
+        nutrient: WidgetTypeIds.fat,
+        unit: 'g',
+        defaultGoalKey: 'goal',
+        defaultGoal: 70,
+      ))
+      ..register(NutrientTrackerWidget(
+        nutrient: WidgetTypeIds.calories,
+        unit: 'kcal',
+        defaultGoalKey: 'goal',
+        defaultGoal: 2000,
+      ))
+      ..register(NutrientTrackerWidget(
+        nutrient: WidgetTypeIds.fiber,
+        unit: 'g',
+        defaultGoalKey: 'goal',
+        defaultGoal: 30,
+      ))
+      ..register(NutrientTrackerWidget(
+        nutrient: WidgetTypeIds.sugar,
+        unit: 'g',
+        defaultGoalKey: 'goal',
+        defaultGoal: 50,
+      ))
+      ..register(NutrientTrackerWidget(
+        nutrient: WidgetTypeIds.caffeine,
+        unit: 'mg',
+        defaultGoalKey: 'goal',
+        defaultGoal: 400,
+      ))
+      ..register(NutrientTrackerWidget(
+        nutrient: WidgetTypeIds.water,
+        unit: 'ml',
+        defaultGoalKey: 'goal',
+        defaultGoal: 2000,
+      ));
   }
 
   List<String> get categories {
@@ -83,8 +119,8 @@ class _WidgetCatalogPageState extends ConsumerState<WidgetCatalogPage> {
     return cats;
   }
 
-  List<WidgetDefinition> get filteredWidgets {
-    List<WidgetDefinition> widgets;
+  List<WidgetDefinition<Object>> get filteredWidgets {
+    List<WidgetDefinition<Object>> widgets;
     if (_selectedCategory != null) {
       widgets = registry.getByCategory(_selectedCategory!);
     } else {
@@ -102,38 +138,32 @@ class _WidgetCatalogPageState extends ConsumerState<WidgetCatalogPage> {
     return widgets;
   }
 
-  Map<String, dynamic> _getMockData(WidgetDefinition widget) {
-    switch (widget.id) {
-      case 'weather':
-        return {
-          'schemaVersion': 1,
-          'data': {
-            'location': 'Berlin',
-            'current': {'temperature': 22, 'condition': 'Sonnig'},
-            'hourly': [
-              {'time': 'Jetzt', 'temp': 22, 'condition': 'Sonnig'},
-              {'time': '14:00', 'temp': 24, 'condition': 'Sonnig'},
-            ],
-          },
-          'sources': ['OpenWeatherMap API'],
-          'generatedAt': DateTime.now().toIso8601String(),
-        };
-      case 'protein_tracker':
-        return {
-          'schemaVersion': 1,
-          'data': {'goal': 150, 'consumed': 95},
-          'sources': ['Lokale Einträge'],
-          'generatedAt': DateTime.now().toIso8601String(),
-        };
-      default:
-        // Generic mock data for other widgets
-        return {
-          'schemaVersion': 1,
-          'data': {'value': 42, 'label': 'Beispieldaten'},
-          'sources': ['Mock'],
-          'generatedAt': DateTime.now().toIso8601String(),
-        };
+  Map<String, dynamic> _getMockData(String widgetId) {
+    if (widgetId == 'weather') {
+      return {
+        'schemaVersion': 1,
+        'data': {
+          'location': 'Berlin',
+          'current': {'temperature': 22, 'condition': 'Sonnig'},
+          'hourly': [
+            {'time': 'Jetzt', 'temp': 22, 'condition': 'Sonnig'},
+            {'time': '14:00', 'temp': 24, 'condition': 'Sonnig'},
+          ],
+        },
+        'sources': ['OpenWeatherMap API'],
+        'generatedAt': DateTime.now().toIso8601String(),
+      };
     }
+    // Generic mock data for tracker widgets
+    return {
+      'schemaVersion': 1,
+      'data': {
+        'goal': 100,
+        'consumed': 42,
+      },
+      'sources': ['Lokale Einträge'],
+      'generatedAt': DateTime.now().toIso8601String(),
+    };
   }
 
   @override
@@ -220,7 +250,7 @@ class _WidgetCatalogPageState extends ConsumerState<WidgetCatalogPage> {
     );
   }
 
-  Widget _buildCatalogItem(BuildContext context, WidgetDefinition widget) {
+  Widget _buildCatalogItem(BuildContext context, WidgetDefinition<Object> widget) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -279,8 +309,8 @@ class _WidgetCatalogPageState extends ConsumerState<WidgetCatalogPage> {
     );
   }
 
-  void _showPreview(BuildContext context, WidgetDefinition widget) {
-    final mockData = _getMockData(widget);
+  void _showPreview(BuildContext context, WidgetDefinition<Object> widget) {
+    final mockData = _getMockData(widget.id);
     final widgetData = WidgetData.fromJson(mockData);
 
     showDialog(
@@ -302,7 +332,7 @@ class _WidgetCatalogPageState extends ConsumerState<WidgetCatalogPage> {
                   context,
                   widgetData,
                   WidgetDataState.ready,
-                  const WidgetConfig({}),
+                  WidgetConfig({}),
                 ),
               ),
             ),

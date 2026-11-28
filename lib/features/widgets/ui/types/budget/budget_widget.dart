@@ -34,7 +34,6 @@ class BudgetWidget extends WidgetDefinition<Map<String, dynamic>> {
   RefreshInterval get defaultRefreshInterval => RefreshInterval.manual;
 
   @override
-  @override
   Map<String, dynamic> parseData(WidgetData? data) {
     if (data == null) {
       return {};
@@ -45,6 +44,7 @@ class BudgetWidget extends WidgetDefinition<Map<String, dynamic>> {
 
   @override
   Widget buildView(
+    BuildContext context,
     Map<String, dynamic> data,
     WidgetDataState state,
     WidgetConfig config, {
@@ -93,7 +93,7 @@ class BudgetWidget extends WidgetDefinition<Map<String, dynamic>> {
     return _buildContent(data);
   }
 
-  Widget _buildContent(WidgetData data) {
+  Widget _buildContent(Map<String, dynamic> data) {
     final budget = (data['budget'] as num?)?.toDouble() ?? 0;
     final spent = (data['spent'] as num?)?.toDouble() ?? 0;
     final remaining = budget - spent;

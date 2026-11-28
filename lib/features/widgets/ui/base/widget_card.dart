@@ -157,17 +157,14 @@ class WidgetCard extends ConsumerWidget {
             const SizedBox(height: 8),
             Text('Offline', style: AppTheme.bodySmall),
             const SizedBox(height: 8),
-            definition.buildView(typedOfflineData, state, config),
+            definition.buildView(context, typedOfflineData, state, config),
           ],
         );
         break;
       default:
         // Parse typed data before building view
         final typedData = definition.parseData(data);
-        body = definition.buildView(
-          typedData,
-          state,
-          config,
+        body = definition.buildView(context, typedData, state, config,
           onQuickAdd: (type, entry) {
             // Add entry to mock data provider via provider
             final provider = ref.read(mockDataProviderProvider);

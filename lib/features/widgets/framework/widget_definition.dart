@@ -86,6 +86,7 @@ abstract class WidgetDefinition<T> {
   /// Build the widget UI from typed data and state.
   /// [onQuickAdd] is an optional callback for tracker widgets to report quick-add actions.
   Widget buildView(
+    BuildContext context,
     T data,
     WidgetDataState state,
     WidgetConfig config, {

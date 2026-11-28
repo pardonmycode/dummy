@@ -43,7 +43,7 @@ void main() {
     expect(tasks.category, 'Produktivität');
   });
 
-  testWidgets('Body Fat widget renders', (WidgetTester tester) async {
+  testWidgets('Body Fat widget renders', (tester) async {
     final bodyFat = BodyFatTrackerWidget();
     final rawJson = {'current': 22.5, 'goal': 18.0, 'start': 25.0, 'trend': 'down'};
     final typedData = bodyFat.parseData(
@@ -52,16 +52,21 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        home: Material(
-          child: Container(
-            width: 300,
-            height: 200,
-            child: bodyFat.buildView(
-              typedData,
-              WidgetDataState.ready,
-              WidgetConfig({}),
-            ),
-          ),
+        home: Builder(
+          builder: (context) {
+            return Material(
+              child: Container(
+                width: 300,
+                height: 200,
+                child: bodyFat.buildView(
+                  context,
+                  typedData,
+                  WidgetDataState.ready,
+                  WidgetConfig({}),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -70,7 +75,7 @@ void main() {
     expect(find.text('Körperfett nimmt ab'), findsOneWidget);
   });
 
-  testWidgets('Heart Rate widget renders', (WidgetTester tester) async {
+  testWidgets('Heart Rate widget renders', (tester) async {
     final heartRate = HeartRateTrackerWidget();
     final rawJson = {'current': 72, 'resting': 62, 'max': 145, 'trend': 'down'};
     final typedData = heartRate.parseData(
@@ -79,16 +84,21 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        home: Material(
-          child: Container(
-            width: 300,
-            height: 200,
-            child: heartRate.buildView(
-              typedData,
-              WidgetDataState.ready,
-              WidgetConfig({}),
-            ),
-          ),
+        home: Builder(
+          builder: (context) {
+            return Material(
+              child: Container(
+                width: 300,
+                height: 200,
+                child: heartRate.buildView(
+                  context,
+                  typedData,
+                  WidgetDataState.ready,
+                  WidgetConfig({}),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -97,7 +107,7 @@ void main() {
     expect(find.text('Ruhepuls verbessert sich'), findsOneWidget);
   });
 
-  testWidgets('Mood widget renders', (WidgetTester tester) async {
+  testWidgets('Mood widget renders', (tester) async {
     final mood = MoodTrackerWidget();
     final rawJson = {
       'mood': 4,
@@ -110,16 +120,21 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        home: Material(
-          child: Container(
-            width: 300,
-            height: 200,
-            child: mood.buildView(
-              typedData,
-              WidgetDataState.ready,
-              WidgetConfig({}),
-            ),
-          ),
+        home: Builder(
+          builder: (context) {
+            return Material(
+              child: Container(
+                width: 300,
+                height: 200,
+                child: mood.buildView(
+                  context,
+                  typedData,
+                  WidgetDataState.ready,
+                  WidgetConfig({}),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -128,7 +143,7 @@ void main() {
     expect(find.text('Fühle mich gut'), findsOneWidget);
   });
 
-  testWidgets('Tasks widget renders', (WidgetTester tester) async {
+  testWidgets('Tasks widget renders', (tester) async {
     final tasks = TasksWidget();
     final rawJson = {
       'tasks': [
@@ -143,16 +158,21 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        home: Material(
-          child: Container(
-            width: 300,
-            height: 300,
-            child: tasks.buildView(
-              typedData,
-              WidgetDataState.ready,
-              WidgetConfig({}),
-            ),
-          ),
+        home: Builder(
+          builder: (context) {
+            return Material(
+              child: Container(
+                width: 300,
+                height: 300,
+                child: tasks.buildView(
+                  context,
+                  typedData,
+                  WidgetDataState.ready,
+                  WidgetConfig({}),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );

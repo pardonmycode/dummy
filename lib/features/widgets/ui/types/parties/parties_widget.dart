@@ -69,7 +69,10 @@ class PartiesWidget extends WidgetDefinition<PartiesData> {
 
   @override
   Widget buildView(
-    PartiesData data,
+
+      BuildContext context,
+
+      PartiesData data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,

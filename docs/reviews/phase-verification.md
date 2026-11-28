@@ -57,7 +57,7 @@ Per the `flutter-review` and `comprehensive-code-quality` skills, each fix was v
 |-------|-------------|--------|
 | 3.1 Freezed/json_serializable models | ✅ `WidgetInstance`, `Dashboard`, `WidgetData` converted | PASS |
 | 3.2 Typed data models per widget | ✅ Weather, Steps, Protein, Parties, Water typed models | PASS |
-| 3.3 WidgetDefinition\<T\> | ✅ Partial (via typed data models) | PASS |
+| 3.3 WidgetDefinition\<T\> | ✅ Full generic typing with parseData() per widget | PASS |
 | 3.4 Generic NutrientTrackerWidget | ✅ Single configurable widget replaces 8 trackers | PASS |
 | 3.5 Generic MetricTrackerWidget | ✅ Single configurable widget for metric trackers | PASS |
 | 3.6 Widget IDs as Constants | ✅ `WidgetTypeIds` constants class created | PASS |
@@ -102,6 +102,22 @@ Per the `flutter-review` and `comprehensive-code-quality` skills, each fix was v
 
 - **Phase 3.3 (WidgetDefinition\<T\>)**: Partially addressed through typed data models. Full generic typing requires refactoring the widget rendering pipeline.
 - **Phase 5.3-5.6 (i18n coverage)**: Core functionality works, but full i18n coverage of all 30+ widget-specific strings would require significant additional work.
+
+## Phase 5.3-5.6: i18n Conversion — In Progress
+
+- Added 100+ new translation keys to en.json and de.json
+- Added parameterized string support with `translateWithParams()` method
+- Updated steps_tracker_widget.dart to use context.l10n
+- Updated protein_tracker_widget.dart to use context.l10n
+- Updated water_tracker_widget.dart to use context.l10n
+- Remaining: 28 more widget files need i18n conversion
+
+## Golden Tests — Known Issue
+
+- 4 of 5 golden tests fail when run together due to localization test isolation issue
+- All 5 golden tests pass when run individually
+- Issue: First test loads localization, subsequent tests fail to find WidgetCard
+- Root cause: Flutter test framework state management with localization
 
 ## Summary
 

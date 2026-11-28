@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../../../core/i18n/app_localizations.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
@@ -52,11 +53,15 @@ class WeatherWidget extends WidgetDefinition<WeatherData> {
 
   @override
   Widget buildView(
-    WeatherData data,
+
+      BuildContext context,
+
+      WeatherData data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
+    final l10n = context.l10n;
     // Empty state: no weather data available
     if (state == WidgetDataState.empty) {
       return Column(
@@ -64,7 +69,7 @@ class WeatherWidget extends WidgetDefinition<WeatherData> {
         children: [
           Icon(Icons.wb_sunny_outlined, size: 48, color: Colors.grey),
           const SizedBox(height: 8),
-          Text('Keine Wetterdaten verfügbar', style: AppTheme.bodySmall),
+          Text(l10n.noWeatherData, style: AppTheme.bodySmall),
         ],
       );
     }
@@ -78,7 +83,7 @@ class WeatherWidget extends WidgetDefinition<WeatherData> {
             children: [
               Icon(Icons.cloud_off, size: 16, color: Colors.grey),
               const SizedBox(width: 4),
-              Text('Offline - gecachte Daten', style: AppTheme.caption),
+              Text(l10n.offlineCached, style: AppTheme.caption),
             ],
           ),
           const SizedBox(height: 8),

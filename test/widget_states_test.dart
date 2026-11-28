@@ -30,22 +30,26 @@ void main() {
   });
 
   group('Widget rendering - loading state', () {
-    testWidgets('Weather widget shows content when loading',
-        (WidgetTester tester) async {
+    testWidgets('Weather widget shows content when loading', (tester) async {
       final weather = WeatherWidget();
       final typedData = weather.parseData(null);
       await tester.pumpWidget(
         MaterialApp(
-          home: Material(
-            child: Container(
-              width: 300,
-              height: 200,
-              child: weather.buildView(
-                typedData,
-                WidgetDataState.loading,
-                WidgetConfig({}),
-              ),
-            ),
+          home: Builder(
+            builder: (context) {
+              return Material(
+                child: Container(
+                  width: 300,
+                  height: 200,
+                  child: weather.buildView(
+                    context,
+                    typedData,
+                    WidgetDataState.loading,
+                    WidgetConfig({}),
+                  ),
+                ),
+              );
+            },
           ),
         ),
       );
@@ -56,22 +60,26 @@ void main() {
   });
 
   group('Widget rendering - error state', () {
-    testWidgets('Weather widget shows content when error',
-        (WidgetTester tester) async {
+    testWidgets('Weather widget shows content when error', (tester) async {
       final weather = WeatherWidget();
       final typedData = weather.parseData(null);
       await tester.pumpWidget(
         MaterialApp(
-          home: Material(
-            child: Container(
-              width: 300,
-              height: 200,
-              child: weather.buildView(
-                typedData,
-                WidgetDataState.error,
-                WidgetConfig({}),
-              ),
-            ),
+          home: Builder(
+            builder: (context) {
+              return Material(
+                child: Container(
+                  width: 300,
+                  height: 200,
+                  child: weather.buildView(
+                    context,
+                    typedData,
+                    WidgetDataState.error,
+                    WidgetConfig({}),
+                  ),
+                ),
+              );
+            },
           ),
         ),
       );
@@ -82,22 +90,26 @@ void main() {
   });
 
   group('Widget rendering - empty state', () {
-    testWidgets('Weather widget shows empty state',
-        (WidgetTester tester) async {
+    testWidgets('Weather widget shows empty state', (tester) async {
       final weather = WeatherWidget();
       final typedData = weather.parseData(null);
       await tester.pumpWidget(
         MaterialApp(
-          home: Material(
-            child: Container(
-              width: 300,
-              height: 200,
-              child: weather.buildView(
-                typedData,
-                WidgetDataState.empty,
-                WidgetConfig({}),
-              ),
-            ),
+          home: Builder(
+            builder: (context) {
+              return Material(
+                child: Container(
+                  width: 300,
+                  height: 200,
+                  child: weather.buildView(
+                    context,
+                    typedData,
+                    WidgetDataState.empty,
+                    WidgetConfig({}),
+                  ),
+                ),
+              );
+            },
           ),
         ),
       );
@@ -107,8 +119,7 @@ void main() {
   });
 
   group('Widget rendering - ready state', () {
-    testWidgets('Weather widget renders with data',
-        (WidgetTester tester) async {
+    testWidgets('Weather widget renders with data', (tester) async {
       final weather = WeatherWidget();
       final rawJson = {
         'temperature': 22.0,
@@ -123,16 +134,21 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: Material(
-            child: Container(
-              width: 300,
-              height: 300,
-              child: weather.buildView(
-                typedData,
-                WidgetDataState.ready,
-                WidgetConfig({'location': 'Berlin'}),
-              ),
-            ),
+          home: Builder(
+            builder: (context) {
+              return Material(
+                child: Container(
+                  width: 300,
+                  height: 300,
+                  child: weather.buildView(
+                    context,
+                    typedData,
+                    WidgetDataState.ready,
+                    WidgetConfig({'location': 'Berlin'}),
+                  ),
+                ),
+              );
+            },
           ),
         ),
       );
@@ -142,7 +158,7 @@ void main() {
   });
 
   group('Edge cases - missing fields', () {
-    test('Weather handles missing optional fields', () {
+    testWidgets('Weather handles missing optional fields', (tester) async {
       final weather = WeatherWidget();
       final rawJson = {
         'temperature': 20.0,
@@ -156,12 +172,26 @@ void main() {
       );
 
       // Should not throw when optional fields are missing
-      expect(() {
-        weather.buildView(typedData, WidgetDataState.ready, WidgetConfig({}));
-      }, returnsNormally);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) {
+              return Material(
+                child: weather.buildView(
+                  context,
+                  typedData,
+                  WidgetDataState.ready,
+                  WidgetConfig({}),
+                ),
+              );
+            },
+          ),
+        ),
+      );
+      expect(find.byType(Material), findsOneWidget);
     });
 
-    test('Protein tracker handles missing goal', () {
+    testWidgets('Protein tracker handles missing goal', (tester) async {
       final protein = ProteinTrackerWidget();
       final rawJson = {
         'consumed': 50,
@@ -171,14 +201,28 @@ void main() {
       );
 
       // Should not throw when goal is missing
-      expect(() {
-        protein.buildView(typedData, WidgetDataState.ready, WidgetConfig({}));
-      }, returnsNormally);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) {
+              return Material(
+                child: protein.buildView(
+                  context,
+                  typedData,
+                  WidgetDataState.ready,
+                  WidgetConfig({}),
+                ),
+              );
+            },
+          ),
+        ),
+      );
+      expect(find.byType(Material), findsOneWidget);
     });
   });
 
   group('Edge cases - empty collections', () {
-    test('Weather handles empty hourly/daily arrays', () {
+    testWidgets('Weather handles empty hourly/daily arrays', (tester) async {
       final weather = WeatherWidget();
       final rawJson = {
         'temperature': 20.0,
@@ -191,9 +235,23 @@ void main() {
         WidgetData(data: rawJson, generatedAt: DateTime.now()),
       );
 
-      expect(() {
-        weather.buildView(typedData, WidgetDataState.ready, WidgetConfig({}));
-      }, returnsNormally);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) {
+              return Material(
+                child: weather.buildView(
+                  context,
+                  typedData,
+                  WidgetDataState.ready,
+                  WidgetConfig({}),
+                ),
+              );
+            },
+          ),
+        ),
+      );
+      expect(find.byType(Material), findsOneWidget);
     });
 
     test('Tasks widget handles empty task list', () {

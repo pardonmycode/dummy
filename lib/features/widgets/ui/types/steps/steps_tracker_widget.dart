@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../../../core/i18n/app_localizations.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
@@ -50,11 +51,15 @@ class StepsTrackerWidget extends WidgetDefinition<StepsData> {
 
   @override
   Widget buildView(
-    StepsData data,
+
+      BuildContext context,
+
+      StepsData data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
+    final l10n = context.l10n;
     final steps = data.steps;
     final goal = data.goal;
     final distance = data.distanceKm;
@@ -69,7 +74,7 @@ class StepsTrackerWidget extends WidgetDefinition<StepsData> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('$steps Schritte', style: AppTheme.titleMedium),
+            Text('$steps ${l10n.stepsLabel}', style: AppTheme.titleMedium),
             Icon(Icons.directions_walk, color: AppTheme.success),
           ],
         ),
@@ -97,7 +102,7 @@ class StepsTrackerWidget extends WidgetDefinition<StepsData> {
                     '${(progress * 100).toInt()}%',
                     style: AppTheme.titleSmall,
                   ),
-                  Text('Ziel', style: AppTheme.labelSmall),
+                  Text(l10n.stepsGoalLabel, style: AppTheme.labelSmall),
                 ],
               ),
             ],
@@ -111,7 +116,7 @@ class StepsTrackerWidget extends WidgetDefinition<StepsData> {
             children: [
               Icon(Icons.local_fire_department, size: 16, color: Colors.orange),
               const SizedBox(width: 4),
-              Text('$streak Tage Streak', style: AppTheme.labelMedium),
+              Text(l10n.stepsStreak(streak: streak), style: AppTheme.labelMedium),
             ],
           ),
         const SizedBox(height: 4),
@@ -122,14 +127,14 @@ class StepsTrackerWidget extends WidgetDefinition<StepsData> {
           children: [
             Column(
               children: [
-                Text('${distance.toStringAsFixed(1)} km', style: AppTheme.bodyMedium),
-                Text('Distanz', style: AppTheme.labelSmall),
+                Text('${distance.toStringAsFixed(1)} ${l10n.distanceKm}', style: AppTheme.bodyMedium),
+                Text(l10n.stepsDistanceLabel, style: AppTheme.labelSmall),
               ],
             ),
             Column(
               children: [
-                Text('${calories.toInt()} kcal', style: AppTheme.bodyMedium),
-                Text('Kalorien', style: AppTheme.labelSmall),
+                Text('${calories.toInt()} ${l10n.caloriesUnit}', style: AppTheme.bodyMedium),
+                Text(l10n.stepsCaloriesLabel, style: AppTheme.labelSmall),
               ],
             ),
           ],

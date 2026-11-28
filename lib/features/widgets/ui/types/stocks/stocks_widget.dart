@@ -46,6 +46,7 @@ class StocksWidget extends WidgetDefinition<Map<String, dynamic>> {
 
   @override
   Widget buildView(
+    BuildContext context,
     Map<String, dynamic> data,
     WidgetDataState state,
     WidgetConfig config, {
@@ -94,7 +95,7 @@ class StocksWidget extends WidgetDefinition<Map<String, dynamic>> {
     return _buildContent(data);
   }
 
-  Widget _buildContent(WidgetData data) {
+  Widget _buildContent(Map<String, dynamic> data) {
     final symbols = data['symbols'] as List<dynamic>? ?? [];
     final lastUpdate = data['lastUpdate'] as String? ?? '';
 

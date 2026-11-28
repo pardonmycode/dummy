@@ -1,6 +1,8 @@
-import 'package:material_ui/material_ui.dart' as flutter;
 import 'package:material_ui/material_ui.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_localizations/flutter_localizations.dart' as fl;
+import 'package:widgetly/core/i18n/app_localizations.dart';
 import 'package:widgetly/features/widgets/framework/widget_data.dart';
 import 'package:widgetly/features/widgets/framework/widget_definition.dart';
 import 'package:widgetly/features/widgets/framework/widget_instance.dart';
@@ -13,69 +15,84 @@ import 'package:widgetly/features/widgets/ui/types/parties/parties_widget.dart';
 import 'package:widgetly/features/widgets/ui/types/water/water_tracker_widget.dart';
 
 void main() {
-  late WidgetRegistry registry;
-
-  setUp(() {
-    registry = WidgetRegistry();
+  testWidgets('Weather widget renders at medium size', (tester) async {
+    await Future.delayed(const Duration(milliseconds: 100));
+    final registry = WidgetRegistry();
     registry.register(WeatherWidget());
-    registry.register(StepsTrackerWidget());
-    registry.register(ProteinTrackerWidget());
-    registry.register(PartiesWidget());
-    registry.register(WaterTrackerWidget());
+
+    final instance = WidgetInstance(
+      widgetType: 'weather',
+      size: WidgetSize.medium,
+      config: {'location': 'Berlin'},
+    );
+    final definition = registry.get('weather')!;
+    final data = WidgetData.fromJson({
+      'data': {
+        'temperature': 25.0,
+        'condition': 'sunny',
+        'icon': 'sunny',
+        'hourly': [],
+        'daily': [],
+      },
+    });
+
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          localizationsDelegates: [
+            AppLocalizationsDelegate(),
+            GlobalMaterialLocalizations.delegate,
+            fl.GlobalWidgetsLocalizations.delegate,
+            fl.GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: [Locale('en')],
+          home: Scaffold(
+            body: SizedBox(
+              width: 300,
+              height: 300,
+              child: WidgetCard(
+                definition: definition,
+                instance: instance,
+                data: data,
+                state: WidgetDataState.ready,
+                config: WidgetConfig(instance.config),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle(const Duration(seconds: 2));
+
+    expect(find.byType(WidgetCard), findsOneWidget);
   });
 
-  group('Golden tests - widget rendering', () {
-    testWidgets('Weather widget renders at medium size', (tester) async {
-      final instance = WidgetInstance(
-        widgetType: 'weather',
-        size: WidgetSize.medium,
-        config: {'location': 'Berlin'},
-      );
-      final definition = registry.get('weather')!;
-      final data = WidgetData.fromJson({
-        'data': {
-          'temperature': 25.0,
-          'condition': 'sunny',
-          'icon': 'sunny',
-          'hourly': [],
-          'daily': [],
-        },
-      });
+  testWidgets('Steps widget renders at medium size', (tester) async {
+    final registry = WidgetRegistry();
+    registry.register(StepsTrackerWidget());
 
-      await tester.pumpWidget(
-        flutter.MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 300,
-              height: 300,
-              child: WidgetCard(
-                definition: definition,
-                instance: instance,
-                data: data,
-                state: WidgetDataState.ready,
-                config: WidgetConfig(instance.config),
-              ),
-            ),
-          ),
-        ),
-      );
-
-      expect(find.byType(WidgetCard), findsOneWidget);
-    });
-
-    testWidgets('Steps widget renders at medium size', (tester) async {
-      final instance = WidgetInstance(
-        widgetType: 'steps_tracker',
-        size: WidgetSize.medium,
-      );
-      final definition = registry.get('steps_tracker')!;
-      final data = WidgetData.fromJson({
+    final instance = WidgetInstance(
+      widgetType: 'steps_tracker',
+      size: WidgetSize.medium,
+    );
+    final definition = registry.get('steps_tracker')!;
+    final data = WidgetData.fromJson({
+      'data': {
         'steps': 8500,
         'goal': 10000,
-      });
+      },
+    });
 
-      await tester.pumpWidget(
-        flutter.MaterialApp(
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          localizationsDelegates: [
+            AppLocalizationsDelegate(),
+            GlobalMaterialLocalizations.delegate,
+            fl.GlobalWidgetsLocalizations.delegate,
+            fl.GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: [Locale('en')],
           home: Scaffold(
             body: SizedBox(
               width: 300,
@@ -90,24 +107,39 @@ void main() {
             ),
           ),
         ),
-      );
+      ),
+    );
+    await tester.pumpAndSettle(const Duration(seconds: 2));
 
-      expect(find.byType(WidgetCard), findsOneWidget);
-    });
+    expect(find.byType(WidgetCard), findsOneWidget);
+  });
 
-    testWidgets('Protein widget renders at medium size', (tester) async {
-      final instance = WidgetInstance(
-        widgetType: 'protein_tracker',
-        size: WidgetSize.medium,
-      );
-      final definition = registry.get('protein_tracker')!;
-      final data = WidgetData.fromJson({
+  testWidgets('Protein widget renders at medium size', (tester) async {
+    final registry = WidgetRegistry();
+    registry.register(ProteinTrackerWidget());
+
+    final instance = WidgetInstance(
+      widgetType: 'protein_tracker',
+      size: WidgetSize.medium,
+    );
+    final definition = registry.get('protein_tracker')!;
+    final data = WidgetData.fromJson({
+      'data': {
         'consumed': 120,
         'goal': 150,
-      });
+      },
+    });
 
-      await tester.pumpWidget(
-        flutter.MaterialApp(
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          localizationsDelegates: [
+            AppLocalizationsDelegate(),
+            GlobalMaterialLocalizations.delegate,
+            fl.GlobalWidgetsLocalizations.delegate,
+            fl.GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: [Locale('en')],
           home: Scaffold(
             body: SizedBox(
               width: 300,
@@ -122,18 +154,24 @@ void main() {
             ),
           ),
         ),
-      );
+      ),
+    );
+    await tester.pumpAndSettle(const Duration(seconds: 2));
 
-      expect(find.byType(WidgetCard), findsOneWidget);
-    });
+    expect(find.byType(WidgetCard), findsOneWidget);
+  });
 
-    testWidgets('Parties widget renders at large size', (tester) async {
-      final instance = WidgetInstance(
-        widgetType: 'parties',
-        size: WidgetSize.large,
-      );
-      final definition = registry.get('parties')!;
-      final data = WidgetData.fromJson({
+  testWidgets('Parties widget renders at large size', (tester) async {
+    final registry = WidgetRegistry();
+    registry.register(PartiesWidget());
+
+    final instance = WidgetInstance(
+      widgetType: 'parties',
+      size: WidgetSize.large,
+    );
+    final definition = registry.get('parties')!;
+    final data = WidgetData.fromJson({
+      'data': {
         'events': [
           {
             'name': 'Club Night',
@@ -143,10 +181,19 @@ void main() {
             'lng': 13.39,
           },
         ],
-      });
+      },
+    });
 
-      await tester.pumpWidget(
-        flutter.MaterialApp(
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          localizationsDelegates: [
+            AppLocalizationsDelegate(),
+            GlobalMaterialLocalizations.delegate,
+            fl.GlobalWidgetsLocalizations.delegate,
+            fl.GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: [Locale('en')],
           home: Scaffold(
             body: SizedBox(
               width: 600,
@@ -161,24 +208,39 @@ void main() {
             ),
           ),
         ),
-      );
+      ),
+    );
+    await tester.pumpAndSettle(const Duration(seconds: 2));
 
-      expect(find.byType(WidgetCard), findsOneWidget);
-    });
+    expect(find.byType(WidgetCard), findsOneWidget);
+  });
 
-    testWidgets('Water widget renders at medium size', (tester) async {
-      final instance = WidgetInstance(
-        widgetType: 'water_tracker',
-        size: WidgetSize.medium,
-      );
-      final definition = registry.get('water_tracker')!;
-      final data = WidgetData.fromJson({
+  testWidgets('Water widget renders at medium size', (tester) async {
+    final registry = WidgetRegistry();
+    registry.register(WaterTrackerWidget());
+
+    final instance = WidgetInstance(
+      widgetType: 'water_tracker',
+      size: WidgetSize.medium,
+    );
+    final definition = registry.get('water_tracker')!;
+    final data = WidgetData.fromJson({
+      'data': {
         'consumed': 1250,
         'goal': 2000,
-      });
+      },
+    });
 
-      await tester.pumpWidget(
-        flutter.MaterialApp(
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          localizationsDelegates: [
+            AppLocalizationsDelegate(),
+            GlobalMaterialLocalizations.delegate,
+            fl.GlobalWidgetsLocalizations.delegate,
+            fl.GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: [Locale('en')],
           home: Scaffold(
             body: SizedBox(
               width: 300,
@@ -193,9 +255,10 @@ void main() {
             ),
           ),
         ),
-      );
+      ),
+    );
+    await tester.pumpAndSettle(const Duration(seconds: 2));
 
-      expect(find.byType(WidgetCard), findsOneWidget);
-    });
+    expect(find.byType(WidgetCard), findsOneWidget);
   });
 }

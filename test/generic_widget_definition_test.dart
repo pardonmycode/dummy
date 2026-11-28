@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:widgetly/core/i18n/app_localizations.dart';
 import 'package:widgetly/features/widgets/framework/widget_definition.dart';
 import 'package:widgetly/features/widgets/framework/widget_data.dart';
 import 'package:widgetly/features/widgets/weather/data/weather_data.dart';
@@ -39,7 +41,7 @@ void main() {
       expect(typedData.daily.length, 1);
     });
 
-    test('buildView receives typed data', () {
+    testWidgets('buildView receives typed data', (tester) async {
       final widget = WeatherWidget();
       final typedData = WeatherData(
         temperature: 20.0,
@@ -49,14 +51,30 @@ void main() {
         daily: [],
       );
 
-      // Should build without error
-      final view = widget.buildView(
-        typedData,
-        WidgetDataState.ready,
-        WidgetConfig(),
+      // Pump a widget with a Builder to get context
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Builder(
+            builder: (context) {
+              final view = widget.buildView(
+                context,
+                typedData,
+                WidgetDataState.ready,
+                WidgetConfig(),
+              );
+              return view;
+            },
+          ),
+        ),
       );
 
-      expect(view, isNotNull);
+      // Wait for async localization loading
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.byType(MaterialApp), findsOneWidget);
     });
 
     test('parseData handles empty data gracefully', () {

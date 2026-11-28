@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../../../core/i18n/app_localizations.dart';
 import '../../../../../../core/models/tracker_base.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
@@ -72,11 +73,15 @@ class ProteinTrackerWidget extends WidgetDefinition<ProteinData> {
 
   @override
   Widget buildView(
-    ProteinData data,
+
+      BuildContext context,
+
+      ProteinData data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
+    final l10n = context.l10n;
     final goal = data.goal;
     final consumed = data.consumed;
     final meals = data.meals;
@@ -91,7 +96,7 @@ class ProteinTrackerWidget extends WidgetDefinition<ProteinData> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('${consumed}g von ${goal}g', style: AppTheme.titleMedium),
+              Text('${consumed}${l10n.proteinUnit} ${l10n.proteinOf} ${goal}${l10n.proteinUnit}', style: AppTheme.titleMedium),
               Text(
                 '${(progress * 100).toInt()}%',
                 style: AppTheme.labelMedium.copyWith(color: AppTheme.primary),
@@ -136,7 +141,7 @@ class ProteinTrackerWidget extends WidgetDefinition<ProteinData> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Noch ${remaining}g', style: AppTheme.bodyMedium),
+                      Text(l10n.proteinRemaining(remaining: remaining.toInt()), style: AppTheme.bodyMedium),
                       const SizedBox(height: 4),
                       if (remaining > 0)
                         Text(
@@ -145,7 +150,7 @@ class ProteinTrackerWidget extends WidgetDefinition<ProteinData> {
                         )
                       else
                         Text(
-                          'Ziel erreicht! 🎉',
+                          l10n.goalReached,
                           style: AppTheme.bodySmall.copyWith(
                             color: Colors.green,
                           ),
@@ -182,7 +187,7 @@ class ProteinTrackerWidget extends WidgetDefinition<ProteinData> {
                           ],
                         ),
                       ),
-                      Text('+${meal.protein}g', style: AppTheme.labelMedium),
+                      Text(l10n.proteinMeal(amount: meal.protein.toInt()), style: AppTheme.labelMedium),
                     ],
                   ),
                 );

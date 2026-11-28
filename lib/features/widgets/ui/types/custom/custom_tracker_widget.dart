@@ -40,6 +40,7 @@ class CustomTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
 
   @override
   Widget buildView(
+    BuildContext context,
     Map<String, dynamic> data,
     WidgetDataState state,
     WidgetConfig config, {

@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../../../core/i18n/app_localizations.dart';
 import '../../../../../../core/models/tracker_base.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
@@ -58,11 +59,15 @@ class WaterTrackerWidget extends WidgetDefinition<WaterData> {
 
   @override
   Widget buildView(
-    WaterData data,
+
+      BuildContext context,
+
+      WaterData data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
+    final l10n = context.l10n;
     final goal = data.goal;
     final consumed = data.consumed;
     final progress = goal > 0 ? (consumed / goal).clamp(0.0, 1.0) : 0.0;
@@ -74,7 +79,10 @@ class WaterTrackerWidget extends WidgetDefinition<WaterData> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('${consumed}ml von ${goal}ml', style: AppTheme.titleMedium),
+            Expanded(
+              child: Text('${consumed}ml ${l10n.waterOf} ${goal}ml', style: AppTheme.titleMedium),
+            ),
+            const SizedBox(width: 8),
             Icon(Icons.water_drop, color: AppTheme.info),
           ],
         ),
@@ -104,7 +112,7 @@ class WaterTrackerWidget extends WidgetDefinition<WaterData> {
 
         // Add water button
         ActionButton(
-          label: '+ 250ml',
+          label: l10n.waterAdd,
           icon: Icons.add,
           primary: true,
           width: 120,

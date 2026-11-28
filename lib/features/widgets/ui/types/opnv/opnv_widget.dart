@@ -56,6 +56,7 @@ class OpnvWidget extends WidgetDefinition<Map<String, dynamic>> {
 
   @override
   Widget buildView(
+    BuildContext context,
     Map<String, dynamic> data,
     WidgetDataState state,
     WidgetConfig config, {
@@ -104,7 +105,7 @@ class OpnvWidget extends WidgetDefinition<Map<String, dynamic>> {
     return _buildContent(data);
   }
 
-  Widget _buildContent(WidgetData data) {
+  Widget _buildContent(Map<String, dynamic> data) {
     final stop = data['stop'] as String? ?? 'Haltestelle';
     final departures = data['departures'] as List<dynamic>? ?? [];
 

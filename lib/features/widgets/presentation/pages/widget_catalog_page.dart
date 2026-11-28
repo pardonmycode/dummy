@@ -299,6 +299,7 @@ class _WidgetCatalogPageState extends ConsumerState<WidgetCatalogPage> {
               child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: widget.buildView(
+                  context,
                   widgetData,
                   WidgetDataState.ready,
                   WidgetConfig({}),

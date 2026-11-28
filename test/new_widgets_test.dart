@@ -52,7 +52,7 @@ void main() {
     );
   });
 
-  testWidgets('Sleep widget renders with data', (WidgetTester tester) async {
+  testWidgets('Sleep widget renders with data', (tester) async {
     final sleep = SleepTrackerWidget();
     final rawJson = {
       'goal': 8,
@@ -65,16 +65,21 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        home: Material(
-          child: Container(
-            width: 300,
-            height: 200,
-            child: sleep.buildView(
-              typedData,
-              WidgetDataState.ready,
-              WidgetConfig({}),
-            ),
-          ),
+        home: Builder(
+          builder: (context) {
+            return Material(
+              child: Container(
+                width: 300,
+                height: 200,
+                child: sleep.buildView(
+                  context,
+                  typedData,
+                  WidgetDataState.ready,
+                  WidgetConfig({}),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -83,7 +88,7 @@ void main() {
     expect(find.text('Qualität: 8/10'), findsOneWidget);
   });
 
-  testWidgets('Weight widget renders with data', (WidgetTester tester) async {
+  testWidgets('Weight widget renders with data', (tester) async {
     final weight = WeightTrackerWidget();
     final rawJson = {
       'current': 82.5,
@@ -98,16 +103,21 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        home: Material(
-          child: Container(
-            width: 300,
-            height: 200,
-            child: weight.buildView(
-              typedData,
-              WidgetDataState.ready,
-              WidgetConfig({}),
-            ),
-          ),
+        home: Builder(
+          builder: (context) {
+            return Material(
+              child: Container(
+                width: 300,
+                height: 200,
+                child: weight.buildView(
+                  context,
+                  typedData,
+                  WidgetDataState.ready,
+                  WidgetConfig({}),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -116,9 +126,7 @@ void main() {
     expect(find.text('Gewichtsabnahme'), findsOneWidget);
   });
 
-  testWidgets('Tagesbriefing widget renders with data', (
-    WidgetTester tester,
-  ) async {
+  testWidgets('Tagesbriefing widget renders with data', (tester) async {
     final briefing = TagesbriefingWidget();
     final rawJson = {
       'summary': 'Guter Tag!',
@@ -137,16 +145,21 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        home: Material(
-          child: Container(
-            width: 300,
-            height: 400,
-            child: briefing.buildView(
-              typedData,
-              WidgetDataState.ready,
-              WidgetConfig({}),
-            ),
-          ),
+        home: Builder(
+          builder: (context) {
+            return Material(
+              child: Container(
+                width: 300,
+                height: 400,
+                child: briefing.buildView(
+                  context,
+                  typedData,
+                  WidgetDataState.ready,
+                  WidgetConfig({}),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );

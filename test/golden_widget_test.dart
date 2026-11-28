@@ -16,7 +16,6 @@ import 'package:widgetly/features/widgets/ui/types/water/water_tracker_widget.da
 
 void main() {
   testWidgets('Weather widget renders at medium size', (tester) async {
-    await Future.delayed(const Duration(milliseconds: 100));
     final registry = WidgetRegistry();
     registry.register(WeatherWidget());
 

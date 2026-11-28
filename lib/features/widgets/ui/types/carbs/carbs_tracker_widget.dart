@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../../../core/i18n/app_localizations.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
@@ -45,6 +46,7 @@ class CarbsTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
+    final l10n = context.l10n;
     final goal = (data['goal'] as num?)?.toInt() ?? 300;
     final consumed = (data['consumed'] as num?)?.toInt() ?? 0;
     final remaining = goal - consumed;
@@ -57,7 +59,7 @@ class CarbsTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('${consumed}g von ${goal}g', style: AppTheme.titleMedium),
+            Text('${consumed}g ${l10n.carbsOf} ${goal}g', style: AppTheme.titleMedium),
             Text(
               '${(progress * 100).toInt()}%',
               style: AppTheme.labelMedium.copyWith(color: AppTheme.warning),
@@ -89,8 +91,8 @@ class CarbsTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                 ),
                 child: Column(
                   children: [
-                    Text('Noch ${remaining}g', style: AppTheme.bodyMedium),
-                    Text('bis zum Ziel', style: AppTheme.labelSmall),
+                    Text(l10n.carbsRemaining(remaining: remaining), style: AppTheme.bodyMedium),
+                    Text(l10n.carbsToGoal, style: AppTheme.labelSmall),
                   ],
                 ),
               ),
@@ -106,7 +108,7 @@ class CarbsTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                 child: Column(
                   children: [
                     Text('${consumed}', style: AppTheme.bodyMedium),
-                    Text('heute gegessen', style: AppTheme.labelSmall),
+                    Text(l10n.carbsEaten, style: AppTheme.labelSmall),
                   ],
                 ),
               ),

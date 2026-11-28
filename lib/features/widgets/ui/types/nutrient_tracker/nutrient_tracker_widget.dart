@@ -1,4 +1,5 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:widgetly/core/i18n/app_localizations.dart';
 import 'package:widgetly/core/models/tracker_base.dart';
 import 'package:widgetly/core/theme/theme.dart';
 import 'package:widgetly/features/widgets/framework/widget_definition.dart';
@@ -87,6 +88,7 @@ class NutrientTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
+    final l10n = context.l10n;
     final goalKey = config.get(defaultGoalKey);
     final tracker = TrackerBase(
       target: goalKey ?? defaultGoal,
@@ -121,7 +123,7 @@ class NutrientTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('${consumed}$unit von ${goal}$unit', style: AppTheme.titleMedium),
+              Text('${consumed}$unit ${l10n.nutrientOf} ${goal}$unit', style: AppTheme.titleMedium),
               Text(
                 '${(progress * 100).toInt()}%',
                 style: AppTheme.labelMedium.copyWith(color: AppTheme.primary),
@@ -166,7 +168,7 @@ class NutrientTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Noch ${remaining}$unit', style: AppTheme.bodyMedium),
+                      Text(l10n.nutrientRemaining(remaining: remaining.toInt(), unit: unit), style: AppTheme.bodyMedium),
                       if (streak > 0)
                         Padding(
                           padding: const EdgeInsets.only(top: 4),
@@ -174,7 +176,7 @@ class NutrientTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                             children: [
                               Icon(Icons.local_fire_department, size: 14, color: Colors.orange),
                               const SizedBox(width: 4),
-                              Text('$streak Tage Streak', style: AppTheme.labelSmall),
+                              Text(l10n.nutrientStreak(streak: streak), style: AppTheme.labelSmall),
                             ],
                           ),
                         ),
@@ -194,7 +196,7 @@ class NutrientTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
               itemCount: meals.length,
               itemBuilder: (context, index) {
                 final meal = meals[index];
-                final mealName = meal['name'] ?? 'Eintrag';
+                final mealName = meal['name'] ?? l10n.entryName;
                 final mealValue = (meal[nutrient] as num?)?.toInt() ?? 0;
                 final mealTime = meal['time'] ?? '';
 
@@ -214,7 +216,7 @@ class NutrientTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                           ],
                         ),
                       ),
-                      Text('+${mealValue}$unit', style: AppTheme.labelMedium),
+                      Text(l10n.nutrientMeal(amount: mealValue, unit: unit), style: AppTheme.labelMedium),
                     ],
                   ),
                 );

@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import '../../../../../../core/i18n/app_localizations.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
@@ -52,6 +53,7 @@ class StocksWidget extends WidgetDefinition<Map<String, dynamic>> {
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
+    final l10n = context.l10n;
     // Loading state
     if (state == WidgetDataState.loading) {
       return Column(
@@ -63,7 +65,7 @@ class StocksWidget extends WidgetDefinition<Map<String, dynamic>> {
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
           const SizedBox(height: 8),
-          Text('Kurse werden geladen...', style: AppTheme.bodySmall),
+          Text(l10n.stocksLoading, style: AppTheme.bodySmall),
         ],
       );
     }
@@ -75,7 +77,7 @@ class StocksWidget extends WidgetDefinition<Map<String, dynamic>> {
         children: [
           Icon(Icons.error_outline, size: 32, color: AppTheme.error),
           const SizedBox(height: 8),
-          Text('Fehler beim Laden der Kurse', style: AppTheme.bodySmall),
+          Text(l10n.stocksError, style: AppTheme.bodySmall),
         ],
       );
     }
@@ -87,15 +89,16 @@ class StocksWidget extends WidgetDefinition<Map<String, dynamic>> {
         children: [
           Icon(Icons.show_chart_outlined, size: 48, color: Colors.grey),
           const SizedBox(height: 8),
-          Text('Watchlist ist leer', style: AppTheme.bodySmall),
+          Text(l10n.stocksEmpty, style: AppTheme.bodySmall),
         ],
       );
     }
 
-    return _buildContent(data);
+    return _buildContent(context, data);
   }
 
-  Widget _buildContent(Map<String, dynamic> data) {
+  Widget _buildContent(BuildContext context, Map<String, dynamic> data) {
+    final l10n = context.l10n;
     final symbols = data['symbols'] as List<dynamic>? ?? [];
     final lastUpdate = data['lastUpdate'] as String? ?? '';
 
@@ -106,7 +109,7 @@ class StocksWidget extends WidgetDefinition<Map<String, dynamic>> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Watchlist', style: AppTheme.titleMedium),
+              Text(l10n.stocksWatchlist, style: AppTheme.titleMedium),
               if (lastUpdate.isNotEmpty)
                 Text(lastUpdate, style: AppTheme.labelSmall),
             ],
@@ -119,7 +122,7 @@ class StocksWidget extends WidgetDefinition<Map<String, dynamic>> {
                 children: [
                   Icon(Icons.show_chart_outlined, size: 48, color: Colors.grey),
                   const SizedBox(height: 8),
-                  Text('Keine Symbole in Watchlist', style: AppTheme.bodySmall),
+                  Text(l10n.stocksNoSymbols, style: AppTheme.bodySmall),
                 ],
               ),
             )
@@ -130,7 +133,7 @@ class StocksWidget extends WidgetDefinition<Map<String, dynamic>> {
               itemCount: symbols.length,
               itemBuilder: (context, index) {
                 final symbol = symbols[index];
-                final ticker = symbol['ticker']?.toString() ?? 'TICKER';
+                final ticker = symbol['ticker']?.toString() ?? l10n.stocksTicker;
                 final name = symbol['name']?.toString() ?? ticker;
                 final price = (symbol['price'] as num?)?.toDouble() ?? 0;
                 final change = (symbol['change'] as num?)?.toDouble() ?? 0;

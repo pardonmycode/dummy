@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../../../core/i18n/app_localizations.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
@@ -46,8 +47,9 @@ class CustomTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
-    final trackerName = data['name'] ?? 'Mein Tracker';
-    final unit = data['unit'] ?? 'Einheiten';
+    final l10n = context.l10n;
+    final trackerName = data['name'] ?? l10n.myTracker;
+    final unit = data['unit'] ?? l10n.units;
     final goal = (data['goal'] as num?)?.toInt() ?? 100;
     final current = (data['current'] as num?)?.toInt() ?? 0;
     final remaining = goal - current;
@@ -72,8 +74,8 @@ class CustomTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('$current $unit', style: AppTheme.bodySmall),
-              Text('von $goal $unit', style: AppTheme.bodySmall),
+              Text(l10n.customCurrent(current: current, unit: unit), style: AppTheme.bodySmall),
+              Text(l10n.customOf(goal: goal, unit: unit), style: AppTheme.bodySmall),
             ],
           ),
           const SizedBox(height: 8),
@@ -113,13 +115,13 @@ class CustomTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Noch $remaining $unit', style: AppTheme.bodyMedium),
+                      Text(l10n.customRemaining(remaining: remaining, unit: unit), style: AppTheme.bodyMedium),
                       const SizedBox(height: 4),
                       if (remaining > 0)
-                        Text('Weiter so! 💪', style: AppTheme.bodySmall)
+                        Text(l10n.customKeepGoing, style: AppTheme.bodySmall)
                       else
                         Text(
-                          'Ziel erreicht! 🎉',
+                          l10n.goalReached,
                           style: AppTheme.bodySmall.copyWith(
                             color: Colors.green,
                           ),
@@ -139,7 +141,7 @@ class CustomTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
               itemCount: entries.length,
               itemBuilder: (context, index) {
                 final entry = entries[index];
-                final name = entry['name'] ?? 'Eintrag';
+                final name = entry['name'] ?? l10n.entryName;
                 final amount = (entry['amount'] as num?)?.toInt() ?? 0;
                 final time = entry['time'] ?? '';
 
@@ -159,7 +161,7 @@ class CustomTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                           ],
                         ),
                       ),
-                      Text('+$amount', style: AppTheme.labelMedium),
+                      Text(l10n.customAdd(amount: amount), style: AppTheme.labelMedium),
                     ],
                   ),
                 );

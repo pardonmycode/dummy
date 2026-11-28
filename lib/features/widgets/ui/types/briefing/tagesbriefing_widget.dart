@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../../../core/i18n/app_localizations.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
@@ -50,6 +51,7 @@ class TagesbriefingWidget extends WidgetDefinition<Map<String, dynamic>> {
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
+    final l10n = context.l10n;
     final summary = data['summary'] as String? ?? '';
     final weather = data['weather'] as String? ?? '';
     final appointments = data['appointments'] as List<dynamic>? ?? [];
@@ -74,7 +76,7 @@ class TagesbriefingWidget extends WidgetDefinition<Map<String, dynamic>> {
                   children: [
                     Icon(Icons.auto_awesome, size: 16, color: AppTheme.accent),
                     const SizedBox(width: 8),
-                    Text('KI-Zusammenfassung', style: AppTheme.labelMedium),
+                    Text(l10n.briefingAiSummary, style: AppTheme.labelMedium),
                   ],
                 ),
                 const SizedBox(height: 4),
@@ -88,7 +90,7 @@ class TagesbriefingWidget extends WidgetDefinition<Map<String, dynamic>> {
           if (weather.isNotEmpty)
             _BriefingSection(
               icon: Icons.wb_sunny,
-              title: 'Wetter',
+              title: l10n.weatherToday,
               content: weather,
             ),
 
@@ -96,9 +98,9 @@ class TagesbriefingWidget extends WidgetDefinition<Map<String, dynamic>> {
           if (appointments.isNotEmpty)
             _BriefingSection(
               icon: Icons.event,
-              title: 'Termine heute',
+              title: l10n.appointmentsLabel,
               items: appointments
-                  .map((a) => a['title']?.toString() ?? 'Termin')
+                  .map((a) => a['title']?.toString() ?? l10n.translate('appointment'))
                   .toList(),
             ),
 
@@ -106,9 +108,9 @@ class TagesbriefingWidget extends WidgetDefinition<Map<String, dynamic>> {
           if (tasks.isNotEmpty)
             _BriefingSection(
               icon: Icons.check_circle,
-              title: 'Wichtige Aufgaben',
+              title: l10n.tasksToday,
               items: tasks
-                  .map((t) => t['title']?.toString() ?? 'Aufgabe')
+                  .map((t) => t['title']?.toString() ?? l10n.translate('task'))
                   .toList(),
             ),
 
@@ -116,9 +118,9 @@ class TagesbriefingWidget extends WidgetDefinition<Map<String, dynamic>> {
           if (news.isNotEmpty)
             _BriefingSection(
               icon: Icons.newspaper,
-              title: 'News',
+              title: l10n.newsLabel,
               items: news
-                  .map((n) => n['headline']?.toString() ?? 'Nachricht')
+                  .map((n) => n['headline']?.toString() ?? l10n.translate('news_item'))
                   .toList(),
             ),
 

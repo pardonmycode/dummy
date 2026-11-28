@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../../../core/i18n/app_localizations.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
@@ -51,6 +52,7 @@ class NewsWidget extends WidgetDefinition<Map<String, dynamic>> {
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
+    final l10n = context.l10n;
     // Loading state
     if (state == WidgetDataState.loading) {
       return Column(
@@ -62,7 +64,7 @@ class NewsWidget extends WidgetDefinition<Map<String, dynamic>> {
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
           const SizedBox(height: 8),
-          Text('News werden geladen...', style: AppTheme.bodySmall),
+          Text(l10n.newsLoading, style: AppTheme.bodySmall),
         ],
       );
     }
@@ -74,7 +76,7 @@ class NewsWidget extends WidgetDefinition<Map<String, dynamic>> {
         children: [
           Icon(Icons.error_outline, size: 32, color: AppTheme.error),
           const SizedBox(height: 8),
-          Text('Fehler beim Laden der News', style: AppTheme.bodySmall),
+          Text(l10n.newsError, style: AppTheme.bodySmall),
         ],
       );
     }
@@ -86,17 +88,18 @@ class NewsWidget extends WidgetDefinition<Map<String, dynamic>> {
         children: [
           Icon(Icons.newspaper_outlined, size: 48, color: Colors.grey),
           const SizedBox(height: 8),
-          Text('Keine News verfügbar', style: AppTheme.bodySmall),
+          Text(l10n.newsEmpty, style: AppTheme.bodySmall),
         ],
       );
     }
 
-    return _buildContent(data);
+    return _buildContent(context, data);
   }
 
-  Widget _buildContent(Map<String, dynamic> data) {
+  Widget _buildContent(BuildContext context, Map<String, dynamic> data) {
+    final l10n = context.l10n;
     final headlines = data['headlines'] as List<dynamic>? ?? [];
-    final section = data['section'] as String? ?? 'Für dich';
+    final section = data['section'] as String? ?? l10n.newsForYou;
 
     if (headlines.isEmpty) {
       return Column(
@@ -104,7 +107,7 @@ class NewsWidget extends WidgetDefinition<Map<String, dynamic>> {
         children: [
           Icon(Icons.newspaper_outlined, size: 48, color: Colors.grey),
           const SizedBox(height: 8),
-          Text('Keine News verfügbar', style: AppTheme.bodySmall),
+          Text(l10n.newsEmpty, style: AppTheme.bodySmall),
         ],
       );
     }
@@ -116,7 +119,7 @@ class NewsWidget extends WidgetDefinition<Map<String, dynamic>> {
           Text(section, style: AppTheme.titleMedium),
           const SizedBox(height: 8),
           ...headlines.map((item) {
-            final headline = item['headline']?.toString() ?? 'Titel';
+            final headline = item['headline']?.toString() ?? l10n.newsTitle;
             final source = item['source']?.toString() ?? '';
             final time = item['time']?.toString() ?? '';
             final isBreaking = item['breaking'] == true;
@@ -139,7 +142,7 @@ class NewsWidget extends WidgetDefinition<Map<String, dynamic>> {
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
-                            'BREAKING',
+                            l10n.newsBreaking,
                             style: AppTheme.labelSmall.copyWith(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -165,7 +168,7 @@ class NewsWidget extends WidgetDefinition<Map<String, dynamic>> {
                           if (source.isNotEmpty)
                             Text(source, style: AppTheme.labelSmall),
                           if (source.isNotEmpty && time.isNotEmpty)
-                            const Text(' • '),
+                            Text(l10n.newsSeparator),
                           if (time.isNotEmpty)
                             Text(time, style: AppTheme.labelSmall),
                         ],

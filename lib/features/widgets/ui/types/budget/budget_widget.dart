@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../../../core/i18n/app_localizations.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
@@ -50,6 +51,7 @@ class BudgetWidget extends WidgetDefinition<Map<String, dynamic>> {
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
+    final l10n = context.l10n;
     // Loading state
     if (state == WidgetDataState.loading) {
       return Column(
@@ -61,7 +63,7 @@ class BudgetWidget extends WidgetDefinition<Map<String, dynamic>> {
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
           const SizedBox(height: 8),
-          Text('Budget wird geladen...', style: AppTheme.bodySmall),
+          Text(l10n.budgetLoading, style: AppTheme.bodySmall),
         ],
       );
     }
@@ -73,7 +75,7 @@ class BudgetWidget extends WidgetDefinition<Map<String, dynamic>> {
         children: [
           Icon(Icons.error_outline, size: 32, color: AppTheme.error),
           const SizedBox(height: 8),
-          Text('Fehler beim Laden des Budgets', style: AppTheme.bodySmall),
+          Text(l10n.budgetError, style: AppTheme.bodySmall),
         ],
       );
     }
@@ -85,19 +87,20 @@ class BudgetWidget extends WidgetDefinition<Map<String, dynamic>> {
         children: [
           Icon(Icons.account_balance_wallet_outlined, size: 48, color: Colors.grey),
           const SizedBox(height: 8),
-          Text('Keine Budget-Daten verfügbar', style: AppTheme.bodySmall),
+          Text(l10n.budgetEmpty, style: AppTheme.bodySmall),
         ],
       );
     }
 
-    return _buildContent(data);
+    return _buildContent(context, data);
   }
 
-  Widget _buildContent(Map<String, dynamic> data) {
+  Widget _buildContent(BuildContext context, Map<String, dynamic> data) {
+    final l10n = context.l10n;
     final budget = (data['budget'] as num?)?.toDouble() ?? 0;
     final spent = (data['spent'] as num?)?.toDouble() ?? 0;
     final remaining = budget - spent;
-    final period = data['period'] as String? ?? 'Monat';
+    final period = data['period'] as String? ?? l10n.translate('month');
     final categories = data['categories'] as List<dynamic>? ?? [];
     final recent = data['recent'] as List<dynamic>? ?? [];
 
@@ -114,7 +117,7 @@ class BudgetWidget extends WidgetDefinition<Map<String, dynamic>> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Verbleibend', style: AppTheme.bodySmall),
+              Text(l10n.budgetRemainingLabel, style: AppTheme.bodySmall),
               Text(
                 '${remaining.toStringAsFixed(2)} €',
                 style: AppTheme.bodyMedium.copyWith(
@@ -139,9 +142,9 @@ class BudgetWidget extends WidgetDefinition<Map<String, dynamic>> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Ausgegeben', style: AppTheme.labelSmall),
+              Text(l10n.budgetSpentLabel, style: AppTheme.labelSmall),
               Text(
-                '${spent.toStringAsFixed(2)} € von ${budget.toStringAsFixed(2)} €',
+                '${spent.toStringAsFixed(2)} € ${l10n.proteinOf} ${budget.toStringAsFixed(2)} €',
                 style: AppTheme.labelSmall,
               ),
             ],
@@ -151,10 +154,10 @@ class BudgetWidget extends WidgetDefinition<Map<String, dynamic>> {
 
           // Spending by category
           if (categories.isNotEmpty) ...[
-            Text('Ausgaben nach Kategorie', style: AppTheme.titleSmall),
+            Text(l10n.budgetByCategory, style: AppTheme.titleSmall),
             const SizedBox(height: 4),
             ...categories.map((item) {
-              final name = item['name']?.toString() ?? 'Kategorie';
+              final name = item['name']?.toString() ?? l10n.translate('category');
               final amount = (item['amount'] as num?)?.toDouble() ?? 0;
               final icon = item['icon']?.toString() ?? 'category';
 
@@ -178,10 +181,10 @@ class BudgetWidget extends WidgetDefinition<Map<String, dynamic>> {
           // Recent transactions
           if (recent.isNotEmpty) ...[
             const SizedBox(height: 12),
-            Text('Letzte Transaktionen', style: AppTheme.titleSmall),
+            Text(l10n.budgetRecent, style: AppTheme.titleSmall),
             const SizedBox(height: 4),
             ...recent.map((item) {
-              final name = item['name']?.toString() ?? 'Transaktion';
+              final name = item['name']?.toString() ?? l10n.translate('transaction');
               final amount = (item['amount'] as num?)?.toDouble() ?? 0;
               final isIncome = item['income'] == true;
 

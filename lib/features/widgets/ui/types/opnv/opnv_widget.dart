@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../../../core/i18n/app_localizations.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
@@ -62,6 +63,7 @@ class OpnvWidget extends WidgetDefinition<Map<String, dynamic>> {
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
+    final l10n = context.l10n;
     // Loading state
     if (state == WidgetDataState.loading) {
       return Column(
@@ -73,7 +75,7 @@ class OpnvWidget extends WidgetDefinition<Map<String, dynamic>> {
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
           const SizedBox(height: 8),
-          Text('Abfahrten werden geladen...', style: AppTheme.bodySmall),
+          Text(l10n.opnvLoading, style: AppTheme.bodySmall),
         ],
       );
     }
@@ -85,7 +87,7 @@ class OpnvWidget extends WidgetDefinition<Map<String, dynamic>> {
         children: [
           Icon(Icons.error_outline, size: 32, color: AppTheme.error),
           const SizedBox(height: 8),
-          Text('Fehler beim Laden der Abfahrten', style: AppTheme.bodySmall),
+          Text(l10n.opnvError, style: AppTheme.bodySmall),
         ],
       );
     }
@@ -97,16 +99,17 @@ class OpnvWidget extends WidgetDefinition<Map<String, dynamic>> {
         children: [
           Icon(Icons.train_outlined, size: 48, color: Colors.grey),
           const SizedBox(height: 8),
-          Text('Keine Abfahrten verfügbar', style: AppTheme.bodySmall),
+          Text(l10n.opnvEmpty, style: AppTheme.bodySmall),
         ],
       );
     }
 
-    return _buildContent(data);
+    return _buildContent(context, data);
   }
 
-  Widget _buildContent(Map<String, dynamic> data) {
-    final stop = data['stop'] as String? ?? 'Haltestelle';
+  Widget _buildContent(BuildContext context, Map<String, dynamic> data) {
+    final l10n = context.l10n;
+    final stop = data['stop'] as String? ?? l10n.opnvStop;
     final departures = data['departures'] as List<dynamic>? ?? [];
 
     return SingleChildScrollView(
@@ -130,7 +133,7 @@ class OpnvWidget extends WidgetDefinition<Map<String, dynamic>> {
                 children: [
                   Icon(Icons.train_outlined, size: 48, color: Colors.grey),
                   const SizedBox(height: 8),
-                  Text('Keine Abfahrten in Kürze', style: AppTheme.bodySmall),
+                  Text(l10n.opnvSoon, style: AppTheme.bodySmall),
                 ],
               ),
             )
@@ -141,7 +144,7 @@ class OpnvWidget extends WidgetDefinition<Map<String, dynamic>> {
               itemCount: departures.length,
               itemBuilder: (context, index) {
                 final departure = departures[index];
-                final line = departure['line']?.toString() ?? 'Line';
+                final line = departure['line']?.toString() ?? l10n.opnvLine;
                 final destination = departure['destination']?.toString() ?? '';
                 final time = departure['time']?.toString() ?? '';
                 final delay = departure['delay'] as int?;
@@ -184,7 +187,7 @@ class OpnvWidget extends WidgetDefinition<Map<String, dynamic>> {
                                   Padding(
                                     padding: const EdgeInsets.only(left: 4),
                                     child: Text(
-                                      '+${delay} Min',
+                                      l10n.opnvDelay(delay: delay),
                                       style: AppTheme.labelSmall.copyWith(
                                         color: Colors.orange,
                                       ),
@@ -194,7 +197,7 @@ class OpnvWidget extends WidgetDefinition<Map<String, dynamic>> {
                                   Padding(
                                     padding: const EdgeInsets.only(left: 4),
                                     child: Text(
-                                      'Ausgefallen',
+                                      l10n.opnvCancelled,
                                       style: AppTheme.labelSmall.copyWith(
                                         color: Colors.red,
                                         fontWeight: FontWeight.bold,
@@ -211,7 +214,7 @@ class OpnvWidget extends WidgetDefinition<Map<String, dynamic>> {
                             ),
                             if (platform.isNotEmpty)
                               Text(
-                                'Gleis $platform',
+                                l10n.opnvPlatform(platform: platform),
                                 style: AppTheme.labelSmall,
                               ),
                           ],

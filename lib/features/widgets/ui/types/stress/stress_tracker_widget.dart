@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../../../core/i18n/app_localizations.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
@@ -45,6 +46,7 @@ class StressTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
+    final l10n = context.l10n;
     final level = (data['level'] as num?)?.toInt() ?? 50;
     final advice = data['advice'] as String? ?? '';
 
@@ -61,7 +63,7 @@ class StressTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Heute', style: AppTheme.titleMedium),
+              Text(l10n.stressToday, style: AppTheme.titleMedium),
               Text(
                 '$level%',
                 style: AppTheme.titleMedium.copyWith(color: levelColor),
@@ -79,10 +81,10 @@ class StressTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
 
           Text(
             level < 30
-                ? 'Niedriger Stress'
+                ? l10n.stressLow
                 : level < 70
-                ? 'Mäßiger Stress'
-                : 'Hoher Stress',
+                ? l10n.stressModerate
+                : l10n.stressHigh,
             style: AppTheme.bodySmall,
           ),
           const SizedBox(height: 8),

@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../../../core/i18n/app_localizations.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
@@ -45,6 +46,7 @@ class ActiveMinutesTrackerWidget extends WidgetDefinition<Map<String, dynamic>> 
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
+    final l10n = context.l10n;
     final goal = (data['goal'] as num?)?.toInt() ?? 60;
     final minutes = (data['minutes'] as num?)?.toInt() ?? 0;
     final remaining = goal - minutes;
@@ -58,7 +60,7 @@ class ActiveMinutesTrackerWidget extends WidgetDefinition<Map<String, dynamic>> 
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('${minutes}min von ${goal}min', style: AppTheme.titleMedium),
+              Text(l10n.translateWithParams('active_minutes_value', {'amount': minutes.toString()}), style: AppTheme.titleMedium),
               Text(
                 '${(progress * 100).toInt()}%',
                 style: AppTheme.labelMedium.copyWith(color: Colors.teal),
@@ -90,7 +92,7 @@ class ActiveMinutesTrackerWidget extends WidgetDefinition<Map<String, dynamic>> 
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text('$minutes', style: AppTheme.titleSmall),
-                          Text('min', style: AppTheme.labelSmall),
+                          Text(l10n.activeMinutesMin, style: AppTheme.labelSmall),
                         ],
                       ),
                     ],
@@ -102,13 +104,13 @@ class ActiveMinutesTrackerWidget extends WidgetDefinition<Map<String, dynamic>> 
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Noch ${remaining}min', style: AppTheme.bodyMedium),
+                      Text(l10n.activeMinutesRemaining(remaining: remaining), style: AppTheme.bodyMedium),
                       const SizedBox(height: 4),
                       if (remaining > 0)
-                        Text('Weiter so! 🏃', style: AppTheme.bodySmall)
+                        Text(l10n.activeMinutesKeepGoing, style: AppTheme.bodySmall)
                       else
                         Text(
-                          'Ziel erreicht! 🎉',
+                          l10n.goalReached,
                           style: AppTheme.bodySmall.copyWith(
                             color: Colors.green,
                           ),
@@ -128,7 +130,7 @@ class ActiveMinutesTrackerWidget extends WidgetDefinition<Map<String, dynamic>> 
               itemCount: activities.length,
               itemBuilder: (context, index) {
                 final activity = activities[index];
-                final name = activity['name'] ?? 'Aktivität';
+                final name = activity['name'] ?? l10n.translate('activity');
                 final mins = (activity['minutes'] as num?)?.toInt() ?? 0;
                 final time = activity['time'] ?? '';
 
@@ -148,7 +150,7 @@ class ActiveMinutesTrackerWidget extends WidgetDefinition<Map<String, dynamic>> 
                           ],
                         ),
                       ),
-                      Text('$mins min', style: AppTheme.labelMedium),
+                      Text(l10n.activeMinutesValue(amount: mins), style: AppTheme.labelMedium),
                     ],
                   ),
                 );

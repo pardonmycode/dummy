@@ -2,12 +2,14 @@ import 'package:material_ui/material_ui.dart';
 import 'package:widgetly/features/widgets/framework/widget_data.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:widgetly/features/widgets/framework/widget_definition.dart';
 import 'package:widgetly/features/widgets/ui/types/body_fat/body_fat_tracker_widget.dart';
 import 'package:widgetly/features/widgets/ui/types/heart_rate/heart_rate_tracker_widget.dart';
 import 'package:widgetly/features/widgets/ui/types/mood/mood_tracker_widget.dart';
 import 'package:widgetly/features/widgets/ui/types/tasks/tasks_widget.dart';
 import 'package:widgetly/features/dashboard/ui/views/dashboard_view.dart';
+import 'package:widgetly/core/i18n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'test_helpers.dart';
 
@@ -52,6 +54,9 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('en'),
         home: Builder(
           builder: (context) {
             return Material(
@@ -72,7 +77,7 @@ void main() {
     );
 
     expect(find.text('22.5%'), findsOneWidget);
-    expect(find.text('Körperfett nimmt ab'), findsOneWidget);
+    expect(find.text('Body fat decreasing'), findsOneWidget);
   });
 
   testWidgets('Heart Rate widget renders', (tester) async {
@@ -104,7 +109,7 @@ void main() {
     );
 
     expect(find.text('72 bpm'), findsOneWidget);
-    expect(find.text('Ruhepuls verbessert sich'), findsOneWidget);
+    expect(find.text('Resting heart rate improving'), findsOneWidget);
   });
 
   testWidgets('Mood widget renders', (tester) async {
@@ -139,7 +144,7 @@ void main() {
       ),
     );
 
-    expect(find.text('Gut'), findsOneWidget);
+    expect(find.text('Good'), findsOneWidget);
     expect(find.text('Fühle mich gut'), findsOneWidget);
   });
 
@@ -177,9 +182,9 @@ void main() {
       ),
     );
 
-    expect(find.text('Heute'), findsOneWidget);
+    expect(find.text('Today'), findsOneWidget);
     expect(find.text('Einkaufen'), findsOneWidget);
-    expect(find.text('Wichtig'), findsOneWidget);
+    expect(find.text('Important'), findsOneWidget);
   });
 
   test('Dashboard registry contains all widgets', () {

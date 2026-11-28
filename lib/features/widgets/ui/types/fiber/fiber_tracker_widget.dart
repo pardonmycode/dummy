@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../../../core/i18n/app_localizations.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
@@ -45,6 +46,7 @@ class FiberTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
+    final l10n = context.l10n;
     final goal = (data['goal'] as num?)?.toInt() ?? 30;
     final consumed = (data['consumed'] as num?)?.toInt() ?? 0;
     final remaining = goal - consumed;
@@ -58,7 +60,7 @@ class FiberTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('${consumed}g von ${goal}g', style: AppTheme.titleMedium),
+              Text('${consumed}g ${l10n.fiberOf} ${goal}g', style: AppTheme.titleMedium),
               Text(
                 '${(progress * 100).toInt()}%',
                 style: AppTheme.labelMedium.copyWith(color: Colors.green),
@@ -90,7 +92,7 @@ class FiberTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text('$consumed', style: AppTheme.titleSmall),
-                          Text('g', style: AppTheme.labelSmall),
+                          Text(l10n.fiberUnit, style: AppTheme.labelSmall),
                         ],
                       ),
                     ],
@@ -102,16 +104,16 @@ class FiberTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Noch ${remaining}g', style: AppTheme.bodyMedium),
+                      Text(l10n.fiberRemaining(remaining: remaining), style: AppTheme.bodyMedium),
                       const SizedBox(height: 4),
                       if (remaining > 0)
                         Text(
-                          'Mehr Obst und Gemüse hilft!',
+                          l10n.fiberTip,
                           style: AppTheme.bodySmall,
                         )
                       else
                         Text(
-                          'Ziel erreicht! 🎉',
+                          l10n.goalReached,
                           style: AppTheme.bodySmall.copyWith(
                             color: Colors.green,
                           ),
@@ -131,7 +133,7 @@ class FiberTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
               itemCount: meals.length,
               itemBuilder: (context, index) {
                 final meal = meals[index];
-                final mealName = meal['name'] ?? 'Mahlzeit';
+                final mealName = meal['name'] ?? l10n.caloriesMealName;
                 final mealFiber = (meal['fiber'] as num?)?.toInt() ?? 0;
                 final mealTime = meal['time'] ?? '';
 
@@ -151,7 +153,7 @@ class FiberTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                           ],
                         ),
                       ),
-                      Text('+${mealFiber}g', style: AppTheme.labelMedium),
+                      Text(l10n.fiberMeal(amount: mealFiber), style: AppTheme.labelMedium),
                     ],
                   ),
                 );

@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../../../core/i18n/app_localizations.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
@@ -45,6 +46,7 @@ class HeartRateTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
+    final l10n = context.l10n;
     final current = (data['current'] as num?)?.toInt() ?? 0;
     final resting = (data['resting'] as num?)?.toInt() ?? 0;
     final max = (data['max'] as num?)?.toInt() ?? 0;
@@ -60,15 +62,15 @@ class HeartRateTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Aktuell', style: AppTheme.labelSmall),
-                  Text('${current} bpm', style: AppTheme.titleMedium),
+                  Text(l10n.heartRateCurrent, style: AppTheme.labelSmall),
+                  Text('${current} ${l10n.heartRateBpm}', style: AppTheme.titleMedium),
                 ],
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text('Ruhepuls', style: AppTheme.labelSmall),
-                  Text('${resting} bpm', style: AppTheme.titleSmall),
+                  Text(l10n.heartRateResting, style: AppTheme.labelSmall),
+                  Text('${resting} ${l10n.heartRateBpm}', style: AppTheme.titleSmall),
                 ],
               ),
             ],
@@ -85,8 +87,8 @@ class HeartRateTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Max heute', style: AppTheme.bodySmall),
-                  Text('${max} bpm', style: AppTheme.bodyMedium),
+                  Text(l10n.heartRateMax, style: AppTheme.bodySmall),
+                  Text('${max} ${l10n.heartRateBpm}', style: AppTheme.bodyMedium),
                 ],
               ),
             ),
@@ -106,8 +108,8 @@ class HeartRateTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                 Expanded(
                   child: Text(
                     trend == 'down'
-                        ? 'Ruhepuls verbessert sich'
-                        : 'Ruhepuls stabil',
+                        ? l10n.heartRateImproving
+                        : l10n.heartRateStable,
                     style: AppTheme.bodyMedium,
                   ),
                 ),

@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../../../core/i18n/app_localizations.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
@@ -45,6 +46,7 @@ class DistanceTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
+    final l10n = context.l10n;
     final goal = (data['goal'] as num?)?.toInt() ?? 10000;
     final distance = (data['distance'] as num?)?.toInt() ?? 0;
     final remaining = goal - distance;
@@ -59,7 +61,7 @@ class DistanceTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '${distance ~/ 1000}km von ${goal ~/ 1000}km',
+                '${distance ~/ 1000}${l10n.distanceKm} ${l10n.proteinOf} ${goal ~/ 1000}${l10n.distanceKm}',
                 style: AppTheme.titleMedium,
               ),
               Text(
@@ -96,7 +98,7 @@ class DistanceTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                             '${distance ~/ 1000}',
                             style: AppTheme.titleSmall,
                           ),
-                          Text('km', style: AppTheme.labelSmall),
+                          Text(l10n.distanceKm, style: AppTheme.labelSmall),
                         ],
                       ),
                     ],
@@ -109,15 +111,15 @@ class DistanceTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Noch ${remaining ~/ 1000}km',
+                        l10n.metricRemaining(remaining: remaining ~/ 1000, unit: l10n.distanceKm),
                         style: AppTheme.bodyMedium,
                       ),
                       const SizedBox(height: 4),
                       if (remaining > 0)
-                        Text('Weiter so! 🚶', style: AppTheme.bodySmall)
+                        Text(l10n.distanceKeepGoing, style: AppTheme.bodySmall)
                       else
                         Text(
-                          'Ziel erreicht! 🎉',
+                          l10n.goalReached,
                           style: AppTheme.bodySmall.copyWith(
                             color: Colors.green,
                           ),
@@ -137,7 +139,7 @@ class DistanceTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
               itemCount: activities.length,
               itemBuilder: (context, index) {
                 final activity = activities[index];
-                final name = activity['name'] ?? 'Aktivität';
+                final name = activity['name'] ?? l10n.activityName;
                 final dist = (activity['distance'] as num?)?.toInt() ?? 0;
                 final time = activity['time'] ?? '';
 
@@ -157,7 +159,7 @@ class DistanceTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                           ],
                         ),
                       ),
-                      Text('${dist ~/ 1000}km', style: AppTheme.labelMedium),
+                      Text('${dist ~/ 1000}${l10n.distanceKm}', style: AppTheme.labelMedium),
                     ],
                   ),
                 );

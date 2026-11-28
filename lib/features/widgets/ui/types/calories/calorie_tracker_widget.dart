@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../../../core/i18n/app_localizations.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
@@ -45,6 +46,7 @@ class CalorieTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
+    final l10n = context.l10n;
     final goal = (data['goal'] as num?)?.toInt() ?? 2000;
     final consumed = (data['consumed'] as num?)?.toInt() ?? 0;
     final burned = (data['burned'] as num?)?.toInt() ?? 0;
@@ -59,7 +61,7 @@ class CalorieTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('${consumed} von ${goal} kcal', style: AppTheme.titleMedium),
+              Text('${consumed} ${l10n.caloriesOf} ${goal} ${l10n.caloriesUnit}', style: AppTheme.titleMedium),
               Text(
                 '${(progress * 100).toInt()}%',
                 style: AppTheme.labelMedium.copyWith(color: Colors.red),
@@ -94,7 +96,7 @@ class CalorieTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                             '${consumed ~/ 100}',
                             style: AppTheme.titleSmall,
                           ),
-                          Text('h kcal', style: AppTheme.labelSmall),
+                          Text(l10n.caloriesUnit, style: AppTheme.labelSmall),
                         ],
                       ),
                     ],
@@ -107,12 +109,12 @@ class CalorieTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Noch ${remaining} kcal',
+                        'Noch ${remaining} ${l10n.caloriesUnit}',
                         style: AppTheme.bodyMedium,
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Verbrannt heute: ${burned} kcal',
+                        l10n.caloriesBurned(burned: burned),
                         style: AppTheme.bodySmall.copyWith(
                           color: Colors.orange,
                         ),
@@ -132,7 +134,7 @@ class CalorieTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
               itemCount: meals.length,
               itemBuilder: (context, index) {
                 final meal = meals[index];
-                final mealName = meal['name'] ?? 'Mahlzeit';
+                final mealName = meal['name'] ?? l10n.caloriesMealName;
                 final mealCalories = (meal['calories'] as num?)?.toInt() ?? 0;
                 final mealTime = meal['time'] ?? '';
 
@@ -152,7 +154,7 @@ class CalorieTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                           ],
                         ),
                       ),
-                      Text('$mealCalories kcal', style: AppTheme.labelMedium),
+                      Text(l10n.caloriesMeal(amount: mealCalories), style: AppTheme.labelMedium),
                     ],
                   ),
                 );

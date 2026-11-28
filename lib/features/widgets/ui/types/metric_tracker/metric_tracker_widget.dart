@@ -1,4 +1,5 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:widgetly/core/i18n/app_localizations.dart';
 import 'package:widgetly/core/theme/theme.dart';
 import 'package:widgetly/features/widgets/framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
@@ -85,6 +86,7 @@ class MetricTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
+    final l10n = context.l10n;
     final goal = (data[goalKey] as num?)?.toDouble() ?? defaultGoal;
     final value = (data[valueKey] as num?)?.toDouble() ?? 0.0;
     final remaining = goal - value;
@@ -98,7 +100,7 @@ class MetricTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('$value $_unit von ${goal.toInt()} $_unit', style: AppTheme.titleMedium),
+              Text('$value $_unit ${l10n.metricOf} ${goal.toInt()} $_unit', style: AppTheme.titleMedium),
               Text(
                 '${(progress * 100).toInt()}%',
                 style: AppTheme.labelMedium.copyWith(color: _color),
@@ -142,13 +144,13 @@ class MetricTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Noch ${remaining.toInt()} $_unit', style: AppTheme.bodyMedium),
+                      Text(l10n.metricRemaining(remaining: remaining.toInt(), unit: _unit), style: AppTheme.bodyMedium),
                       const SizedBox(height: 4),
                       if (remaining > 0)
-                        Text('Weiter so! 💪', style: AppTheme.bodySmall)
+                        Text(l10n.metricKeepGoing, style: AppTheme.bodySmall)
                       else
                         Text(
-                          'Ziel erreicht! 🎉',
+                          l10n.goalReached,
                           style: AppTheme.bodySmall.copyWith(color: Colors.green),
                         ),
                     ],
@@ -166,7 +168,7 @@ class MetricTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
               itemCount: activities.length,
               itemBuilder: (context, index) {
                 final activity = activities[index];
-                final actName = activity['name'] ?? 'Aktivität';
+                final actName = activity['name'] ?? l10n.activityName;
                 final actValue = (activity['value'] as num?)?.toDouble() ?? 0.0;
                 final time = activity['time'] ?? '';
 
@@ -186,7 +188,7 @@ class MetricTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                           ],
                         ),
                       ),
-                      Text('+${actValue.toInt()} $_unit', style: AppTheme.labelMedium),
+                      Text(l10n.metricAdd(amount: actValue.toInt(), unit: _unit), style: AppTheme.labelMedium),
                     ],
                   ),
                 );

@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../../../core/i18n/app_localizations.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
@@ -45,6 +46,7 @@ class ScreenTimeTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
+    final l10n = context.l10n;
     final totalMinutes = (data['total'] as num?)?.toInt() ?? 0;
     final goalMinutes = (data['goal'] as num?)?.toInt() ?? 480;
     final apps = data['apps'] as List<dynamic>? ?? [];
@@ -60,8 +62,8 @@ class ScreenTimeTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('${hours}h ${minutes}m', style: AppTheme.titleMedium),
-              Text('Ziel: ${goalHours}h', style: AppTheme.labelSmall),
+              Text('${hours}${l10n.screenTimeHours} ${minutes}${l10n.screenTimeMinutes}', style: AppTheme.titleMedium),
+              Text(l10n.screenTimeGoal(goal: goalHours), style: AppTheme.labelSmall),
             ],
           ),
           const SizedBox(height: 8),
@@ -81,7 +83,7 @@ class ScreenTimeTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
               itemCount: apps.length,
               itemBuilder: (context, index) {
                 final app = apps[index];
-                final name = app['name']?.toString() ?? 'App';
+                final name = app['name']?.toString() ?? l10n.screenTimeApp;
                 final appMinutes = (app['minutes'] as num?)?.toInt() ?? 0;
                 final appHours = appMinutes ~/ 60;
                 final appMins = appMinutes % 60;
@@ -95,8 +97,8 @@ class ScreenTimeTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                       Expanded(child: Text(name, style: AppTheme.bodyMedium)),
                       Text(
                         appHours > 0
-                            ? '${appHours}h ${appMins}m'
-                            : '${appMins}m',
+                            ? '${appHours}${l10n.screenTimeHours} ${appMins}${l10n.screenTimeMinutes}'
+                            : '${appMins}${l10n.screenTimeMinutes}',
                         style: AppTheme.bodySmall,
                       ),
                     ],

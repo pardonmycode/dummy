@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../../../core/i18n/app_localizations.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
@@ -48,6 +49,7 @@ class TasksWidget extends WidgetDefinition<Map<String, dynamic>> {
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
+    final l10n = context.l10n;
     final tasks = data['tasks'] as List<dynamic>? ?? [];
     final completed = (data['completed'] as num?)?.toInt() ?? 0;
     final total = tasks.length;
@@ -60,9 +62,9 @@ class TasksWidget extends WidgetDefinition<Map<String, dynamic>> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Heute', style: AppTheme.titleMedium),
+              Text(l10n.tasksTodayLabel, style: AppTheme.titleMedium),
               Text(
-                '$completed/$total erledigt',
+                l10n.tasksCompleted(completed: completed, total: total),
                 style: AppTheme.labelMedium.copyWith(color: AppTheme.primary),
               ),
             ],
@@ -85,7 +87,7 @@ class TasksWidget extends WidgetDefinition<Map<String, dynamic>> {
                 children: [
                   Icon(Icons.task_alt, size: 48, color: Colors.grey),
                   const SizedBox(height: 8),
-                  Text('Keine Aufgaben für heute', style: AppTheme.bodySmall),
+                  Text(l10n.tasksEmpty, style: AppTheme.bodySmall),
                 ],
               ),
             )
@@ -96,7 +98,7 @@ class TasksWidget extends WidgetDefinition<Map<String, dynamic>> {
               itemCount: tasks.length,
               itemBuilder: (context, index) {
                 final task = tasks[index];
-                final title = task['title']?.toString() ?? 'Aufgabe';
+                final title = task['title']?.toString() ?? l10n.taskName;
                 final priority = task['priority']?.toString() ?? 'normal';
                 final isCompleted = task['completed'] == true;
                 final time = task['time']?.toString() ?? '';
@@ -142,7 +144,7 @@ class TasksWidget extends WidgetDefinition<Map<String, dynamic>> {
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
-                            'Wichtig',
+                            l10n.highPriority,
                             style: AppTheme.labelSmall.copyWith(
                               color: Colors.red,
                             ),

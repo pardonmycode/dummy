@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../../../core/i18n/app_localizations.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
@@ -45,6 +46,7 @@ class CaffeineTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
+    final l10n = context.l10n;
     final goal = (data['goal'] as num?)?.toInt() ?? 400;
     final consumed = (data['consumed'] as num?)?.toInt() ?? 0;
     final remaining = goal - consumed;
@@ -58,7 +60,7 @@ class CaffeineTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('${consumed}mg von ${goal}mg', style: AppTheme.titleMedium),
+              Text('${consumed}mg ${l10n.caffeineOf} ${goal}mg', style: AppTheme.titleMedium),
               Text(
                 '${(progress * 100).toInt()}%',
                 style: AppTheme.labelMedium.copyWith(color: Colors.brown),
@@ -93,7 +95,7 @@ class CaffeineTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                             '${consumed ~/ 100}',
                             style: AppTheme.titleSmall,
                           ),
-                          Text('h mg', style: AppTheme.labelSmall),
+                          Text(l10n.caffeineUnit, style: AppTheme.labelSmall),
                         ],
                       ),
                     ],
@@ -105,16 +107,16 @@ class CaffeineTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Noch ${remaining}mg', style: AppTheme.bodyMedium),
+                      Text(l10n.caffeineRemaining(remaining: remaining), style: AppTheme.bodyMedium),
                       const SizedBox(height: 4),
                       if (remaining > 0)
                         Text(
-                          'ca. ${remaining ~/ 100} weitere Tassen',
+                          l10n.caffeineCups(cups: remaining ~/ 100),
                           style: AppTheme.bodySmall,
                         )
                       else
                         Text(
-                          'Ziel erreicht! 🎉',
+                          l10n.goalReached,
                           style: AppTheme.bodySmall.copyWith(
                             color: Colors.green,
                           ),
@@ -134,7 +136,7 @@ class CaffeineTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
               itemCount: sources.length,
               itemBuilder: (context, index) {
                 final source = sources[index];
-                final name = source['name'] ?? 'Getränk';
+                final name = source['name'] ?? l10n.caffeineDrink;
                 final amount = (source['amount'] as num?)?.toInt() ?? 0;
                 final time = source['time'] ?? '';
 
@@ -154,7 +156,7 @@ class CaffeineTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                           ],
                         ),
                       ),
-                      Text('$amount mg', style: AppTheme.labelMedium),
+                      Text(l10n.caffeineAdd(amount: amount), style: AppTheme.labelMedium),
                     ],
                   ),
                 );

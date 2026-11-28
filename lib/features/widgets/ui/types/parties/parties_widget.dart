@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../../../../../core/i18n/app_localizations.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
@@ -77,6 +78,7 @@ class PartiesWidget extends WidgetDefinition<PartiesData> {
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
+    final l10n = context.l10n;
     final events = data.events;
 
     if (events.isEmpty) {
@@ -85,9 +87,9 @@ class PartiesWidget extends WidgetDefinition<PartiesData> {
         children: [
           Icon(Icons.celebration, size: 48, color: Colors.grey),
           const SizedBox(height: 8),
-          Text('Keine Events gefunden', style: AppTheme.bodySmall),
+          Text(l10n.partiesNoEvents, style: AppTheme.bodySmall),
           const SizedBox(height: 4),
-          Text('Versuche später noch einmal', style: AppTheme.caption),
+          Text(l10n.partiesTryAgain, style: AppTheme.caption),
         ],
       );
     }

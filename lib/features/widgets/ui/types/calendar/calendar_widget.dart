@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../../../core/i18n/app_localizations.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
@@ -48,6 +49,7 @@ class CalendarWidget extends WidgetDefinition<Map<String, dynamic>> {
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
+    final l10n = context.l10n;
     final today = data['today'] as String? ?? '';
     final events = data['events'] as List<dynamic>? ?? [];
     final freeSlots = data['freeSlots'] as List<dynamic>? ?? [];
@@ -67,7 +69,7 @@ class CalendarWidget extends WidgetDefinition<Map<String, dynamic>> {
                 children: [
                   Icon(Icons.event, size: 48, color: Colors.grey),
                   const SizedBox(height: 8),
-                  Text('Keine Events heute', style: AppTheme.bodySmall),
+                  Text(l10n.calendarNoEvents, style: AppTheme.bodySmall),
                 ],
               ),
             )
@@ -78,7 +80,7 @@ class CalendarWidget extends WidgetDefinition<Map<String, dynamic>> {
               itemCount: events.length,
               itemBuilder: (context, index) {
                 final event = events[index];
-                final title = event['title']?.toString() ?? 'Event';
+                final title = event['title']?.toString() ?? l10n.calendarEvent;
                 final startTime = event['start']?.toString() ?? '';
                 final endTime = event['end']?.toString() ?? '';
                 final location = event['location']?.toString() ?? '';
@@ -97,7 +99,7 @@ class CalendarWidget extends WidgetDefinition<Map<String, dynamic>> {
                           children: [
                             Text(title, style: AppTheme.bodyMedium),
                             Text(
-                              isAllDay ? 'Ganztägig' : '$startTime - $endTime',
+                              isAllDay ? l10n.calendarAllday : '$startTime - $endTime',
                               style: AppTheme.bodySmall,
                             ),
                             if (location.isNotEmpty)
@@ -114,7 +116,7 @@ class CalendarWidget extends WidgetDefinition<Map<String, dynamic>> {
           // Free slots
           if (freeSlots.isNotEmpty) ...[
             const SizedBox(height: 12),
-            Text('Freie Zeitfenster', style: AppTheme.labelMedium),
+            Text(l10n.calendarFreeSlots, style: AppTheme.labelMedium),
             const SizedBox(height: 4),
             ...freeSlots.map((slot) {
               final start = slot['start']?.toString() ?? '';

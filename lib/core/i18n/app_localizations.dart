@@ -332,6 +332,93 @@ class AppLocalizations {
       translateWithParams('carbs_remaining', {'remaining': remaining.toString()});
   String get carbsToGoal => translate('carbs_to_goal');
   String get carbsEaten => translate('carbs_eaten');
+
+  // Caffeine additional strings
+  String caffeineCups({required int cups}) =>
+      translateWithParams('caffeine_cups', {'cups': cups.toString()});
+  String get caffeineDrink => translate('caffeine_drink');
+
+  // Calories additional strings
+  String caloriesBurned({required int burned}) =>
+      translateWithParams('calories_burned', {'burned': burned.toString()});
+  String get caloriesMealName => translate('calories_meal');
+
+  // Calendar additional strings
+  String get calendarEvent => translate('calendar_event');
+  String get calendarAllday => translate('calendar_allday');
+
+  // Generic strings
+  String get activityName => translate('activity');
+  String get appointmentName => translate('appointment');
+  String get taskName => translate('task');
+  String get newsItem => translate('news_item');
+  String get monthName => translate('month');
+  String get categoryName => translate('category');
+  String get transactionName => translate('transaction');
+  String get myTracker => translate('my_tracker');
+  String get units => translate('units');
+  String get entryName => translate('entry');
+  String fatMeals({required int meals}) =>
+      translateWithParams('fat_meals', {'meals': meals.toString()});
+  String get fiberTip => translate('fiber_tip');
+
+  // Heart rate additional strings
+  String get heartRateImproving => translate('heart_rate_improving');
+  String get heartRateStable => translate('heart_rate_stable');
+
+  // Medications additional strings
+  String get medicationsNoneToday => translate('medications_none_today');
+  String get medicationName => translate('medication_name');
+  String get supplementName => translate('supplement_name');
+
+  // Mood labels
+  String get moodVeryBad => translate('mood_very_bad');
+  String get moodVeryGood => translate('mood_very_good');
+
+  // News additional strings
+  String get newsForYou => translate('news_for_you');
+  String get newsTitle => translate('news_title');
+  String get newsBreaking => translate('news_breaking');
+
+  // OPNV additional strings
+  String get opnvStop => translate('opnv_stop');
+  String get opnvLine => translate('opnv_line');
+  String opnvDelay({required int delay}) =>
+      translateWithParams('opnv_delay', {'delay': delay.toString()});
+  String get opnvCancelled => translate('opnv_cancelled');
+  String opnvPlatform({required String platform}) =>
+      translateWithParams('opnv_platform', {'platform': platform});
+
+  // Screen time additional strings
+  String get screenTimeApp => translate('screen_time_app');
+
+  // Sleep additional strings
+  String get sleepQualityGood => translate('sleep_quality_good');
+  String get sleepQualityImprove => translate('sleep_quality_improve');
+
+  // Stocks additional strings
+  String get stocksTicker => translate('stocks_ticker');
+
+  // Stress additional strings
+  String get stressLow => translate('stress_low');
+  String get stressModerate => translate('stress_moderate');
+  String get stressHigh => translate('stress_high');
+
+  // Sugar additional strings
+  String sugarSpoons({required int spoons}) =>
+      translateWithParams('sugar_spoons', {'spoons': spoons.toString()});
+
+  // Tasks additional strings
+  String tasksCompleted({required int completed, required int total}) =>
+      translateWithParams('tasks_completed', {
+        'completed': completed.toString(),
+        'total': total.toString(),
+      });
+
+  // Weight additional strings
+  String weightToGoal({required String kg}) =>
+      translateWithParams('weight_to_goal', {'kg': kg});
+  String get weightStable => translate('weight_stable');
 }
 
 @immutable

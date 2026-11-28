@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../../../core/i18n/app_localizations.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
@@ -59,6 +60,7 @@ class SleepTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
+    final l10n = context.l10n;
     final goal = (data['goal'] as num?)?.toInt() ?? 8;
     final slept = (data['slept'] as num?)?.toDouble() ?? 0.0;
     final quality = (data['quality'] as num?)?.toInt() ?? 0;
@@ -73,7 +75,7 @@ class SleepTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('${slept}h von ${goal}h', style: AppTheme.titleMedium),
+              Text('${slept}${l10n.sleepHours} ${l10n.sleepOf} ${goal}${l10n.sleepHours}', style: AppTheme.titleMedium),
               Text(
                 '${(progress * 100).toInt()}%',
                 style: AppTheme.labelMedium.copyWith(color: AppTheme.accent),
@@ -106,7 +108,7 @@ class SleepTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text('${slept.toInt()}', style: AppTheme.titleSmall),
-                          Text('h', style: AppTheme.labelSmall),
+                          Text(l10n.sleepHours, style: AppTheme.labelSmall),
                         ],
                       ),
                     ],
@@ -118,11 +120,11 @@ class SleepTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Noch ${remaining}h', style: AppTheme.bodyMedium),
+                      Text(l10n.sleepRemaining(remaining: remaining), style: AppTheme.bodyMedium),
                       const SizedBox(height: 4),
                       if (quality > 0)
                         Text(
-                          'Qualität: ${quality}/10',
+                          '${l10n.qualityLabel}: ${quality}/10',
                           style: AppTheme.bodySmall,
                         ),
                     ],
@@ -148,8 +150,8 @@ class SleepTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                   Expanded(
                     child: Text(
                       quality >= 7
-                          ? 'Gute Schlafqualität'
-                          : 'Verbesserungspotenzial',
+                          ? l10n.sleepQualityGood
+                          : l10n.sleepQualityImprove,
                       style: AppTheme.bodyMedium,
                     ),
                   ),

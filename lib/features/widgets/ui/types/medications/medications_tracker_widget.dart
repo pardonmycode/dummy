@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../../../core/i18n/app_localizations.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
@@ -45,6 +46,7 @@ class MedicationsTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
+    final l10n = context.l10n;
     final medications = data['medications'] as List<dynamic>? ?? [];
     final upcoming = data['upcoming'] as List<dynamic>? ?? [];
 
@@ -53,7 +55,7 @@ class MedicationsTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Today's schedule
-          Text('Heute', style: AppTheme.labelMedium),
+          Text(l10n.medicationsToday, style: AppTheme.labelMedium),
           const SizedBox(height: 4),
 
           if (medications.isEmpty)
@@ -63,7 +65,7 @@ class MedicationsTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                   Icon(Icons.medication, size: 48, color: Colors.grey),
                   const SizedBox(height: 8),
                   Text(
-                    'Keine Medikamente für heute',
+                    l10n.medicationsNoneToday,
                     style: AppTheme.bodySmall,
                   ),
                 ],
@@ -76,7 +78,7 @@ class MedicationsTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
               itemCount: medications.length,
               itemBuilder: (context, index) {
                 final med = medications[index];
-                final name = med['name']?.toString() ?? 'Medikament';
+                final name = med['name']?.toString() ?? l10n.medicationName;
                 final dose = med['dose']?.toString() ?? '';
                 final time = med['time']?.toString() ?? '';
                 final taken = med['taken'] == true;
@@ -126,7 +128,7 @@ class MedicationsTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
-                            'Supplement',
+                            l10n.supplementName,
                             style: AppTheme.labelSmall.copyWith(
                               color: Colors.green,
                             ),
@@ -141,10 +143,10 @@ class MedicationsTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
           // Upcoming
           if (upcoming.isNotEmpty) ...[
             const SizedBox(height: 12),
-            Text('Als Nächstes', style: AppTheme.labelMedium),
+            Text(l10n.medicationsNext, style: AppTheme.labelMedium),
             const SizedBox(height: 4),
             ...upcoming.map((u) {
-              final name = u['name']?.toString() ?? 'Medikament';
+              final name = u['name']?.toString() ?? l10n.medicationName;
               final time = u['time']?.toString() ?? '';
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 2),

@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../../../core/i18n/app_localizations.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
@@ -45,6 +46,7 @@ class BodyFatTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
+    final l10n = context.l10n;
     final current = (data['current'] as num?)?.toDouble() ?? 0.0;
     final goal = (data['goal'] as num?)?.toDouble() ?? 0.0;
     final start = (data['start'] as num?)?.toDouble() ?? current;
@@ -66,7 +68,7 @@ class BodyFatTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                 style: AppTheme.titleMedium,
               ),
               Text(
-                'Ziel: ${goal.toStringAsFixed(1)}%',
+                '${l10n.weightGoal}: ${goal.toStringAsFixed(1)}%',
                 style: AppTheme.labelSmall,
               ),
             ],
@@ -97,8 +99,8 @@ class BodyFatTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                 Expanded(
                   child: Text(
                     trend == 'down'
-                        ? 'Körperfett nimmt ab'
-                        : 'Körperfett stabil',
+                        ? '${l10n.bodyFatLabel} ${l10n.takingOff}'
+                        : '${l10n.bodyFatLabel} ${l10n.stableLabel}',
                     style: AppTheme.bodyMedium,
                   ),
                 ),

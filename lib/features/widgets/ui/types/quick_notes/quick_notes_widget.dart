@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../../../core/i18n/app_localizations.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
@@ -48,6 +49,7 @@ class QuickNotesWidget extends WidgetDefinition<Map<String, dynamic>> {
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
+    final l10n = context.l10n;
     final notes = data['notes'] as List<dynamic>? ?? [];
 
     return SingleChildScrollView(
@@ -61,7 +63,7 @@ class QuickNotesWidget extends WidgetDefinition<Map<String, dynamic>> {
                 children: [
                   Icon(Icons.sticky_note_2, size: 48, color: Colors.grey),
                   const SizedBox(height: 8),
-                  Text('Keine Notizen', style: AppTheme.bodySmall),
+                  Text(l10n.notesEmpty, style: AppTheme.bodySmall),
                 ],
               ),
             )

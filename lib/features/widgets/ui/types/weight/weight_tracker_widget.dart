@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../../../core/i18n/app_localizations.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
@@ -45,6 +46,7 @@ class WeightTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
+    final l10n = context.l10n;
     final current = (data['current'] as num?)?.toDouble() ?? 0.0;
     final goal = (data['goal'] as num?)?.toDouble() ?? 0.0;
     final start = (data['start'] as num?)?.toDouble() ?? current;
@@ -67,7 +69,7 @@ class WeightTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Aktuell', style: AppTheme.labelSmall),
+                  Text(l10n.weightCurrent, style: AppTheme.labelSmall),
                   Text(
                     '${current.toStringAsFixed(1)} kg',
                     style: AppTheme.titleMedium,
@@ -77,7 +79,7 @@ class WeightTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text('Ziel', style: AppTheme.labelSmall),
+                  Text(l10n.weightGoal, style: AppTheme.labelSmall),
                   Text(
                     '${goal.toStringAsFixed(1)} kg',
                     style: AppTheme.titleSmall,
@@ -99,8 +101,8 @@ class WeightTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
           // Diff text
           Text(
             diff > 0
-                ? 'Noch ${diff.toStringAsFixed(1)} kg abnehmen'
-                : 'Ziel erreicht! 🎉',
+                ? l10n.weightToGoal(kg: diff.toStringAsFixed(1))
+                : l10n.goalReached,
             style: AppTheme.bodySmall,
           ),
           const SizedBox(height: 8),
@@ -120,7 +122,7 @@ class WeightTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(_trendText(trend), style: AppTheme.bodyMedium),
+                      Text(_trendText(l10n, trend), style: AppTheme.bodyMedium),
                       if (lastChange.isNotEmpty)
                         Text(lastChange, style: AppTheme.caption),
                     ],
@@ -156,14 +158,14 @@ class WeightTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
     }
   }
 
-  String _trendText(String trend) {
+  String _trendText(AppLocalizations l10n, String trend) {
     switch (trend) {
       case 'down':
-        return 'Gewichtsabnahme';
+        return l10n.weightLoss;
       case 'up':
-        return 'Gewichtszunahme';
+        return l10n.weightGain;
       default:
-        return 'Gewicht stabil';
+        return l10n.weightStable;
     }
   }
 }

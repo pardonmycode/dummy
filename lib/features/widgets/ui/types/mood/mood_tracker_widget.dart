@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../../../../../core/i18n/app_localizations.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
@@ -45,6 +46,7 @@ class MoodTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
+    final l10n = context.l10n;
     final mood = (data['mood'] as num?)?.toInt() ?? 3;
     final note = data['note'] as String? ?? '';
     final week = data['week'] as List<dynamic>? ?? [];
@@ -66,11 +68,11 @@ class MoodTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
     ];
 
     final moodLabels = [
-      'Sehr schlecht',
-      'Schlecht',
-      'Neutral',
-      'Gut',
-      'Sehr gut',
+      l10n.moodVeryBad,
+      l10n.moodBad,
+      l10n.moodNeutral,
+      l10n.moodGood,
+      l10n.moodVeryGood,
     ];
 
     return SingleChildScrollView(
@@ -96,7 +98,7 @@ class MoodTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Heute', style: AppTheme.labelSmall),
+                      Text(l10n.moodToday, style: AppTheme.labelSmall),
                       Text(moodLabels[mood - 1], style: AppTheme.bodyMedium),
                     ],
                   ),

@@ -3,7 +3,9 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetly/core/i18n/app_localizations.dart';
 import 'package:widgetly/features/dashboard/domain/dashboard_sync_service.dart';
-import 'package:widgetly/features/dashboard/ui/views/dashboard_view.dart';
+import 'package:widgetly/features/dashboard/domain/dashboard_notifier.dart';
+import 'providers.dart'
+    show dashboardWidgetsProvider;
 import 'package:widgetly/features/widgets/framework/widget_instance.dart';
 
 void showShareLayoutDialog(
@@ -12,9 +14,9 @@ void showShareLayoutDialog(
   List<WidgetInstance> widgets,
 ) {
   final syncService = DashboardSyncService();
-  final dashboard = ref.read(dashboardsProvider.notifier).active;
+  final activeDashboard = ref.read(dashboardNotifierProvider.notifier).activeDashboard;
 
-  if (dashboard == null) {
+  if (activeDashboard == null) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(context.l10n.error)),
     );
@@ -22,8 +24,8 @@ void showShareLayoutDialog(
   }
 
   final layoutJson = syncService.exportLayout({
-    'id': dashboard.id,
-    'name': dashboard.name,
+    'id': activeDashboard.id,
+    'name': activeDashboard.name,
     'widgets': widgets.map((w) => w.toJson()).toList(),
   });
 

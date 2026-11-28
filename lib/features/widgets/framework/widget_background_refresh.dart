@@ -1,7 +1,5 @@
-import 'package:shared_preferences/shared_preferences.dart';
-
-import '../framework/widget_definition.dart';
 import 'package:widgetly/core/logging/app_logger.dart';
+import 'widget_definition.dart' show RefreshInterval;
 
 /// Simple logger function for background refresh.
 void _log(String message) {
@@ -33,7 +31,6 @@ Duration intervalToDuration(RefreshInterval interval) {
 /// Service that manages widget refresh on app resume.
 /// Uses AppLifecycleListener to refresh widgets when returning to the app.
 class WidgetBackgroundRefresh {
-  SharedPreferences? _prefs;
   final Map<String, Future<void> Function()> _refreshCallbacks = {};
 
   /// Register a refresh callback for a widget instance.
@@ -79,7 +76,6 @@ class WidgetBackgroundRefresh {
   /// Dispose of the service.
   void dispose() {
     clearAll();
-    _prefs = null;
   }
 }
 

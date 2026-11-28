@@ -2,7 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetly/core/i18n/app_localizations.dart';
 import 'package:widgetly/features/dashboard/domain/dashboard_sync_service.dart';
-import 'package:widgetly/features/dashboard/ui/views/dashboard_view.dart';
+import 'package:widgetly/features/dashboard/ui/views/providers.dart';
 import 'package:widgetly/features/widgets/framework/widget_instance.dart';
 
 void showImportLayoutDialog(

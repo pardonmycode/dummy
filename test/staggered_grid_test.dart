@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetly/main.dart' show WidgetlyApp;
 import 'package:widgetly/features/widgets/framework/widget_instance.dart';
 import 'package:widgetly/features/widgets/framework/widget_definition.dart';
-import 'package:widgetly/features/dashboard/ui/views/dashboard_view.dart';
+import "package:widgetly/features/dashboard/ui/views/providers.dart";
 import 'test_helpers.dart';
 
 void main() {

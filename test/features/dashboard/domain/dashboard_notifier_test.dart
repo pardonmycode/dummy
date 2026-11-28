@@ -14,10 +14,13 @@ void main() {
         dashboardNotifierProvider.overrideWith(() => DashboardNotifier()),
       ],
     );
+    // Wait for AsyncNotifier to initialize
+    await container.read(dashboardNotifierProvider.future);
   });
 
   tearDown(() {
     container.dispose();
+    SharedPreferences.setMockInitialValues({});
   });
 
   group('DashboardNotifier', () {
@@ -32,7 +35,7 @@ void main() {
       final notifier = container.read(dashboardNotifierProvider.notifier);
       final initial = notifier.activeDashboard!.widgets.length;
 
-      notifier.addActiveWidget(const WidgetInstance(widgetType: 'weather'));
+      notifier.addActiveWidget(WidgetInstance.create(widgetType: 'weather'));
       expect(notifier.activeDashboard!.widgets.length, initial + 1);
 
       notifier.undo();
@@ -44,28 +47,31 @@ void main() {
 
     test('can move widget within active dashboard', () {
       final notifier = container.read(dashboardNotifierProvider.notifier);
-      notifier.addActiveWidget(const WidgetInstance(widgetType: 'weather'));
-      notifier.addActiveWidget(const WidgetInstance(widgetType: 'steps_tracker'));
-      notifier.addActiveWidget(const WidgetInstance(widgetType: 'water_tracker'));
+      notifier.addActiveWidget(WidgetInstance.create(widgetType: 'weather'));
+      notifier.addActiveWidget(WidgetInstance.create(widgetType: 'steps_tracker'));
+      notifier.addActiveWidget(WidgetInstance.create(widgetType: 'water_tracker'));
 
-      expect(notifier.activeDashboard!.widgets[0].widgetType, 'weather');
-      expect(notifier.activeDashboard!.widgets[1].widgetType, 'steps_tracker');
-      expect(notifier.activeDashboard!.widgets[2].widgetType, 'water_tracker');
+      final widgets = notifier.activeDashboard!.widgets;
+      expect(widgets[widgets.length - 3].widgetType, 'weather');
+      expect(widgets[widgets.length - 2].widgetType, 'steps_tracker');
+      expect(widgets[widgets.length - 1].widgetType, 'water_tracker');
 
-      notifier.moveActiveWidget(0, 2);
-      expect(notifier.activeDashboard!.widgets[0].widgetType, 'steps_tracker');
-      expect(notifier.activeDashboard!.widgets[1].widgetType, 'water_tracker');
-      expect(notifier.activeDashboard!.widgets[2].widgetType, 'weather');
+      notifier.moveActiveWidget(widgets.length - 3, widgets.length - 1);
+      final moved = notifier.activeDashboard!.widgets;
+      expect(moved[moved.length - 3].widgetType, 'steps_tracker');
+      expect(moved[moved.length - 2].widgetType, 'water_tracker');
+      expect(moved[moved.length - 1].widgetType, 'weather');
     });
 
     test('can remove active widget', () {
       final notifier = container.read(dashboardNotifierProvider.notifier);
-      notifier.addActiveWidget(const WidgetInstance(widgetType: 'weather'));
-      notifier.addActiveWidget(const WidgetInstance(widgetType: 'steps_tracker'));
+      notifier.addActiveWidget(WidgetInstance.create(widgetType: 'weather'));
+      notifier.addActiveWidget(WidgetInstance.create(widgetType: 'steps_tracker'));
 
-      notifier.removeActiveWidget(0);
-      expect(notifier.activeDashboard!.widgets.length, 1);
-      expect(notifier.activeDashboard!.widgets[0].widgetType, 'steps_tracker');
+      final initial = notifier.activeDashboard!.widgets.length;
+      notifier.removeActiveWidget(initial - 2);
+      expect(notifier.activeDashboard!.widgets.length, initial - 1);
+      expect(notifier.activeDashboard!.widgets[initial - 2].widgetType, 'steps_tracker');
     });
 
     test('can set active dashboard', () async {
@@ -77,20 +83,21 @@ void main() {
 
     test('undo/redo is bounded to max steps', () {
       final notifier = container.read(dashboardNotifierProvider.notifier);
-      notifier.addActiveWidget(const WidgetInstance(widgetType: 'weather'));
-      notifier.addActiveWidget(const WidgetInstance(widgetType: 'steps'));
-      notifier.addActiveWidget(const WidgetInstance(widgetType: 'water'));
-      notifier.addActiveWidget(const WidgetInstance(widgetType: 'protein'));
+      final initial = notifier.activeDashboard!.widgets.length;
+      notifier.addActiveWidget(WidgetInstance.create(widgetType: 'weather'));
+      notifier.addActiveWidget(WidgetInstance.create(widgetType: 'steps'));
+      notifier.addActiveWidget(WidgetInstance.create(widgetType: 'water'));
+      notifier.addActiveWidget(WidgetInstance.create(widgetType: 'protein'));
 
       // Only last 3 should be undoable
       notifier.undo();
       notifier.undo();
       notifier.undo();
-      expect(notifier.activeDashboard!.widgets.length, 1);
+      expect(notifier.activeDashboard!.widgets.length, initial + 1);
 
-      // Fourth undo goes back to initial state (0 widgets)
+      // Fourth undo goes back to initial state
       notifier.undo();
-      expect(notifier.activeDashboard!.widgets.length, 0);
+      expect(notifier.activeDashboard!.widgets.length, initial);
     });
   });
 }

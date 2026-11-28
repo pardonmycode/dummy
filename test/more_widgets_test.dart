@@ -8,7 +8,7 @@ import 'package:widgetly/features/widgets/ui/types/body_fat/body_fat_tracker_wid
 import 'package:widgetly/features/widgets/ui/types/heart_rate/heart_rate_tracker_widget.dart';
 import 'package:widgetly/features/widgets/ui/types/mood/mood_tracker_widget.dart';
 import 'package:widgetly/features/widgets/ui/types/tasks/tasks_widget.dart';
-import 'package:widgetly/features/dashboard/ui/views/dashboard_view.dart';
+import "package:widgetly/features/dashboard/ui/views/providers.dart";
 import 'package:widgetly/core/i18n/app_localizations.dart';
 import 'test_helpers.dart';
 

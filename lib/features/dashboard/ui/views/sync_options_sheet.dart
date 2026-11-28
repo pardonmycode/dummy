@@ -3,7 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetly/core/i18n/app_localizations.dart';
 import 'package:widgetly/core/theme/theme.dart';
 import 'package:widgetly/features/dashboard/domain/dashboard_sync_service.dart';
-import 'package:widgetly/features/dashboard/ui/views/dashboard_view.dart';
+import 'package:widgetly/features/dashboard/domain/dashboard_notifier.dart';
+import 'providers.dart'
+    show
+        dashboardWidgetsProvider,
+        isSyncingProvider;
 import 'package:widgetly/features/widgets/framework/widget_instance.dart';
 
 void showSyncOptions(
@@ -34,12 +38,12 @@ void showSyncOptions(
                 try {
                   final syncService = DashboardSyncService();
                   final widgets = ref.read(dashboardWidgetsProvider);
-                  final dashboard = ref.read(dashboardsProvider.notifier).active;
-                  if (dashboard != null) {
+                  final activeDashboard = ref.read(dashboardNotifierProvider.notifier).activeDashboard;
+                  if (activeDashboard != null) {
                     final syncResult = await syncService.syncToServer([
                       {
-                        'id': dashboard.id,
-                        'name': dashboard.name,
+                        'id': activeDashboard.id,
+                        'name': activeDashboard.name,
                         'widgets': widgets.map((w) => w.toJson()).toList(),
                       },
                     ]);

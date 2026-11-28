@@ -1,213 +1,28 @@
-import 'dart:async';
 import 'dart:convert';
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/i18n/app_localizations.dart';
 import '../../../../core/theme/theme.dart';
-import '../domain/dashboards_notifier.dart';
+import '../../domain/dashboard_notifier.dart';
+import 'widget_providers.dart'
+    show widgetDataProvider, widgetCacheDataProvider;
 import '../../../widgets/framework/widget_definition.dart';
 import '../../../widgets/framework/widget_data.dart';
 import '../../../widgets/framework/widget_instance.dart';
 import '../../../widgets/framework/widget_registry.dart';
 import '../../../widgets/framework/widget_schema_validator.dart';
-import '../../../widgets/framework/widget_schema_migration.dart';
-import '../../../widgets/framework/widget_providers.dart';
-import '../../../widgets/framework/mock_widget_data_provider.dart';
 import '../../../widgets/ui/base/widget_card.dart';
+import 'providers.dart';
 import 'widget_catalog.dart';
 import 'share_layout_dialog.dart';
 import 'import_layout_dialog.dart';
 import 'sync_options_sheet.dart';
 import 'template_sheet.dart';
-
-export 'widget_catalog.dart' show widgetRegistryProvider;
-
-// Singleton Uuid instance
-const _uuid = Uuid();
-
-// Providers
-
-final dashboardWidgetsProvider =
-    StateNotifierProvider<DashboardWidgetsNotifier, List<WidgetInstance>>((
-      ref,
-    ) {
-      return DashboardWidgetsNotifier();
-    });
-
-final isEditingProvider = StateProvider<bool>((ref) => false);
-final isSyncingProvider = StateProvider<bool>((ref) => false);
-
-// Undo/Redo history — bounded to prevent unbounded growth
-final _maxUndoHistory = 50;
-final undoHistoryProvider = StateProvider<List<List<WidgetInstance>>>((ref) => []);
-final redoHistoryProvider = StateProvider<List<List<WidgetInstance>>>((ref) => []);
-
-/// Push current state to undo history (bounded).
-void _pushUndo(WidgetRef ref, List<WidgetInstance> state) {
-  ref.read(undoHistoryProvider.notifier).update((history) {
-    if (history.length >= _maxUndoHistory) {
-      return [history[0], ...history.sublist(1), state];
-    }
-    return [...history, state];
-  });
-  ref.read(redoHistoryProvider.notifier).state = [];
-}
-
-// Dashboard management
-final dashboardsProvider = NotifierProvider<DashboardsNotifier, List<Dashboard>>(
-  DashboardsNotifier.new,
-);
-
-final activeDashboardProvider = StateProvider<String?>((ref) => null);
-
-final mockDataProviderProvider = Provider<MockWidgetDataProvider>(
-  (ref) => MockWidgetDataProvider(),
-);
-
-/// Memoized data provider — caches the Future per widget instance
-/// so rebuilds don't trigger new fetches. Uses select to only watch
-/// the specific instance by ID to avoid reloading all widgets on changes.
-final widgetDataProvider = FutureProvider.family<Map<String, dynamic>?, String>(
-  (ref, instanceId) async {
-    final instance = ref.watch(
-      dashboardWidgetsProvider.select(
-        (widgets) => widgets.firstWhere(
-          (w) => w.id == instanceId,
-          orElse: () => throw StateError('Widget $instanceId not found'),
-        ),
-      ),
-    );
-    final provider = ref.watch(mockDataProviderProvider);
-    var data = await provider.getData(instance.widgetType, instance.config);
-
-    // Apply schema migrations if needed
-    final migrationRegistry = ref.watch(widgetMigrationRegistryProvider);
-    final expectedVersion = getExpectedVersion(instance.widgetType);
-    data = await migrationRegistry.migrateData(
-      widgetType: instance.widgetType,
-      data: data,
-      targetVersion: expectedVersion,
-    );
-
-    // Save to local cache
-    final cache = ref.watch(widgetLocalCacheProvider);
-    await cache.setCachedData(
-      widgetType: instance.widgetType,
-      instanceId: instance.id,
-      data: data,
-    );
-
-    return data;
-  },
-);
-
-/// State notifier for dashboard widgets with persistence
-class DashboardWidgetsNotifier extends StateNotifier<List<WidgetInstance>> {
-  DashboardWidgetsNotifier() : super(_defaultWidgets()) {
-    _loadWidgets();
-  }
-
-  static List<WidgetInstance> _defaultWidgets() {
-    return [
-      WidgetInstance(
-        id: _uuid.v4(),
-        widgetType: 'weather',
-        size: WidgetSize.medium,
-        config: {'location': 'Berlin'},
-      ),
-      WidgetInstance(
-        id: _uuid.v4(),
-        widgetType: 'protein_tracker',
-        size: WidgetSize.medium,
-        config: {'goal': 150},
-      ),
-    ];
-  }
-
-  void addWidget(String widgetType, {Map<String, dynamic>? config}) {
-    final widget = WidgetInstance.create(
-      widgetType: widgetType,
-      config: config,
-    );
-    state = [...state, widget];
-    _saveWidgets();
-  }
-
-  void removeWidget(String id) {
-    state = state.where((w) => w.id != id).toList();
-    _saveWidgets();
-  }
-
-  void duplicateWidget(String id) {
-    final original = state.firstWhere((w) => w.id == id);
-    final duplicate = original.clone();
-    final index = state.indexWhere((w) => w.id == id);
-    final widgets = List<WidgetInstance>.from(state);
-    widgets.insert(index + 1, duplicate);
-    state = widgets;
-    _saveWidgets();
-  }
-
-  void moveWidget(int oldIndex, int newIndex) {
-    final widgets = List<WidgetInstance>.from(state);
-    final item = widgets.removeAt(oldIndex);
-    widgets.insert(newIndex, item);
-    state = widgets;
-    _saveWidgets();
-  }
-
-  void resizeWidget(String id, WidgetSize newSize) {
-    state = state
-        .map((w) => w.id == id ? w.copyWith(size: newSize) : w)
-        .toList();
-    _saveWidgets();
-  }
-
-  void updateConfig(String id, Map<String, dynamic> newConfig) {
-    state = state
-        .map((w) => w.id == id ? w.copyWith(config: newConfig) : w)
-        .toList();
-    _saveWidgets();
-  }
-
-  void setWidgets(List<WidgetInstance> widgets) {
-    state = widgets;
-    _saveWidgets();
-  }
-
-  Future<void> _loadWidgets() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final json = prefs.getString('dashboard_widgets');
-      if (json != null) {
-        final List<dynamic> data = jsonDecode(json);
-        state = data
-            .map(
-              (item) => WidgetInstance.fromJson(
-                Map<String, dynamic>.from(item as Map),
-              ),
-            )
-            .toList();
-      }
-    } catch (e) {
-      debugPrint('[DashboardWidgetsNotifier] Failed to load widgets: $e');
-    }
-  }
-
-  Future<void> _saveWidgets() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final json = jsonEncode(state.map((w) => w.toJson()).toList());
-      await prefs.setString('dashboard_widgets', json);
-    } catch (e) {
-      debugPrint('[DashboardWidgetsNotifier] Failed to save widgets: $e');
-    }
-  }
-}
 
 // Responsive grid configuration
 class ResponsiveGridConfig {
@@ -290,10 +105,9 @@ class DashboardView extends ConsumerWidget {
             onPressed: () {
               ref.read(isEditingProvider.notifier).update((s) => !s);
               if (isEditing) {
-                // Save when exiting edit mode
-                ref
-                    .read(dashboardsProvider.notifier)
-                    .saveActive(ref.read(dashboardWidgetsProvider));
+                // Save when exiting edit mode — use consolidated notifier
+                final notifier = ref.read(dashboardNotifierProvider.notifier);
+                notifier.setAllActiveWidgets(ref.read(dashboardWidgetsProvider));
               }
             },
             tooltip: isEditing ? context.l10n.done : context.l10n.edit,
@@ -405,7 +219,7 @@ class DashboardView extends ConsumerWidget {
       onReorderItem: (oldIndex, newIndex) {
         final adjustedIndex = newIndex > oldIndex ? newIndex - 1 : newIndex;
         final current = ref.read(dashboardWidgetsProvider);
-        _pushUndo(ref, current);
+        pushUndo(ref, current);
         ref
             .read(dashboardWidgetsProvider.notifier)
             .moveWidget(oldIndex, adjustedIndex);
@@ -446,7 +260,7 @@ class DashboardView extends ConsumerWidget {
                   ),
                   onSelected: (size) {
                     final current = ref.read(dashboardWidgetsProvider);
-                    _pushUndo(ref, current);
+                    pushUndo(ref, current);
                     ref
                         .read(dashboardWidgetsProvider.notifier)
                         .resizeWidget(instance.id, size);
@@ -470,7 +284,7 @@ class DashboardView extends ConsumerWidget {
                   icon: Icon(Icons.copy, color: scheme.onSurfaceVariant),
                   onPressed: () {
                     final current = ref.read(dashboardWidgetsProvider);
-                    _pushUndo(ref, current);
+                    pushUndo(ref, current);
                     ref
                         .read(dashboardWidgetsProvider.notifier)
                         .duplicateWidget(instance.id);
@@ -480,7 +294,7 @@ class DashboardView extends ConsumerWidget {
                   icon: const Icon(Icons.delete, color: Colors.red),
                   onPressed: () {
                     final current = ref.read(dashboardWidgetsProvider);
-                    _pushUndo(ref, current);
+                    pushUndo(ref, current);
                     ref
                         .read(dashboardWidgetsProvider.notifier)
                         .removeWidget(instance.id);
@@ -505,43 +319,36 @@ class DashboardView extends ConsumerWidget {
     final snapshot = ref.watch(widgetDataProvider(instance.id));
 
     if (snapshot.isLoading) {
-      final cache = ref.read(widgetLocalCacheProvider);
-      return FutureBuilder<Map<String, dynamic>?>(
-        future: cache.getCachedData(
-          widgetType: instance.widgetType,
-          instanceId: instance.id,
-        ),
-        builder: (context, cacheSnapshot) {
-          if (cacheSnapshot.hasData && cacheSnapshot.data != null) {
-            return WidgetCard(
+      // Watch cache provider instead of creating FutureBuilder
+      final cacheSnapshot = ref.watch(widgetCacheDataProvider(instance.id));
+      if (cacheSnapshot.hasValue && cacheSnapshot.value != null) {
+        return WidgetCard(
+          definition: definition,
+          instance: instance,
+          data: WidgetData.fromJson(cacheSnapshot.value!),
+          state: WidgetDataState.stale,
+          config: WidgetConfig(instance.config),
+          onConfigure: () {
+            final card = WidgetCard(
               definition: definition,
               instance: instance,
-              data: WidgetData.fromJson(cacheSnapshot.data!),
+              data: WidgetData.fromJson(cacheSnapshot.value!),
               state: WidgetDataState.stale,
               config: WidgetConfig(instance.config),
-              onConfigure: () {
-                final card = WidgetCard(
-                  definition: definition,
-                  instance: instance,
-                  data: WidgetData.fromJson(cacheSnapshot.data!),
-                  state: WidgetDataState.stale,
-                  config: WidgetConfig(instance.config),
-                );
-                card.showConfigForm(context, ref, instance);
-              },
-              onRefresh: () {
-                ref.invalidate(widgetDataProvider(instance.id));
-              },
             );
-          }
-          return WidgetCard(
-            definition: definition,
-            instance: instance,
-            data: null,
-            state: WidgetDataState.loading,
-            config: WidgetConfig(instance.config),
-          );
-        },
+            card.showConfigForm(context, ref, instance);
+          },
+          onRefresh: () {
+            ref.invalidate(widgetDataProvider(instance.id));
+          },
+        );
+      }
+      return WidgetCard(
+        definition: definition,
+        instance: instance,
+        data: null,
+        state: WidgetDataState.loading,
+        config: WidgetConfig(instance.config),
       );
     }
 
@@ -679,7 +486,7 @@ class DashboardView extends ConsumerWidget {
                   trailing: const Icon(Icons.add, color: AppTheme.primary),
                   onTap: () {
                     final current = ref.read(dashboardWidgetsProvider);
-                    _pushUndo(ref, current);
+                    pushUndo(ref, current);
                     ref
                         .read(dashboardWidgetsProvider.notifier)
                         .addWidget(def.id);

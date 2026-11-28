@@ -5,8 +5,12 @@ import '../../../../core/theme/theme.dart';
 import '../../framework/widget_definition.dart';
 import '../../framework/widget_data.dart';
 import '../../framework/widget_instance.dart';
-import '../../../dashboard/ui/views/dashboard_view.dart'
-    show dashboardWidgetsProvider, mockDataProviderProvider, widgetDataProvider;
+import '../../../dashboard/ui/views/providers.dart'
+    show
+        dashboardWidgetsProvider,
+        mockDataProviderProvider;
+import '../../../dashboard/ui/views/widget_providers.dart'
+    show widgetDataProvider;
 import '../components/widget_action_menu.dart';
 
 /// Base card wrapper for all widgets with header, states, and actions.

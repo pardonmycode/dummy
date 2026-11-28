@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetly/features/widgets/framework/widget_definition.dart';
 import 'package:widgetly/features/widgets/framework/widget_instance.dart';
+import 'package:widgetly/features/dashboard/ui/views/providers.dart';
 import 'package:widgetly/features/dashboard/ui/views/dashboard_view.dart';
 import 'package:widgetly/core/i18n/app_localizations.dart';
 import 'test_helpers.dart';

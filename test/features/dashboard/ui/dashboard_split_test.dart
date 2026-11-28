@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:widgetly/features/dashboard/ui/views/providers.dart';
 import 'package:widgetly/features/dashboard/ui/views/dashboard_view.dart';
 
 void main() {

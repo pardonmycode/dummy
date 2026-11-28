@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:widgetly/core/i18n/app_localizations.dart';
-import 'package:widgetly/features/dashboard/ui/views/dashboard_view.dart';
+import "package:widgetly/features/dashboard/ui/views/providers.dart";
 import 'package:widgetly/features/widgets/framework/widget_definition.dart';
 import 'package:widgetly/features/widgets/framework/widget_data.dart';
 import 'package:widgetly/features/widgets/ui/types/protein/protein_tracker_widget.dart';

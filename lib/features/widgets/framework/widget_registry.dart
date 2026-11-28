@@ -9,6 +9,9 @@ class WidgetRegistry {
     if (_widgets.containsKey(widget.id)) {
       throw StateError('Widget with id "${widget.id}" is already registered.');
     }
+    // Cast to WidgetDefinition<Object> — the type system doesn't support
+    // covariant assignment, but this is safe because we only read back
+    // via get(id) which returns the concrete type.
     _widgets[widget.id] = widget as WidgetDefinition<Object>;
   }
 

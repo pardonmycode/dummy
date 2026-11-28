@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 from fastapi import APIRouter, HTTPException, Depends
@@ -84,14 +85,19 @@ async def login(request: LoginRequest, db: Session = Depends(get_db)):
 async def get_me(current_user: User = Depends(get_current_user)):
     return {"id": current_user.id, "email": current_user.email, "name": current_user.name}
 
-# OAuth endpoints (mock)
+# OAuth endpoints (mock) — only active when DEV_OAUTH=1
 class OAuthLoginRequest(BaseModel):
     provider: str
     token: str
 
+def _is_dev_oauth():
+    return os.getenv("DEV_OAUTH") == "1"
+
 @router.post("/oauth/{provider}")
 async def oauth_login(provider: str, request: OAuthLoginRequest, db: Session = Depends(get_db)):
-    """Mock OAuth login for Apple and Google."""
+    """Mock OAuth login for Apple and Google (DEV ONLY)."""
+    if not _is_dev_oauth():
+        raise HTTPException(status_code=501, detail="OAuth login not configured")
     # In real implementation, verify the provider token
     # For now, just create/find a user
     email = f"oauth_{provider}_{request.token[:8]}@example.com"

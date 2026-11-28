@@ -4,46 +4,75 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import '../../widgets/framework/widget_instance.dart';
-import '../../widgets/framework/widget_definition.dart';
+import '../../widgets/framework/widget_definition.dart' show WidgetSize;
 import 'dashboard.dart';
 
 const _uuid = Uuid();
 
 /// Consolidated notifier managing dashboards, widgets, and undo/redo history.
-class DashboardNotifier extends Notifier<List<Dashboard>> {
+class DashboardNotifier extends AsyncNotifier<List<Dashboard>> {
   static const String _storageKey = 'dashboards';
   static const String _activeIdKey = 'active_dashboard_id';
   static const int _maxUndoSteps = 50;
 
-  final int _maxHistory;
-  String? _activeId;
   final List<List<WidgetInstance>> _undoStack = [];
   final List<List<WidgetInstance>> _redoStack = [];
-
-  DashboardNotifier({int? maxHistory}) : _maxHistory = maxHistory ?? _maxUndoSteps;
+  String? _activeId;
 
   @override
-  List<Dashboard> build() {
-    final defaultDashboard = _loadDefaultDashboard();
+  Future<List<Dashboard>> build() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      // Load active dashboard ID
+      _activeId = prefs.getString(_activeIdKey);
+
+      // Load dashboards
+      final json = prefs.getString(_storageKey);
+      if (json != null) {
+        final List<dynamic> data = jsonDecode(json);
+        final dashboards = data
+            .map((item) =>
+                Dashboard.fromJson(Map<String, dynamic>.from(item as Map)))
+            .toList();
+        if (dashboards.isNotEmpty) {
+          // Validate active ID
+          if (_activeId == null ||
+              !dashboards.any((d) => d.id == _activeId)) {
+            _activeId = dashboards.first.id;
+            await _saveActiveId();
+          }
+          return dashboards;
+        }
+      }
+    } catch (e) {
+      debugPrint('Failed to load dashboards: $e');
+    }
+
+    // Create default dashboard
+    final defaultDashboard = _createDefaultDashboard();
     _activeId = defaultDashboard.id;
+    await _saveDashboards([defaultDashboard]);
     return [defaultDashboard];
   }
 
   // --- Public getters ---
 
-  List<Dashboard> get dashboards => state;
+  List<Dashboard> get dashboards => state.value ?? [];
 
   Dashboard? get activeDashboard {
+    final ds = state.value ?? [];
     if (_activeId == null) return null;
     try {
-      return state.firstWhere((d) => d.id == _activeId);
+      return ds.firstWhere((d) => d.id == _activeId);
     } catch (_) {
       return null;
     }
   }
 
   Dashboard get _activeOrFirst {
-    return activeDashboard ?? state.first;
+    final ds = state.value ?? [];
+    return activeDashboard ?? ds.first;
   }
 
   bool get canUndo => _undoStack.isNotEmpty;
@@ -55,29 +84,35 @@ class DashboardNotifier extends Notifier<List<Dashboard>> {
   void setActive(String id) {
     _activeId = id;
     _saveActiveId();
-    state = List<Dashboard>.from(state); // Trigger rebuild
+    state = AsyncValue.data(dashboards); // Trigger rebuild
   }
 
   Future<Dashboard> create(String name) async {
     final dashboard = Dashboard(id: _uuid.v4(), name: name);
-    state = [...state, dashboard];
+    final ds = [...dashboards, dashboard];
+    state = AsyncValue.data(ds);
     setActive(dashboard.id);
-    await _saveDashboards();
+    await _saveDashboards(ds);
     return dashboard;
   }
 
   void delete(String id) {
-    if (state.length <= 1) return;
-    state = state.where((d) => d.id != id).toList();
-    _saveDashboards();
+    if (dashboards.length <= 1) return;
+    final ds = dashboards.where((d) => d.id != id).toList();
+    state = AsyncValue.data(ds);
+    if (_activeId == id) {
+      _activeId = ds.first.id;
+      _saveActiveId();
+    }
+    _saveDashboards(ds);
   }
 
   void rename(String id, String name) {
-    state = state
-        .map((d) =>
-            d.id == id ? Dashboard(id: d.id, name: name, widgets: d.widgets) : d)
+    final ds = dashboards
+        .map((d) => d.id == id ? d.copyWith(name: name) : d)
         .toList();
-    _saveDashboards();
+    state = AsyncValue.data(ds);
+    _saveDashboards(ds);
   }
 
   // --- Active widget management (with undo/redo) ---
@@ -85,7 +120,7 @@ class DashboardNotifier extends Notifier<List<Dashboard>> {
   void addActiveWidget(WidgetInstance widget) {
     final active = _activeOrFirst;
     pushUndo();
-    state = state
+    final ds = dashboards
         .map((d) {
           if (d.id == active.id) {
             return d.copyWith(widgets: [...d.widgets, widget]);
@@ -93,14 +128,15 @@ class DashboardNotifier extends Notifier<List<Dashboard>> {
           return d;
         })
         .toList();
-    _saveDashboards();
+    state = AsyncValue.data(ds);
+    _saveDashboards(ds);
   }
 
   void removeActiveWidget(int index) {
     final active = _activeOrFirst;
     if (index < 0 || index >= active.widgets.length) return;
     pushUndo();
-    state = state
+    final ds = dashboards
         .map((d) {
           if (d.id == active.id) {
             final widgets = List<WidgetInstance>.from(d.widgets);
@@ -110,7 +146,8 @@ class DashboardNotifier extends Notifier<List<Dashboard>> {
           return d;
         })
         .toList();
-    _saveDashboards();
+    state = AsyncValue.data(ds);
+    _saveDashboards(ds);
   }
 
   void moveActiveWidget(int fromIndex, int toIndex) {
@@ -122,7 +159,7 @@ class DashboardNotifier extends Notifier<List<Dashboard>> {
       return;
     }
     pushUndo();
-    state = state
+    final ds = dashboards
         .map((d) {
           if (d.id == active.id) {
             final widgets = List<WidgetInstance>.from(d.widgets);
@@ -133,31 +170,51 @@ class DashboardNotifier extends Notifier<List<Dashboard>> {
           return d;
         })
         .toList();
-    _saveDashboards();
+    state = AsyncValue.data(ds);
+    _saveDashboards(ds);
   }
 
-  void resizeActiveWidget(int index, String size) {
+  void resizeActiveWidget(int index, WidgetSize size) {
     final active = _activeOrFirst;
     if (index < 0 || index >= active.widgets.length) return;
     pushUndo();
-    state = state
+    final ds = dashboards
         .map((d) {
           if (d.id == active.id) {
             final widgets = d.widgets.map((w) => w).toList();
-            widgets[index] = widgets[index].clone(newSize: WidgetSize.values.firstWhere((s) => s.name == size));
+            widgets[index] = widgets[index].copyWith(size: size);
             return d.copyWith(widgets: widgets);
           }
           return d;
         })
         .toList();
-    _saveDashboards();
+    state = AsyncValue.data(ds);
+    _saveDashboards(ds);
+  }
+
+  void updateActiveWidgetConfig(int index, Map<String, dynamic> config) {
+    final active = _activeOrFirst;
+    if (index < 0 || index >= active.widgets.length) return;
+    pushUndo();
+    final ds = dashboards
+        .map((d) {
+          if (d.id == active.id) {
+            final widgets = d.widgets.map((w) => w).toList();
+            widgets[index] = widgets[index].copyWith(config: config);
+            return d.copyWith(widgets: widgets);
+          }
+          return d;
+        })
+        .toList();
+    state = AsyncValue.data(ds);
+    _saveDashboards(ds);
   }
 
   /// Replace all widgets on the active dashboard (for templates, import, etc.)
   void setAllActiveWidgets(List<WidgetInstance> widgets) {
     final active = _activeOrFirst;
     pushUndo();
-    state = state
+    final ds = dashboards
         .map((d) {
           if (d.id == active.id) {
             return d.copyWith(widgets: List.from(widgets));
@@ -165,7 +222,8 @@ class DashboardNotifier extends Notifier<List<Dashboard>> {
           return d;
         })
         .toList();
-    _saveDashboards();
+    state = AsyncValue.data(ds);
+    _saveDashboards(ds);
   }
 
   // --- Undo/Redo ---
@@ -173,7 +231,7 @@ class DashboardNotifier extends Notifier<List<Dashboard>> {
   void pushUndo() {
     final active = _activeOrFirst;
     _undoStack.add(List<WidgetInstance>.from(active.widgets));
-    if (_undoStack.length > _maxHistory) {
+    if (_undoStack.length > _maxUndoSteps) {
       _undoStack.removeAt(0);
     }
     _redoStack.clear();
@@ -184,7 +242,7 @@ class DashboardNotifier extends Notifier<List<Dashboard>> {
     final previous = _undoStack.removeLast();
     final active = _activeOrFirst;
     _redoStack.add(List<WidgetInstance>.from(active.widgets));
-    state = state
+    final ds = dashboards
         .map((d) {
           if (d.id == active.id) {
             return d.copyWith(widgets: previous);
@@ -192,7 +250,8 @@ class DashboardNotifier extends Notifier<List<Dashboard>> {
           return d;
         })
         .toList();
-    _saveDashboards();
+    state = AsyncValue.data(ds);
+    _saveDashboards(ds);
   }
 
   void redo() {
@@ -200,7 +259,7 @@ class DashboardNotifier extends Notifier<List<Dashboard>> {
     final next = _redoStack.removeLast();
     final active = _activeOrFirst;
     _undoStack.add(List<WidgetInstance>.from(active.widgets));
-    state = state
+    final ds = dashboards
         .map((d) {
           if (d.id == active.id) {
             return d.copyWith(widgets: next);
@@ -208,30 +267,37 @@ class DashboardNotifier extends Notifier<List<Dashboard>> {
           return d;
         })
         .toList();
-    _saveDashboards();
+    state = AsyncValue.data(ds);
+    _saveDashboards(ds);
   }
 
   // --- Persistence ---
 
-  Dashboard _loadDefaultDashboard() {
-    return Dashboard(id: _uuid.v4(), name: 'Mein Dashboard');
+  Dashboard _createDefaultDashboard() {
+    return Dashboard(
+      id: _uuid.v4(),
+      name: 'Mein Dashboard',
+      widgets: [
+        WidgetInstance.create(widgetType: 'weather', config: {'location': 'Berlin'}),
+        WidgetInstance.create(widgetType: 'protein_tracker', config: {'goal': 150}),
+      ],
+    );
   }
 
-  void _loadActiveId() {
-    // Set default active ID to the first dashboard
-    if (state.isNotEmpty) {
-      _activeId = state.first.id;
+  Future<void> _saveActiveId() async {
+    if (_activeId == null) return;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_activeIdKey, _activeId!);
+    } catch (e) {
+      debugPrint('Failed to save active dashboard id: $e');
     }
   }
 
-  void _saveActiveId() {
-    // Simplified — would write to prefs
-  }
-
-  Future<void> _saveDashboards() async {
+  Future<void> _saveDashboards(List<Dashboard> dashboards) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final json = jsonEncode(state.map((d) => d.toJson()).toList());
+      final json = jsonEncode(dashboards.map((d) => d.toJson()).toList());
       await prefs.setString(_storageKey, json);
     } catch (e) {
       debugPrint('Failed to save dashboards: $e');
@@ -241,4 +307,5 @@ class DashboardNotifier extends Notifier<List<Dashboard>> {
 
 /// Riverpod provider for the consolidated dashboard notifier.
 final dashboardNotifierProvider =
-    NotifierProvider<DashboardNotifier, List<Dashboard>>(DashboardNotifier.new);
+    AsyncNotifierProvider<DashboardNotifier, List<Dashboard>>(
+        DashboardNotifier.new);

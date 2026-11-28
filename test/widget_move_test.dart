@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:widgetly/features/dashboard/ui/views/dashboard_view.dart';
+import "package:widgetly/features/dashboard/ui/views/providers.dart";
 import 'package:widgetly/features/widgets/framework/widget_instance.dart';
 
 void main() {

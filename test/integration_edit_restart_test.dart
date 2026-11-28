@@ -9,21 +9,21 @@ void main() {
   group('Integration: edit-add-move-resize-restart', () {
     test('Layout survives restart after add, move, resize', () {
       // Start with empty dashboard
-      var dashboard = Dashboard(
+      var dashboard = const Dashboard(
         id: 'test-dashboard',
         name: 'Test Dashboard',
       );
 
       // Add widgets
-      final weather = WidgetInstance(
+      const weather = WidgetInstance(
         widgetType: 'weather',
         size: WidgetSize.small,
       );
-      final steps = WidgetInstance(
+      const steps = WidgetInstance(
         widgetType: 'steps_tracker',
         size: WidgetSize.medium,
       );
-      final water = WidgetInstance(
+      const water = WidgetInstance(
         widgetType: 'water_tracker',
         size: WidgetSize.large,
       );

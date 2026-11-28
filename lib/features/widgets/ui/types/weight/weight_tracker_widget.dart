@@ -94,7 +94,7 @@ class WeightTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
           LinearProgressIndicator(
             value: progress.clamp(0.0, 1.0).toDouble(),
             backgroundColor: Colors.grey.shade200,
-            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primary),
+            valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primary),
           ),
           const SizedBox(height: 4),
 

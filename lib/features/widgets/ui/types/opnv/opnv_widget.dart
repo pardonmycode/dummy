@@ -36,7 +36,7 @@ class OpnvWidget extends WidgetDefinition<Map<String, dynamic>> {
 
   @override
   List<WidgetConfigField> get configFields => [
-    WidgetConfigField(
+    const WidgetConfigField(
       key: 'stop',
       label: 'Haltestelle',
       description: 'Name deiner Haltestelle',
@@ -69,7 +69,7 @@ class OpnvWidget extends WidgetDefinition<Map<String, dynamic>> {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(
+          const SizedBox(
             width: 24,
             height: 24,
             child: CircularProgressIndicator(strokeWidth: 2),
@@ -85,7 +85,7 @@ class OpnvWidget extends WidgetDefinition<Map<String, dynamic>> {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.error_outline, size: 32, color: AppTheme.error),
+          const Icon(Icons.error_outline, size: 32, color: AppTheme.error),
           const SizedBox(height: 8),
           Text(l10n.opnvError, style: AppTheme.bodySmall),
         ],
@@ -93,11 +93,11 @@ class OpnvWidget extends WidgetDefinition<Map<String, dynamic>> {
     }
 
     // Empty state
-    if (state == WidgetDataState.empty || data == null) {
+    if (state == WidgetDataState.empty) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.train_outlined, size: 48, color: Colors.grey),
+          const Icon(Icons.train_outlined, size: 48, color: Colors.grey),
           const SizedBox(height: 8),
           Text(l10n.opnvEmpty, style: AppTheme.bodySmall),
         ],
@@ -118,7 +118,7 @@ class OpnvWidget extends WidgetDefinition<Map<String, dynamic>> {
         children: [
           Row(
             children: [
-              Icon(Icons.location_on, size: 16, color: AppTheme.primary),
+              const Icon(Icons.location_on, size: 16, color: AppTheme.primary),
               const SizedBox(width: 4),
               Expanded(
                 child: Text(stop, style: AppTheme.titleMedium, maxLines: 1),
@@ -131,7 +131,7 @@ class OpnvWidget extends WidgetDefinition<Map<String, dynamic>> {
             Center(
               child: Column(
                 children: [
-                  Icon(Icons.train_outlined, size: 48, color: Colors.grey),
+                  const Icon(Icons.train_outlined, size: 48, color: Colors.grey),
                   const SizedBox(height: 8),
                   Text(l10n.opnvSoon, style: AppTheme.bodySmall),
                 ],

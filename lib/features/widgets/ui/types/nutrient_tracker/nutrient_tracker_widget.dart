@@ -29,7 +29,7 @@ class NutrientTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
   String get name => _getNutrientName(nutrient);
 
   @override
-  String get description => 'Tägliche ${name}-Aufnahme tracken';
+  String get description => 'Tägliche $name-Aufnahme tracken';
 
   @override
   String get category => 'Gesundheit';
@@ -48,7 +48,7 @@ class NutrientTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
     WidgetConfigField(
       key: defaultGoalKey,
       label: 'Tagesziel ($unit)',
-      description: 'Dein tägliches ${name}-Ziel',
+      description: 'Dein tägliches $name-Ziel',
       type: 'number',
       defaultValue: defaultGoal,
       min: 0,
@@ -123,7 +123,7 @@ class NutrientTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('${consumed}$unit ${l10n.nutrientOf} ${goal}$unit', style: AppTheme.titleMedium),
+              Text('$consumed$unit ${l10n.nutrientOf} $goal$unit', style: AppTheme.titleMedium),
               Text(
                 '${(progress * 100).toInt()}%',
                 style: AppTheme.labelMedium.copyWith(color: AppTheme.primary),
@@ -174,7 +174,7 @@ class NutrientTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                           padding: const EdgeInsets.only(top: 4),
                           child: Row(
                             children: [
-                              Icon(Icons.local_fire_department, size: 14, color: Colors.orange),
+                              const Icon(Icons.local_fire_department, size: 14, color: Colors.orange),
                               const SizedBox(width: 4),
                               Text(l10n.nutrientStreak(streak: streak), style: AppTheme.labelSmall),
                             ],
@@ -204,7 +204,7 @@ class NutrientTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Row(
                     children: [
-                      Icon(Icons.restaurant, size: 16, color: Colors.grey),
+                      const Icon(Icons.restaurant, size: 16, color: Colors.grey),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Column(

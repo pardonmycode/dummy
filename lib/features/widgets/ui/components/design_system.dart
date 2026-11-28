@@ -60,7 +60,7 @@ class ListTileItem extends StatelessWidget {
                   ],
                 ),
               ),
-              if (trailing != null) trailing!,
+              ?trailing,
             ],
           ),
         ),
@@ -125,7 +125,7 @@ class ActionButton extends StatelessWidget {
         width: width,
         child: ElevatedButton.icon(
           icon: loading
-              ? SizedBox(
+              ? const SizedBox(
                   width: 16,
                   height: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
@@ -140,7 +140,7 @@ class ActionButton extends StatelessWidget {
       width: width,
       child: OutlinedButton.icon(
         icon: loading
-            ? SizedBox(
+            ? const SizedBox(
                 width: 16,
                 height: 16,
                 child: CircularProgressIndicator(strokeWidth: 2),
@@ -272,7 +272,7 @@ class SourceSection extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('Quelle: ', style: AppTheme.caption),
+          const Text('Quelle: ', style: AppTheme.caption),
           ...sources.map(
             (s) => SourceChip(name: s['name']?.toString() ?? 'Unbekannt'),
           ),

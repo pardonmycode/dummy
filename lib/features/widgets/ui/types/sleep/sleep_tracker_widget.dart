@@ -30,7 +30,7 @@ class SleepTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
 
   @override
   List<WidgetConfigField> get configFields => [
-    WidgetConfigField(
+    const WidgetConfigField(
       key: 'goal',
       label: 'Schlafziel (h)',
       description: 'Dein tägliches Schlafziel in Stunden',
@@ -75,7 +75,7 @@ class SleepTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('${slept}${l10n.sleepHours} ${l10n.sleepOf} ${goal}${l10n.sleepHours}', style: AppTheme.titleMedium),
+              Text('$slept${l10n.sleepHours} ${l10n.sleepOf} $goal${l10n.sleepHours}', style: AppTheme.titleMedium),
               Text(
                 '${(progress * 100).toInt()}%',
                 style: AppTheme.labelMedium.copyWith(color: AppTheme.accent),
@@ -124,7 +124,7 @@ class SleepTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                       const SizedBox(height: 4),
                       if (quality > 0)
                         Text(
-                          '${l10n.qualityLabel}: ${quality}/10',
+                          '${l10n.qualityLabel}: $quality/10',
                           style: AppTheme.bodySmall,
                         ),
                     ],
@@ -145,7 +145,7 @@ class SleepTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.nights_stay, size: 16, color: AppTheme.accent),
+                  const Icon(Icons.nights_stay, size: 16, color: AppTheme.accent),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(

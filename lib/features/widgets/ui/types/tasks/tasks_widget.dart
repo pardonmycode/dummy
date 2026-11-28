@@ -75,7 +75,7 @@ class TasksWidget extends WidgetDefinition<Map<String, dynamic>> {
             LinearProgressIndicator(
               value: (completed / total).clamp(0.0, 1.0),
               backgroundColor: Colors.grey.shade200,
-              valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primary),
+              valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primary),
             ),
 
           const SizedBox(height: 8),
@@ -85,7 +85,7 @@ class TasksWidget extends WidgetDefinition<Map<String, dynamic>> {
             Center(
               child: Column(
                 children: [
-                  Icon(Icons.task_alt, size: 48, color: Colors.grey),
+                  const Icon(Icons.task_alt, size: 48, color: Colors.grey),
                   const SizedBox(height: 8),
                   Text(l10n.tasksEmpty, style: AppTheme.bodySmall),
                 ],

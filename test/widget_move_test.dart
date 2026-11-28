@@ -19,9 +19,9 @@ void main() {
 
     test('move widget down by one position works', () {
       final widgets = [
-        WidgetInstance(id: 'a', widgetType: 'weather'),
-        WidgetInstance(id: 'b', widgetType: 'steps_tracker'),
-        WidgetInstance(id: 'c', widgetType: 'water_tracker'),
+        const WidgetInstance(id: 'a', widgetType: 'weather'),
+        const WidgetInstance(id: 'b', widgetType: 'steps_tracker'),
+        const WidgetInstance(id: 'c', widgetType: 'water_tracker'),
       ];
       container.read(dashboardWidgetsProvider.notifier).setWidgets(widgets);
 
@@ -38,9 +38,9 @@ void main() {
 
     test('move widget up by one position works', () {
       final widgets = [
-        WidgetInstance(id: 'a', widgetType: 'weather'),
-        WidgetInstance(id: 'b', widgetType: 'steps_tracker'),
-        WidgetInstance(id: 'c', widgetType: 'water_tracker'),
+        const WidgetInstance(id: 'a', widgetType: 'weather'),
+        const WidgetInstance(id: 'b', widgetType: 'steps_tracker'),
+        const WidgetInstance(id: 'c', widgetType: 'water_tracker'),
       ];
       container.read(dashboardWidgetsProvider.notifier).setWidgets(widgets);
 
@@ -55,9 +55,9 @@ void main() {
 
     test('move widget to end works', () {
       final widgets = [
-        WidgetInstance(id: 'a', widgetType: 'weather'),
-        WidgetInstance(id: 'b', widgetType: 'steps_tracker'),
-        WidgetInstance(id: 'c', widgetType: 'water_tracker'),
+        const WidgetInstance(id: 'a', widgetType: 'weather'),
+        const WidgetInstance(id: 'b', widgetType: 'steps_tracker'),
+        const WidgetInstance(id: 'c', widgetType: 'water_tracker'),
       ];
       container.read(dashboardWidgetsProvider.notifier).setWidgets(widgets);
 
@@ -72,9 +72,9 @@ void main() {
 
     test('move widget to beginning works', () {
       final widgets = [
-        WidgetInstance(id: 'a', widgetType: 'weather'),
-        WidgetInstance(id: 'b', widgetType: 'steps_tracker'),
-        WidgetInstance(id: 'c', widgetType: 'water_tracker'),
+        const WidgetInstance(id: 'a', widgetType: 'weather'),
+        const WidgetInstance(id: 'b', widgetType: 'steps_tracker'),
+        const WidgetInstance(id: 'c', widgetType: 'water_tracker'),
       ];
       container.read(dashboardWidgetsProvider.notifier).setWidgets(widgets);
 

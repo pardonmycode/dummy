@@ -11,7 +11,7 @@ import 'package:widgetly/features/widgets/water/data/water_data.dart';
 void main() {
   group('Typed data models - JSON roundtrip', () {
     test('WeatherData roundtrip via jsonEncode/Decode', () {
-      final data = WeatherData(
+      const data = WeatherData(
         temperature: 25.5,
         condition: 'sunny',
         icon: '☀️',
@@ -37,7 +37,7 @@ void main() {
     });
 
     test('StepsData roundtrip via jsonEncode/Decode', () {
-      final data = StepsData(
+      const data = StepsData(
         steps: 8500,
         goal: 10000,
         distanceKm: 6.46,
@@ -56,7 +56,7 @@ void main() {
     });
 
     test('ProteinData roundtrip via jsonEncode/Decode', () {
-      final data = ProteinData(
+      const data = ProteinData(
         consumed: 120,
         goal: 150,
         meals: [
@@ -76,7 +76,7 @@ void main() {
     });
 
     test('PartiesData roundtrip via jsonEncode/Decode', () {
-      final data = PartiesData(
+      const data = PartiesData(
         events: [
           PartyEvent(
             name: 'Club Night',
@@ -120,7 +120,7 @@ void main() {
     });
 
     test('TrackerBase methods via extension', () {
-      final tracker = TrackerBase(target: 10000, unit: 'steps');
+      const tracker = TrackerBase(target: 10000, unit: 'steps');
 
       // addEntry returns new instance (immutability)
       final tracker2 = tracker.addEntry(500);

@@ -1,5 +1,4 @@
 import 'package:material_ui/material_ui.dart';
-import 'package:material_ui/material_ui.dart' show GlobalMaterialLocalizations;
 import 'package:cupertino_ui/cupertino_ui.dart' show GlobalCupertinoLocalizations;
 import 'package:flutter_localizations/flutter_localizations.dart' show GlobalWidgetsLocalizations;
 import 'package:flutter_test/flutter_test.dart';
@@ -8,7 +7,6 @@ import 'package:widgetly/features/widgets/framework/widget_definition.dart';
 import 'package:widgetly/features/widgets/framework/widget_instance.dart';
 import 'package:widgetly/features/dashboard/ui/views/dashboard_view.dart';
 import 'package:widgetly/core/i18n/app_localizations.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'test_helpers.dart';
 
 void main() {
@@ -17,7 +15,7 @@ void main() {
 
   group('Widget instance serialization', () {
     test('WidgetInstance can be serialized and deserialized', () {
-      final instance = WidgetInstance(
+      const instance = WidgetInstance(
         widgetType: 'weather',
         size: WidgetSize.medium,
         config: {'location': 'Berlin'},
@@ -42,7 +40,7 @@ void main() {
     });
 
     test('WidgetInstance clone creates new ID', () {
-      final instance = WidgetInstance(
+      const instance = WidgetInstance(
         widgetType: 'weather',
         config: {'location': 'Berlin'},
       );

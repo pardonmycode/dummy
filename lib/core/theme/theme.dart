@@ -118,10 +118,8 @@ class AppTheme {
     onSecondaryContainer: Color(0xFF4C0080),
     surface: Color(0xFFFFFFFF),
     onSurface: Color(0xFF1A1A1A),
-    surfaceVariant: Color(0xFFF8F9FA),
+    surfaceContainerHighest: Color(0xFFF8F9FA),
     onSurfaceVariant: Color(0xFF6C757D),
-    background: Color(0xFFF8F9FA),
-    onBackground: Color(0xFF1A1A1A),
     error: Color(0xFFE74C3C),
     onError: Colors.white,
     outline: Color(0xFFE9ECEF),
@@ -141,10 +139,8 @@ class AppTheme {
     onSecondaryContainer: Color(0xFFD8A8FF),
     surface: Color(0xFF1E1E1E),
     onSurface: Color(0xFFF0F0F0),
-    surfaceVariant: Color(0xFF121212),
+    surfaceContainerHighest: Color(0xFF121212),
     onSurfaceVariant: Color(0xFFA0A0A0),
-    background: Color(0xFF121212),
-    onBackground: Color(0xFFF0F0F0),
     error: Color(0xFFFF3B30),
     onError: Colors.white,
     outline: Color(0xFF3A3A3A),
@@ -156,7 +152,7 @@ class AppTheme {
     return flutter.ThemeData(
       colorScheme: lightScheme,
       brightness: flutter.Brightness.light,
-      scaffoldBackgroundColor: lightScheme.surfaceVariant,
+      scaffoldBackgroundColor: lightScheme.surfaceContainerHighest,
       cardTheme: flutter.CardThemeData(
         color: lightScheme.surface,
         elevation: 0,
@@ -219,7 +215,7 @@ class AppTheme {
     return flutter.ThemeData(
       colorScheme: darkScheme,
       brightness: flutter.Brightness.dark,
-      scaffoldBackgroundColor: darkScheme.surfaceVariant,
+      scaffoldBackgroundColor: darkScheme.surfaceContainerHighest,
       cardTheme: flutter.CardThemeData(
         color: darkScheme.surface,
         elevation: 0,

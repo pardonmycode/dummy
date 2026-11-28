@@ -1,8 +1,10 @@
-import 'package:flutter/material.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_localizations/flutter_localizations.dart' as fl;
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:widgetly/core/i18n/app_localizations.dart';
 import 'package:widgetly/features/dashboard/ui/views/dashboard_view.dart';
@@ -72,20 +74,20 @@ void main() {
           AppLocalizationsDelegate(),
           GlobalMaterialLocalizations.delegate,
           fl.GlobalWidgetsLocalizations.delegate,
-          fl.GlobalCupertinoLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: const [Locale('en')],
         home: Builder(
           builder: (context) {
             return Material(
-              child: Container(
+              child: SizedBox(
                 width: 300,
                 height: 200,
                 child: sleep.buildView(
                   context,
                   typedData,
                   WidgetDataState.ready,
-                  WidgetConfig({}),
+                  const WidgetConfig({}),
                 ),
               ),
             );
@@ -118,20 +120,20 @@ void main() {
           AppLocalizationsDelegate(),
           GlobalMaterialLocalizations.delegate,
           fl.GlobalWidgetsLocalizations.delegate,
-          fl.GlobalCupertinoLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: const [Locale('en')],
         home: Builder(
           builder: (context) {
             return Material(
-              child: Container(
+              child: SizedBox(
                 width: 300,
                 height: 200,
                 child: weight.buildView(
                   context,
                   typedData,
                   WidgetDataState.ready,
-                  WidgetConfig({}),
+                  const WidgetConfig({}),
                 ),
               ),
             );
@@ -168,20 +170,20 @@ void main() {
           AppLocalizationsDelegate(),
           GlobalMaterialLocalizations.delegate,
           fl.GlobalWidgetsLocalizations.delegate,
-          fl.GlobalCupertinoLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: const [Locale('en')],
         home: Builder(
           builder: (context) {
             return Material(
-              child: Container(
+              child: SizedBox(
                 width: 300,
                 height: 400,
                 child: briefing.buildView(
                   context,
                   typedData,
                   WidgetDataState.ready,
-                  WidgetConfig({}),
+                  const WidgetConfig({}),
                 ),
               ),
             );

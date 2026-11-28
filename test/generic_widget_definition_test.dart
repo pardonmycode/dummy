@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:widgetly/core/i18n/app_localizations.dart';
 import 'package:widgetly/features/widgets/framework/widget_definition.dart';
@@ -43,7 +43,7 @@ void main() {
 
     testWidgets('buildView receives typed data', (tester) async {
       final widget = WeatherWidget();
-      final typedData = WeatherData(
+      const typedData = WeatherData(
         temperature: 20.0,
         condition: 'cloudy',
         icon: 'cloudy',
@@ -62,7 +62,7 @@ void main() {
                 context,
                 typedData,
                 WidgetDataState.ready,
-                WidgetConfig(),
+                const WidgetConfig(),
               );
               return view;
             },

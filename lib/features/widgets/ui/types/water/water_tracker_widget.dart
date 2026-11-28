@@ -1,7 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../../../core/i18n/app_localizations.dart';
-import '../../../../../../core/models/tracker_base.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
@@ -34,7 +33,7 @@ class WaterTrackerWidget extends WidgetDefinition<WaterData> {
   @override
   WaterData parseData(WidgetData? data) {
     if (data == null) {
-      return WaterData(consumed: 0, goal: 2000, entries: []);
+      return const WaterData(consumed: 0, goal: 2000, entries: []);
     }
     try {
       final consumed = (data.data['consumed'] as num?) ?? 0;
@@ -83,7 +82,7 @@ class WaterTrackerWidget extends WidgetDefinition<WaterData> {
               child: Text('${consumed}ml ${l10n.waterOf} ${goal}ml', style: AppTheme.titleMedium),
             ),
             const SizedBox(width: 8),
-            Icon(Icons.water_drop, color: AppTheme.info),
+            const Icon(Icons.water_drop, color: AppTheme.info),
           ],
         ),
         const SizedBox(height: 8),

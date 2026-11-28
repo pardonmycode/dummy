@@ -7,7 +7,7 @@ import '../../widgets/framework/widget_instance.dart';
 import '../../widgets/framework/widget_definition.dart';
 import 'dashboard.dart';
 
-final _uuid = Uuid();
+const _uuid = Uuid();
 
 /// Consolidated notifier managing dashboards, widgets, and undo/redo history.
 class DashboardNotifier extends Notifier<List<Dashboard>> {
@@ -17,8 +17,8 @@ class DashboardNotifier extends Notifier<List<Dashboard>> {
 
   final int _maxHistory;
   String? _activeId;
-  List<List<WidgetInstance>> _undoStack = [];
-  List<List<WidgetInstance>> _redoStack = [];
+  final List<List<WidgetInstance>> _undoStack = [];
+  final List<List<WidgetInstance>> _redoStack = [];
 
   DashboardNotifier({int? maxHistory}) : _maxHistory = maxHistory ?? _maxUndoSteps;
 

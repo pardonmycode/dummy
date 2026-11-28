@@ -74,7 +74,7 @@ class TagesbriefingWidget extends WidgetDefinition<Map<String, dynamic>> {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.auto_awesome, size: 16, color: AppTheme.accent),
+                    const Icon(Icons.auto_awesome, size: 16, color: AppTheme.accent),
                     const SizedBox(width: 8),
                     Text(l10n.briefingAiSummary, style: AppTheme.labelMedium),
                   ],
@@ -175,7 +175,7 @@ class _BriefingSection extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(vertical: 2),
                         child: Row(
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.circle,
                               size: 6,
                               color: AppTheme.primary,

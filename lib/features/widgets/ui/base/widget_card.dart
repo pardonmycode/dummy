@@ -120,12 +120,12 @@ class WidgetCard extends ConsumerWidget {
           width: 8,
           height: 8,
           margin: const EdgeInsets.only(right: 4),
-          child: CircularProgressIndicator(strokeWidth: 2),
+          child: const CircularProgressIndicator(strokeWidth: 2),
         );
       case WidgetDataState.stale:
-        return Icon(Icons.access_time, size: 12, color: Colors.orange);
+        return const Icon(Icons.access_time, size: 12, color: Colors.orange);
       case WidgetDataState.error:
-        return Icon(Icons.error, size: 12, color: Colors.red);
+        return const Icon(Icons.error, size: 12, color: Colors.red);
       default:
         return Container();
     }
@@ -153,9 +153,9 @@ class WidgetCard extends ConsumerWidget {
         final typedOfflineData = definition.parseData(data);
         body = Column(
           children: [
-            Icon(Icons.cloud_off, size: 32, color: Colors.grey),
+            const Icon(Icons.cloud_off, size: 32, color: Colors.grey),
             const SizedBox(height: 8),
-            Text('Offline', style: AppTheme.bodySmall),
+            const Text('Offline', style: AppTheme.bodySmall),
             const SizedBox(height: 8),
             definition.buildView(context, typedOfflineData, state, config),
           ],
@@ -197,7 +197,7 @@ class WidgetCard extends ConsumerWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(Icons.warning_amber_rounded, size: 32, color: Colors.orange),
+        const Icon(Icons.warning_amber_rounded, size: 32, color: Colors.orange),
         const SizedBox(height: 8),
         Text(
           'Schema-Fehler',
@@ -371,12 +371,12 @@ class WidgetCard extends ConsumerWidget {
   }
 
   Widget _buildError() {
-    return Center(
+    return const Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.error_outline, size: 32, color: Colors.red),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text('Fehler beim Laden', style: AppTheme.bodySmall),
         ],
       ),
@@ -384,12 +384,12 @@ class WidgetCard extends ConsumerWidget {
   }
 
   Widget _buildEmpty() {
-    return Center(
+    return const Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.inbox, size: 32, color: Colors.grey),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text('Keine Daten', style: AppTheme.bodySmall),
         ],
       ),

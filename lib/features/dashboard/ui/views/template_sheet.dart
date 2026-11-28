@@ -30,19 +30,19 @@ void showTemplates(
               onTap: () {
                 Navigator.pop(ctx);
                 ref.read(dashboardWidgetsProvider.notifier).setWidgets([
-                  WidgetInstance(
+                  const WidgetInstance(
                     widgetType: WidgetTypeIds.stepsTracker,
                     config: {},
                   ),
-                  WidgetInstance(
+                  const WidgetInstance(
                     widgetType: 'protein_tracker',
                     config: {'goal': 150},
                   ),
-                  WidgetInstance(
+                  const WidgetInstance(
                     widgetType: 'water_tracker',
                     config: {},
                   ),
-                  WidgetInstance(
+                  const WidgetInstance(
                     widgetType: WidgetTypeIds.weightTracker,
                     config: {},
                   ),
@@ -59,9 +59,9 @@ void showTemplates(
               onTap: () {
                 Navigator.pop(ctx);
                 ref.read(dashboardWidgetsProvider.notifier).setWidgets([
-                  WidgetInstance(widgetType: WidgetTypeIds.tasks, config: {}),
-                  WidgetInstance(widgetType: WidgetTypeIds.calendar, config: {}),
-                  WidgetInstance(widgetType: WidgetTypeIds.quickNotes, config: {}),
+                  const WidgetInstance(widgetType: WidgetTypeIds.tasks, config: {}),
+                  const WidgetInstance(widgetType: WidgetTypeIds.calendar, config: {}),
+                  const WidgetInstance(widgetType: WidgetTypeIds.quickNotes, config: {}),
                 ]);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text(context.l10n.workTemplateApplied)),
@@ -75,7 +75,7 @@ void showTemplates(
               onTap: () {
                 Navigator.pop(ctx);
                 ref.read(dashboardWidgetsProvider.notifier).setWidgets([
-                  WidgetInstance(
+                  const WidgetInstance(
                     widgetType: WidgetTypeIds.weather,
                     config: {'location': 'Berlin'},
                   ),

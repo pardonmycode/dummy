@@ -107,7 +107,7 @@ class CarbsTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                 ),
                 child: Column(
                   children: [
-                    Text('${consumed}', style: AppTheme.bodyMedium),
+                    Text('$consumed', style: AppTheme.bodyMedium),
                     Text(l10n.carbsEaten, style: AppTheme.labelSmall),
                   ],
                 ),

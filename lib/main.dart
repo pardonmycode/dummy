@@ -1,12 +1,8 @@
-import 'dart:async';
 
 import 'package:material_ui/material_ui.dart' as flutter;
-import 'package:material_ui/material_ui.dart' show GlobalMaterialLocalizations, GlobalWidgetsLocalizations;
 import 'package:cupertino_ui/cupertino_ui.dart' show GlobalCupertinoLocalizations;
 import 'package:flutter_localizations/flutter_localizations.dart' as flutter_localizations;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/scheduler.dart' show SchedulerBinding;
-import 'package:flutter/foundation.dart' show AppLifecycleState;
 import 'package:material_ui/material_ui.dart';
 
 import 'core/i18n/app_localizations.dart';

@@ -28,7 +28,7 @@ class WeatherWidget extends WidgetDefinition<WeatherData> {
 
   @override
   List<WidgetConfigField> get configFields => [
-    WidgetConfigField(
+    const WidgetConfigField(
       key: 'location',
       label: 'Ort',
       description: 'Standort für Wetterinformationen',
@@ -40,7 +40,7 @@ class WeatherWidget extends WidgetDefinition<WeatherData> {
   @override
   WeatherData parseData(WidgetData? data) {
     if (data == null) {
-      return WeatherData(
+      return const WeatherData(
         temperature: 0,
         condition: 'unknown',
         icon: 'unknown',
@@ -67,7 +67,7 @@ class WeatherWidget extends WidgetDefinition<WeatherData> {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.wb_sunny_outlined, size: 48, color: Colors.grey),
+          const Icon(Icons.wb_sunny_outlined, size: 48, color: Colors.grey),
           const SizedBox(height: 8),
           Text(l10n.noWeatherData, style: AppTheme.bodySmall),
         ],
@@ -81,7 +81,7 @@ class WeatherWidget extends WidgetDefinition<WeatherData> {
         children: [
           Row(
             children: [
-              Icon(Icons.cloud_off, size: 16, color: Colors.grey),
+              const Icon(Icons.cloud_off, size: 16, color: Colors.grey),
               const SizedBox(width: 4),
               Text(l10n.offlineCached, style: AppTheme.caption),
             ],
@@ -122,7 +122,7 @@ class WeatherWidget extends WidgetDefinition<WeatherData> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '${current}°C',
+                        '$current°C',
                         style: AppTheme.titleMedium,
                       ),
                       Text(

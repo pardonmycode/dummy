@@ -39,7 +39,7 @@ class PartiesWidget extends WidgetDefinition<PartiesData> {
   @override
   PartiesData parseData(WidgetData? data) {
     if (data == null) {
-      return PartiesData(events: []);
+      return const PartiesData(events: []);
     }
     try {
       final rawEvents = data.data['events'] as List? ?? [];
@@ -64,7 +64,7 @@ class PartiesWidget extends WidgetDefinition<PartiesData> {
       
       return PartiesData(events: events);
     } catch (e) {
-      return PartiesData(events: []);
+      return const PartiesData(events: []);
     }
   }
 
@@ -85,7 +85,7 @@ class PartiesWidget extends WidgetDefinition<PartiesData> {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.celebration, size: 48, color: Colors.grey),
+          const Icon(Icons.celebration, size: 48, color: Colors.grey),
           const SizedBox(height: 8),
           Text(l10n.partiesNoEvents, style: AppTheme.bodySmall),
           const SizedBox(height: 4),
@@ -106,7 +106,7 @@ class PartiesWidget extends WidgetDefinition<PartiesData> {
           child: Container(
             width: 24,
             height: 24,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: AppTheme.accent,
               shape: BoxShape.circle,
               boxShadow: AppTheme.shadowSm,

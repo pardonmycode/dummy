@@ -149,7 +149,7 @@ class CustomTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Row(
                     children: [
-                      Icon(Icons.add_circle, size: 16, color: Colors.grey),
+                      const Icon(Icons.add_circle, size: 16, color: Colors.grey),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Column(

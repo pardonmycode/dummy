@@ -58,7 +58,7 @@ class NewsWidget extends WidgetDefinition<Map<String, dynamic>> {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(
+          const SizedBox(
             width: 24,
             height: 24,
             child: CircularProgressIndicator(strokeWidth: 2),
@@ -74,7 +74,7 @@ class NewsWidget extends WidgetDefinition<Map<String, dynamic>> {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.error_outline, size: 32, color: AppTheme.error),
+          const Icon(Icons.error_outline, size: 32, color: AppTheme.error),
           const SizedBox(height: 8),
           Text(l10n.newsError, style: AppTheme.bodySmall),
         ],
@@ -82,11 +82,11 @@ class NewsWidget extends WidgetDefinition<Map<String, dynamic>> {
     }
 
     // Empty state
-    if (state == WidgetDataState.empty || data == null) {
+    if (state == WidgetDataState.empty) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.newspaper_outlined, size: 48, color: Colors.grey),
+          const Icon(Icons.newspaper_outlined, size: 48, color: Colors.grey),
           const SizedBox(height: 8),
           Text(l10n.newsEmpty, style: AppTheme.bodySmall),
         ],
@@ -105,7 +105,7 @@ class NewsWidget extends WidgetDefinition<Map<String, dynamic>> {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.newspaper_outlined, size: 48, color: Colors.grey),
+          const Icon(Icons.newspaper_outlined, size: 48, color: Colors.grey),
           const SizedBox(height: 8),
           Text(l10n.newsEmpty, style: AppTheme.bodySmall),
         ],
@@ -177,7 +177,7 @@ class NewsWidget extends WidgetDefinition<Map<String, dynamic>> {
                 ],
               ),
             );
-          }).toList(),
+          }),
         ],
       ),
     );

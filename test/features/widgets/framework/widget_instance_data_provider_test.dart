@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:widgetly/features/widgets/framework/mock_widget_data_repository.dart';
-import 'package:widgetly/features/widgets/framework/widget_data_repository.dart';
 import 'package:widgetly/features/widgets/framework/widget_instance_data_provider.dart';
 
 void main() {
@@ -27,7 +26,7 @@ void main() {
     });
 
     test('can be refreshed via invalidate', () {
-      final instance = 'test-widget-2';
+      const instance = 'test-widget-2';
       // Initial read
       final initial = container.read(widgetDataProvider(instance));
       expect(initial, isA<AsyncValue<Map<String, dynamic>>>());

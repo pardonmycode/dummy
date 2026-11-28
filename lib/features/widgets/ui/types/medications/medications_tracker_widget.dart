@@ -62,7 +62,7 @@ class MedicationsTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
             Center(
               child: Column(
                 children: [
-                  Icon(Icons.medication, size: 48, color: Colors.grey),
+                  const Icon(Icons.medication, size: 48, color: Colors.grey),
                   const SizedBox(height: 8),
                   Text(
                     l10n.medicationsNoneToday,
@@ -152,7 +152,7 @@ class MedicationsTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                 padding: const EdgeInsets.symmetric(vertical: 2),
                 child: Row(
                   children: [
-                    Icon(Icons.alarm, size: 14, color: Colors.orange),
+                    const Icon(Icons.alarm, size: 14, color: Colors.orange),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text('$name $time', style: AppTheme.bodySmall),
@@ -160,7 +160,7 @@ class MedicationsTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                   ],
                 ),
               );
-            }).toList(),
+            }),
           ],
         ],
       ),

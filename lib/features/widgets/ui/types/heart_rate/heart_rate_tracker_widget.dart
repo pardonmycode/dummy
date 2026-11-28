@@ -63,14 +63,14 @@ class HeartRateTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(l10n.heartRateCurrent, style: AppTheme.labelSmall),
-                  Text('${current} ${l10n.heartRateBpm}', style: AppTheme.titleMedium),
+                  Text('$current ${l10n.heartRateBpm}', style: AppTheme.titleMedium),
                 ],
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(l10n.heartRateResting, style: AppTheme.labelSmall),
-                  Text('${resting} ${l10n.heartRateBpm}', style: AppTheme.titleSmall),
+                  Text('$resting ${l10n.heartRateBpm}', style: AppTheme.titleSmall),
                 ],
               ),
             ],
@@ -88,7 +88,7 @@ class HeartRateTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(l10n.heartRateMax, style: AppTheme.bodySmall),
-                  Text('${max} ${l10n.heartRateBpm}', style: AppTheme.bodyMedium),
+                  Text('$max ${l10n.heartRateBpm}', style: AppTheme.bodyMedium),
                 ],
               ),
             ),
@@ -103,7 +103,7 @@ class HeartRateTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
             ),
             child: Row(
               children: [
-                Icon(Icons.heart_broken, size: 16, color: Colors.red),
+                const Icon(Icons.heart_broken, size: 16, color: Colors.red),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(

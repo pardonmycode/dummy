@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -11,7 +9,6 @@ import 'package:uuid/uuid.dart';
 import '../../../../core/i18n/app_localizations.dart';
 import '../../../../core/theme/theme.dart';
 import '../domain/dashboards_notifier.dart';
-import '../../domain/dashboard_sync_service.dart';
 import '../../../widgets/framework/widget_definition.dart';
 import '../../../widgets/framework/widget_data.dart';
 import '../../../widgets/framework/widget_instance.dart';
@@ -19,7 +16,6 @@ import '../../../widgets/framework/widget_registry.dart';
 import '../../../widgets/framework/widget_schema_validator.dart';
 import '../../../widgets/framework/widget_schema_migration.dart';
 import '../../../widgets/framework/widget_providers.dart';
-import '../../../widgets/framework/widget_local_cache.dart';
 import '../../../widgets/framework/mock_widget_data_provider.dart';
 import '../../../widgets/ui/base/widget_card.dart';
 import 'widget_catalog.dart';
@@ -31,7 +27,7 @@ import 'template_sheet.dart';
 export 'widget_catalog.dart' show widgetRegistryProvider;
 
 // Singleton Uuid instance
-final _uuid = Uuid();
+const _uuid = Uuid();
 
 // Providers
 
@@ -220,7 +216,7 @@ class DashboardView extends ConsumerWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final scheme = theme.colorScheme;
-    final bg = scheme.surfaceVariant;
+    final bg = scheme.surfaceContainerHighest;
     final widgets = ref.watch(dashboardWidgetsProvider);
     final registry = ref.watch(widgetRegistryProvider);
     final isEditing = ref.watch(isEditingProvider);
@@ -471,7 +467,7 @@ class DashboardView extends ConsumerWidget {
                   },
                 ),
                 IconButton(
-                  icon: Icon(Icons.delete, color: Colors.red),
+                  icon: const Icon(Icons.delete, color: Colors.red),
                   onPressed: () {
                     ref
                         .read(undoHistoryProvider.notifier)
@@ -639,7 +635,7 @@ class DashboardView extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.extension, size: 48, color: Colors.grey),
+            const Icon(Icons.extension, size: 48, color: Colors.grey),
             const SizedBox(height: 8),
             Text('Widget: $type', style: AppTheme.bodySmall),
           ],
@@ -673,7 +669,7 @@ class DashboardView extends ConsumerWidget {
                   leading: Icon(def.icon, color: def.color),
                   title: Text(def.name),
                   subtitle: Text(def.description),
-                  trailing: Icon(Icons.add, color: AppTheme.primary),
+                  trailing: const Icon(Icons.add, color: AppTheme.primary),
                   onTap: () {
                     ref
                         .read(undoHistoryProvider.notifier)

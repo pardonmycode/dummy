@@ -2,6 +2,7 @@
 ///
 /// All widget types must use these constants instead of magic strings
 /// to prevent typos and ensure consistency across the codebase.
+library;
 
 class WidgetTypeIds {
   WidgetTypeIds._();

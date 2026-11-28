@@ -8,7 +8,7 @@ import 'dart:convert';
 void main() {
   group('Phase 3.1: Freezed models', () {
     test('WidgetInstance has freezed copyWith and equality', () {
-      final instance = WidgetInstance(
+      const instance = WidgetInstance(
         id: 'test-id',
         widgetType: 'weather',
         size: WidgetSize.medium,
@@ -27,7 +27,7 @@ void main() {
     });
 
     test('Dashboard has freezed copyWith and equality', () {
-      final dashboard = Dashboard(id: 'test-dash-id', name: 'Test Dashboard');
+      const dashboard = Dashboard(id: 'test-dash-id', name: 'Test Dashboard');
       final updated = dashboard.copyWith(name: 'Updated Name');
 
       expect(updated.id, equals('test-dash-id'));
@@ -52,7 +52,7 @@ void main() {
     });
 
     test('WidgetInstance JSON roundtrip preserves types', () {
-      final instance = WidgetInstance(
+      const instance = WidgetInstance(
         id: 'test-id',
         widgetType: 'steps_tracker',
         size: WidgetSize.small,
@@ -67,11 +67,11 @@ void main() {
       expect(decoded.widgetType, equals('steps_tracker'));
       expect(decoded.size, equals(WidgetSize.small));
       expect(decoded.config['goal'], equals(10000));
-      expect(decoded.gridPosition!['row'], equals(1));
+      expect(decoded.gridPosition['row'], equals(1));
     });
 
     test('Dashboard JSON roundtrip', () {
-      final dashboard = Dashboard(
+      const dashboard = Dashboard(
         id: 'test-dash-id',
         name: 'Health Dashboard',
         widgets: [

@@ -75,7 +75,7 @@ class StepsTrackerWidget extends WidgetDefinition<StepsData> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text('$steps ${l10n.stepsLabel}', style: AppTheme.titleMedium),
-            Icon(Icons.directions_walk, color: AppTheme.success),
+            const Icon(Icons.directions_walk, color: AppTheme.success),
           ],
         ),
         const SizedBox(height: 8),
@@ -114,7 +114,7 @@ class StepsTrackerWidget extends WidgetDefinition<StepsData> {
         if (streak > 0)
           Row(
             children: [
-              Icon(Icons.local_fire_department, size: 16, color: Colors.orange),
+              const Icon(Icons.local_fire_department, size: 16, color: Colors.orange),
               const SizedBox(width: 4),
               Text(l10n.stepsStreak(streak: streak), style: AppTheme.labelMedium),
             ],

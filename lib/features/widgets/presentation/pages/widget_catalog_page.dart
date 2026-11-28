@@ -302,7 +302,7 @@ class _WidgetCatalogPageState extends ConsumerState<WidgetCatalogPage> {
                   context,
                   widgetData,
                   WidgetDataState.ready,
-                  WidgetConfig({}),
+                  const WidgetConfig({}),
                 ),
               ),
             ),

@@ -30,7 +30,7 @@ void main() {
     });
 
     test('importLayout handles versioned format', () {
-      final json = '''
+      const json = '''
       {
         "version": 2,
         "exportedAt": "2026-11-27T10:00:00Z",
@@ -50,7 +50,7 @@ void main() {
     });
 
     test('importLayout handles legacy format', () {
-      final json = '''
+      const json = '''
       {
         "id": "legacy-dash",
         "name": "Legacy Dashboard",

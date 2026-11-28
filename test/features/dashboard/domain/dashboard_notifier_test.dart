@@ -32,7 +32,7 @@ void main() {
       final notifier = container.read(dashboardNotifierProvider.notifier);
       final initial = notifier.activeDashboard!.widgets.length;
 
-      notifier.addActiveWidget(WidgetInstance(widgetType: 'weather'));
+      notifier.addActiveWidget(const WidgetInstance(widgetType: 'weather'));
       expect(notifier.activeDashboard!.widgets.length, initial + 1);
 
       notifier.undo();
@@ -44,9 +44,9 @@ void main() {
 
     test('can move widget within active dashboard', () {
       final notifier = container.read(dashboardNotifierProvider.notifier);
-      notifier.addActiveWidget(WidgetInstance(widgetType: 'weather'));
-      notifier.addActiveWidget(WidgetInstance(widgetType: 'steps_tracker'));
-      notifier.addActiveWidget(WidgetInstance(widgetType: 'water_tracker'));
+      notifier.addActiveWidget(const WidgetInstance(widgetType: 'weather'));
+      notifier.addActiveWidget(const WidgetInstance(widgetType: 'steps_tracker'));
+      notifier.addActiveWidget(const WidgetInstance(widgetType: 'water_tracker'));
 
       expect(notifier.activeDashboard!.widgets[0].widgetType, 'weather');
       expect(notifier.activeDashboard!.widgets[1].widgetType, 'steps_tracker');
@@ -60,8 +60,8 @@ void main() {
 
     test('can remove active widget', () {
       final notifier = container.read(dashboardNotifierProvider.notifier);
-      notifier.addActiveWidget(WidgetInstance(widgetType: 'weather'));
-      notifier.addActiveWidget(WidgetInstance(widgetType: 'steps_tracker'));
+      notifier.addActiveWidget(const WidgetInstance(widgetType: 'weather'));
+      notifier.addActiveWidget(const WidgetInstance(widgetType: 'steps_tracker'));
 
       notifier.removeActiveWidget(0);
       expect(notifier.activeDashboard!.widgets.length, 1);
@@ -77,10 +77,10 @@ void main() {
 
     test('undo/redo is bounded to max steps', () {
       final notifier = container.read(dashboardNotifierProvider.notifier);
-      notifier.addActiveWidget(WidgetInstance(widgetType: 'weather'));
-      notifier.addActiveWidget(WidgetInstance(widgetType: 'steps'));
-      notifier.addActiveWidget(WidgetInstance(widgetType: 'water'));
-      notifier.addActiveWidget(WidgetInstance(widgetType: 'protein'));
+      notifier.addActiveWidget(const WidgetInstance(widgetType: 'weather'));
+      notifier.addActiveWidget(const WidgetInstance(widgetType: 'steps'));
+      notifier.addActiveWidget(const WidgetInstance(widgetType: 'water'));
+      notifier.addActiveWidget(const WidgetInstance(widgetType: 'protein'));
 
       // Only last 3 should be undoable
       notifier.undo();

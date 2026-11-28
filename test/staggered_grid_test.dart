@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,15 +23,15 @@ void main() {
           overrides: [
             dashboardWidgetsProvider.overrideWith((ref) {
               return DashboardWidgetsNotifier()..setWidgets([
-                WidgetInstance(
+                const WidgetInstance(
                     id: 'widget-small',
                     widgetType: 'weather',
                     size: WidgetSize.small),
-                WidgetInstance(
+                const WidgetInstance(
                     id: 'widget-medium',
                     widgetType: 'steps_tracker',
                     size: WidgetSize.medium),
-                WidgetInstance(
+                const WidgetInstance(
                     id: 'widget-large',
                     widgetType: 'weather',
                     size: WidgetSize.large),

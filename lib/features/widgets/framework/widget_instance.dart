@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';
 import 'widget_definition.dart';
 
@@ -7,7 +6,7 @@ part 'widget_instance.freezed.dart';
 part 'widget_instance.g.dart';
 
 /// Singleton Uuid instance to avoid recreating on every WidgetInstance.
-final _uuid = Uuid();
+const _uuid = Uuid();
 
 Map<String, dynamic>? _configFromJson(dynamic json) {
   if (json == null) return null;

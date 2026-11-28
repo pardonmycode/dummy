@@ -61,7 +61,7 @@ class CalorieTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('${consumed} ${l10n.caloriesOf} ${goal} ${l10n.caloriesUnit}', style: AppTheme.titleMedium),
+              Text('$consumed ${l10n.caloriesOf} $goal ${l10n.caloriesUnit}', style: AppTheme.titleMedium),
               Text(
                 '${(progress * 100).toInt()}%',
                 style: AppTheme.labelMedium.copyWith(color: Colors.red),
@@ -109,7 +109,7 @@ class CalorieTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Noch ${remaining} ${l10n.caloriesUnit}',
+                        'Noch $remaining ${l10n.caloriesUnit}',
                         style: AppTheme.bodyMedium,
                       ),
                       const SizedBox(height: 4),
@@ -142,7 +142,7 @@ class CalorieTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Row(
                     children: [
-                      Icon(Icons.restaurant, size: 16, color: Colors.grey),
+                      const Icon(Icons.restaurant, size: 16, color: Colors.grey),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Column(

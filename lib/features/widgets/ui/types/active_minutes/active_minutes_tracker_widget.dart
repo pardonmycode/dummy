@@ -138,7 +138,7 @@ class ActiveMinutesTrackerWidget extends WidgetDefinition<Map<String, dynamic>> 
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Row(
                     children: [
-                      Icon(Icons.sports_score, size: 16, color: Colors.grey),
+                      const Icon(Icons.sports_score, size: 16, color: Colors.grey),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Column(

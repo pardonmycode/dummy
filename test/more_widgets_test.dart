@@ -10,7 +10,6 @@ import 'package:widgetly/features/widgets/ui/types/mood/mood_tracker_widget.dart
 import 'package:widgetly/features/widgets/ui/types/tasks/tasks_widget.dart';
 import 'package:widgetly/features/dashboard/ui/views/dashboard_view.dart';
 import 'package:widgetly/core/i18n/app_localizations.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'test_helpers.dart';
 
 void main() {
@@ -54,9 +53,9 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        localizationsDelegates: [
+        localizationsDelegates: const [
           AppLocalizationsDelegate(),
-          fl.GlobalMaterialLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
           fl.GlobalWidgetsLocalizations.delegate,
         ],
         supportedLocales: AppLocalizations.supportedLocales,
@@ -64,14 +63,14 @@ void main() {
         home: Builder(
           builder: (context) {
             return Material(
-              child: Container(
+              child: SizedBox(
                 width: 300,
                 height: 200,
                 child: bodyFat.buildView(
                   context,
                   typedData,
                   WidgetDataState.ready,
-                  WidgetConfig({}),
+                  const WidgetConfig({}),
                 ),
               ),
             );
@@ -94,9 +93,9 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        localizationsDelegates: [
+        localizationsDelegates: const [
           AppLocalizationsDelegate(),
-          fl.GlobalMaterialLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
           fl.GlobalWidgetsLocalizations.delegate,
         ],
         supportedLocales: AppLocalizations.supportedLocales,
@@ -104,14 +103,14 @@ void main() {
         home: Builder(
           builder: (context) {
             return Material(
-              child: Container(
+              child: SizedBox(
                 width: 300,
                 height: 200,
                 child: heartRate.buildView(
                   context,
                   typedData,
                   WidgetDataState.ready,
-                  WidgetConfig({}),
+                  const WidgetConfig({}),
                 ),
               ),
             );
@@ -138,9 +137,9 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        localizationsDelegates: [
+        localizationsDelegates: const [
           AppLocalizationsDelegate(),
-          fl.GlobalMaterialLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
           fl.GlobalWidgetsLocalizations.delegate,
         ],
         supportedLocales: AppLocalizations.supportedLocales,
@@ -148,14 +147,14 @@ void main() {
         home: Builder(
           builder: (context) {
             return Material(
-              child: Container(
+              child: SizedBox(
                 width: 300,
                 height: 200,
                 child: mood.buildView(
                   context,
                   typedData,
                   WidgetDataState.ready,
-                  WidgetConfig({}),
+                  const WidgetConfig({}),
                 ),
               ),
             );
@@ -184,9 +183,9 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        localizationsDelegates: [
+        localizationsDelegates: const [
           AppLocalizationsDelegate(),
-          fl.GlobalMaterialLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
           fl.GlobalWidgetsLocalizations.delegate,
         ],
         supportedLocales: AppLocalizations.supportedLocales,
@@ -194,14 +193,14 @@ void main() {
         home: Builder(
           builder: (context) {
             return Material(
-              child: Container(
+              child: SizedBox(
                 width: 300,
                 height: 300,
                 child: tasks.buildView(
                   context,
                   typedData,
                   WidgetDataState.ready,
-                  WidgetConfig({}),
+                  const WidgetConfig({}),
                 ),
               ),
             );

@@ -18,21 +18,16 @@ class MetricTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
   final double defaultGoal;
 
   MetricTrackerWidget({
-    required String id,
-    required String name,
-    required String description,
-    required String unit,
-    required IconData icon,
-    required Color color,
+    required this._id,
+    required this._name,
+    required this._description,
+    required this._unit,
+    required this._icon,
+    required this._color,
     this.goalKey = 'goal',
     this.valueKey = 'value',
     this.defaultGoal = 100,
-  })  : _id = id,
-        _name = name,
-        _description = description,
-        _unit = unit,
-        _icon = icon,
-        _color = color;
+  });
 
   @override
   String get id => _id;

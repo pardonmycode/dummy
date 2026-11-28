@@ -61,7 +61,7 @@ class QuickNotesWidget extends WidgetDefinition<Map<String, dynamic>> {
             Center(
               child: Column(
                 children: [
-                  Icon(Icons.sticky_note_2, size: 48, color: Colors.grey),
+                  const Icon(Icons.sticky_note_2, size: 48, color: Colors.grey),
                   const SizedBox(height: 8),
                   Text(l10n.notesEmpty, style: AppTheme.bodySmall),
                 ],
@@ -123,7 +123,7 @@ class QuickNotesWidget extends WidgetDefinition<Map<String, dynamic>> {
                                       ),
                                     ),
                                   );
-                                }).toList(),
+                                }),
                                 if (timestamp.isNotEmpty)
                                   Padding(
                                     padding: const EdgeInsets.only(left: 4),

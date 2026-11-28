@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 class AppLocalizations {
@@ -37,7 +36,7 @@ class AppLocalizations {
   String translateWithParams(String key, Map<String, String> params) {
     String result = _messages[key] ?? key;
     for (var entry in params.entries) {
-      result = result.replaceAll('{' + entry.key + '}', entry.value);
+      result = result.replaceAll('{${entry.key}}', entry.value);
     }
     return result;
   }

@@ -67,7 +67,7 @@ class CalendarWidget extends WidgetDefinition<Map<String, dynamic>> {
             Center(
               child: Column(
                 children: [
-                  Icon(Icons.event, size: 48, color: Colors.grey),
+                  const Icon(Icons.event, size: 48, color: Colors.grey),
                   const SizedBox(height: 8),
                   Text(l10n.calendarNoEvents, style: AppTheme.bodySmall),
                 ],
@@ -91,7 +91,7 @@ class CalendarWidget extends WidgetDefinition<Map<String, dynamic>> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.event, size: 16, color: AppTheme.primary),
+                      const Icon(Icons.event, size: 16, color: AppTheme.primary),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Column(
@@ -125,13 +125,13 @@ class CalendarWidget extends WidgetDefinition<Map<String, dynamic>> {
                 padding: const EdgeInsets.symmetric(vertical: 2),
                 child: Row(
                   children: [
-                    Icon(Icons.access_time, size: 14, color: Colors.green),
+                    const Icon(Icons.access_time, size: 14, color: Colors.green),
                     const SizedBox(width: 8),
                     Text('$start - $end', style: AppTheme.bodySmall),
                   ],
                 ),
               );
-            }).toList(),
+            }),
           ],
         ],
       ),

@@ -147,7 +147,7 @@ class DistanceTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Row(
                     children: [
-                      Icon(Icons.directions_run, size: 16, color: Colors.grey),
+                      const Icon(Icons.directions_run, size: 16, color: Colors.grey),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Column(

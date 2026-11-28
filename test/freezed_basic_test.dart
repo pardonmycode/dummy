@@ -4,7 +4,7 @@ import 'package:widgetly/features/widgets/framework/widget_definition.dart';
 
 void main() {
   test('basic freezed instance', () {
-    final instance = WidgetInstance(
+    const instance = WidgetInstance(
       id: 'test-id',
       widgetType: 'weather',
       size: WidgetSize.medium,

@@ -1,6 +1,5 @@
 import 'package:material_ui/material_ui.dart';
 
-import '../../../../core/theme/theme.dart';
 import '../../framework/widget_definition.dart';
 
 /// Standardized action menu for all widget cards.
@@ -39,7 +38,7 @@ class WidgetActionMenu extends StatelessWidget {
 
     // Popup menu with all actions
     return PopupMenuButton<WidgetAction>(
-      icon: Icon(Icons.more_vert, size: 14),
+      icon: const Icon(Icons.more_vert, size: 14),
       padding: EdgeInsets.zero,
       constraints: const BoxConstraints(),
       itemBuilder: (context) => [

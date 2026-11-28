@@ -98,7 +98,7 @@ class StressTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.lightbulb, size: 16, color: Colors.orange),
+                  const Icon(Icons.lightbulb, size: 16, color: Colors.orange),
                   const SizedBox(width: 8),
                   Expanded(child: Text(advice, style: AppTheme.bodySmall)),
                 ],

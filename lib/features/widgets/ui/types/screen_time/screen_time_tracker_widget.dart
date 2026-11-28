@@ -62,7 +62,7 @@ class ScreenTimeTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('${hours}${l10n.screenTimeHours} ${minutes}${l10n.screenTimeMinutes}', style: AppTheme.titleMedium),
+              Text('$hours${l10n.screenTimeHours} $minutes${l10n.screenTimeMinutes}', style: AppTheme.titleMedium),
               Text(l10n.screenTimeGoal(goal: goalHours), style: AppTheme.labelSmall),
             ],
           ),
@@ -71,7 +71,7 @@ class ScreenTimeTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
           LinearProgressIndicator(
             value: (totalMinutes / goalMinutes).clamp(0.0, 1.0),
             backgroundColor: Colors.grey.shade200,
-            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primary),
+            valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primary),
           ),
           const SizedBox(height: 12),
 
@@ -92,13 +92,13 @@ class ScreenTimeTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Row(
                     children: [
-                      Icon(Icons.apps, size: 16, color: Colors.grey),
+                      const Icon(Icons.apps, size: 16, color: Colors.grey),
                       const SizedBox(width: 8),
                       Expanded(child: Text(name, style: AppTheme.bodyMedium)),
                       Text(
                         appHours > 0
-                            ? '${appHours}${l10n.screenTimeHours} ${appMins}${l10n.screenTimeMinutes}'
-                            : '${appMins}${l10n.screenTimeMinutes}',
+                            ? '$appHours${l10n.screenTimeHours} $appMins${l10n.screenTimeMinutes}'
+                            : '$appMins${l10n.screenTimeMinutes}',
                         style: AppTheme.bodySmall,
                       ),
                     ],

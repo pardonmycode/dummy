@@ -78,7 +78,7 @@ class BodyFatTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
           LinearProgressIndicator(
             value: progress.clamp(0.0, 1.0).toDouble(),
             backgroundColor: Colors.grey.shade200,
-            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.accent),
+            valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.accent),
           ),
           const SizedBox(height: 4),
 

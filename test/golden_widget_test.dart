@@ -1,3 +1,4 @@
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -19,7 +20,7 @@ void main() {
     final registry = WidgetRegistry();
     registry.register(WeatherWidget());
 
-    final instance = WidgetInstance(
+    const instance = WidgetInstance(
       widgetType: 'weather',
       size: WidgetSize.medium,
       config: {'location': 'Berlin'},
@@ -40,13 +41,13 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         child: MaterialApp(
-          localizationsDelegates: [
+          localizationsDelegates: const [
             AppLocalizationsDelegate(),
             GlobalMaterialLocalizations.delegate,
             fl.GlobalWidgetsLocalizations.delegate,
-            fl.GlobalCupertinoLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: [Locale('en')],
+          supportedLocales: const [Locale('en')],
           home: Scaffold(
             body: SizedBox(
               width: 300,
@@ -72,7 +73,7 @@ void main() {
     final registry = WidgetRegistry();
     registry.register(StepsTrackerWidget());
 
-    final instance = WidgetInstance(
+    const instance = WidgetInstance(
       widgetType: 'steps_tracker',
       size: WidgetSize.medium,
     );
@@ -89,13 +90,13 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         child: MaterialApp(
-          localizationsDelegates: [
+          localizationsDelegates: const [
             AppLocalizationsDelegate(),
             GlobalMaterialLocalizations.delegate,
             fl.GlobalWidgetsLocalizations.delegate,
-            fl.GlobalCupertinoLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: [Locale('en')],
+          supportedLocales: const [Locale('en')],
           home: Scaffold(
             body: SizedBox(
               width: 300,
@@ -121,7 +122,7 @@ void main() {
     final registry = WidgetRegistry();
     registry.register(ProteinTrackerWidget());
 
-    final instance = WidgetInstance(
+    const instance = WidgetInstance(
       widgetType: 'protein_tracker',
       size: WidgetSize.medium,
     );
@@ -138,13 +139,13 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         child: MaterialApp(
-          localizationsDelegates: [
+          localizationsDelegates: const [
             AppLocalizationsDelegate(),
             GlobalMaterialLocalizations.delegate,
             fl.GlobalWidgetsLocalizations.delegate,
-            fl.GlobalCupertinoLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: [Locale('en')],
+          supportedLocales: const [Locale('en')],
           home: Scaffold(
             body: SizedBox(
               width: 300,
@@ -170,7 +171,7 @@ void main() {
     final registry = WidgetRegistry();
     registry.register(PartiesWidget());
 
-    final instance = WidgetInstance(
+    const instance = WidgetInstance(
       widgetType: 'parties',
       size: WidgetSize.large,
     );
@@ -194,13 +195,13 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         child: MaterialApp(
-          localizationsDelegates: [
+          localizationsDelegates: const [
             AppLocalizationsDelegate(),
             GlobalMaterialLocalizations.delegate,
             fl.GlobalWidgetsLocalizations.delegate,
-            fl.GlobalCupertinoLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: [Locale('en')],
+          supportedLocales: const [Locale('en')],
           home: Scaffold(
             body: SizedBox(
               width: 600,
@@ -226,7 +227,7 @@ void main() {
     final registry = WidgetRegistry();
     registry.register(WaterTrackerWidget());
 
-    final instance = WidgetInstance(
+    const instance = WidgetInstance(
       widgetType: 'water_tracker',
       size: WidgetSize.medium,
     );
@@ -243,13 +244,13 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         child: MaterialApp(
-          localizationsDelegates: [
+          localizationsDelegates: const [
             AppLocalizationsDelegate(),
             GlobalMaterialLocalizations.delegate,
             fl.GlobalWidgetsLocalizations.delegate,
-            fl.GlobalCupertinoLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: [Locale('en')],
+          supportedLocales: const [Locale('en')],
           home: Scaffold(
             body: SizedBox(
               width: 300,

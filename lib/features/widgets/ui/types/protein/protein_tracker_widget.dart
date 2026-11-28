@@ -1,7 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../../../../../core/i18n/app_localizations.dart';
-import '../../../../../../core/models/tracker_base.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
@@ -32,7 +31,7 @@ class ProteinTrackerWidget extends WidgetDefinition<ProteinData> {
 
   @override
   List<WidgetConfigField> get configFields => [
-    WidgetConfigField(
+    const WidgetConfigField(
       key: 'goal',
       label: 'Tagesziel (g)',
       description: 'Dein tägliches Protein-Ziel in Gramm',
@@ -47,7 +46,7 @@ class ProteinTrackerWidget extends WidgetDefinition<ProteinData> {
   @override
   ProteinData parseData(WidgetData? data) {
     if (data == null) {
-      return ProteinData(consumed: 0, goal: 150, meals: []);
+      return const ProteinData(consumed: 0, goal: 150, meals: []);
     }
     try {
       final consumed = (data.data['consumed'] as num?) ?? 0;
@@ -96,7 +95,7 @@ class ProteinTrackerWidget extends WidgetDefinition<ProteinData> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('${consumed}${l10n.proteinUnit} ${l10n.proteinOf} ${goal}${l10n.proteinUnit}', style: AppTheme.titleMedium),
+              Text('$consumed${l10n.proteinUnit} ${l10n.proteinOf} $goal${l10n.proteinUnit}', style: AppTheme.titleMedium),
               Text(
                 '${(progress * 100).toInt()}%',
                 style: AppTheme.labelMedium.copyWith(color: AppTheme.primary),
@@ -129,7 +128,7 @@ class ProteinTrackerWidget extends WidgetDefinition<ProteinData> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text('$consumed', style: AppTheme.titleSmall),
-                          Text('g', style: AppTheme.labelSmall),
+                          const Text('g', style: AppTheme.labelSmall),
                         ],
                       ),
                     ],
@@ -175,7 +174,7 @@ class ProteinTrackerWidget extends WidgetDefinition<ProteinData> {
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Row(
                     children: [
-                      Icon(Icons.restaurant, size: 16, color: Colors.grey),
+                      const Icon(Icons.restaurant, size: 16, color: Colors.grey),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Column(

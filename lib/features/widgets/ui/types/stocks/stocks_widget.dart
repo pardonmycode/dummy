@@ -59,7 +59,7 @@ class StocksWidget extends WidgetDefinition<Map<String, dynamic>> {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(
+          const SizedBox(
             width: 24,
             height: 24,
             child: CircularProgressIndicator(strokeWidth: 2),
@@ -75,7 +75,7 @@ class StocksWidget extends WidgetDefinition<Map<String, dynamic>> {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.error_outline, size: 32, color: AppTheme.error),
+          const Icon(Icons.error_outline, size: 32, color: AppTheme.error),
           const SizedBox(height: 8),
           Text(l10n.stocksError, style: AppTheme.bodySmall),
         ],
@@ -83,11 +83,11 @@ class StocksWidget extends WidgetDefinition<Map<String, dynamic>> {
     }
 
     // Empty state
-    if (state == WidgetDataState.empty || data == null) {
+    if (state == WidgetDataState.empty) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.show_chart_outlined, size: 48, color: Colors.grey),
+          const Icon(Icons.show_chart_outlined, size: 48, color: Colors.grey),
           const SizedBox(height: 8),
           Text(l10n.stocksEmpty, style: AppTheme.bodySmall),
         ],
@@ -120,7 +120,7 @@ class StocksWidget extends WidgetDefinition<Map<String, dynamic>> {
             Center(
               child: Column(
                 children: [
-                  Icon(Icons.show_chart_outlined, size: 48, color: Colors.grey),
+                  const Icon(Icons.show_chart_outlined, size: 48, color: Colors.grey),
                   const SizedBox(height: 8),
                   Text(l10n.stocksNoSymbols, style: AppTheme.bodySmall),
                 ],

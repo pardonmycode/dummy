@@ -7,7 +7,7 @@ import 'package:widgetly/features/widgets/framework/widget_definition.dart';
 void main() {
   group('WidgetInstance JSON roundtrip', () {
     test('serializes and deserializes through jsonEncode/jsonDecode', () {
-      final instance = WidgetInstance(
+      const instance = WidgetInstance(
         id: 'test-id-123',
         widgetType: 'steps_tracker',
         size: WidgetSize.small,
@@ -30,14 +30,14 @@ void main() {
       expect(restored.widgetType, 'steps_tracker');
       expect(restored.size, WidgetSize.small);
       expect(restored.config['target'], 10000);
-      expect(restored.gridPosition!['row'], 2);
-      expect(restored.gridPosition!['col'], 1);
-      expect(restored.gridPosition!['rowSpan'], 1);
-      expect(restored.gridPosition!['colSpan'], 2);
+      expect(restored.gridPosition['row'], 2);
+      expect(restored.gridPosition['col'], 1);
+      expect(restored.gridPosition['rowSpan'], 1);
+      expect(restored.gridPosition['colSpan'], 2);
 
       // Ensure gridPosition values are int after deserialization
-      expect(restored.gridPosition!['row'] is int, isTrue);
-      expect(restored.gridPosition!['col'] is int, isTrue);
+      expect(restored.gridPosition['row'] is int, isTrue);
+      expect(restored.gridPosition['col'] is int, isTrue);
     });
 
     test('deserializes with missing gridPosition', () {
@@ -50,8 +50,8 @@ void main() {
 
       final instance = WidgetInstance.fromJson(json);
       expect(instance.id, 'test-id');
-      expect(instance.gridPosition!['row'], 0);
-      expect(instance.gridPosition!['col'], 0);
+      expect(instance.gridPosition['row'], 0);
+      expect(instance.gridPosition['col'], 0);
     });
 
     test('deserializes with missing optional fields', () {
@@ -69,7 +69,7 @@ void main() {
     });
 
     test('roundtrip preserves config with mixed types', () {
-      final instance = WidgetInstance(
+      const instance = WidgetInstance(
         widgetType: 'test',
         config: {
           'string': 'hello',

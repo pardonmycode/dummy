@@ -5,7 +5,7 @@ import '../../widgets/framework/widget_instance.dart';
 part 'dashboard.freezed.dart';
 part 'dashboard.g.dart';
 
-final _uuid = Uuid();
+const _uuid = Uuid();
 
 /// A named dashboard configuration.
 @freezed

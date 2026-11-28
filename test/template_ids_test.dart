@@ -18,10 +18,10 @@ void main() {
     test('fitness template uses correct widget type IDs', () {
       // Simulate what the fitness template does
       final widgets = [
-        WidgetInstance(widgetType: 'steps_tracker', config: {}),
-        WidgetInstance(widgetType: 'protein_tracker', config: {'goal': 150}),
-        WidgetInstance(widgetType: 'water_tracker', config: {}),
-        WidgetInstance(widgetType: 'weight_tracker', config: {}),
+        const WidgetInstance(widgetType: 'steps_tracker', config: {}),
+        const WidgetInstance(widgetType: 'protein_tracker', config: {'goal': 150}),
+        const WidgetInstance(widgetType: 'water_tracker', config: {}),
+        const WidgetInstance(widgetType: 'weight_tracker', config: {}),
       ];
 
       // All widget types should be recognized by the registry

@@ -140,7 +140,6 @@ class PartiesWidget extends WidgetDefinition {
                 initialZoom: 13.0,
                 minZoom: 10.0,
                 maxZoom: 16.0,
-                interactive: false, // Disable map gestures in grid view
               ),
               children: [
                 TileLayer(

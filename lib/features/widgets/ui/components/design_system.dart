@@ -24,11 +24,9 @@ class ListTileItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final textColor = isDark ? AppTheme.darkText : AppTheme.lightText;
-    final subColor = isDark
-        ? AppTheme.darkTextSecondary
-        : AppTheme.lightTextSecondary;
+    final scheme = theme.colorScheme;
+    final textColor = scheme.onSurface;
+    final subColor = scheme.onSurfaceVariant;
 
     return Material(
       color: Colors.transparent,
@@ -87,16 +85,16 @@ class FilterChipItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final scheme = theme.colorScheme;
 
     return FilterChip(
       label: Text(label),
       selected: selected,
       onSelected: (_) => onTap?.call(),
-      backgroundColor: isDark ? AppTheme.darkBorder : AppTheme.lightBorder,
-      selectedColor: AppTheme.primary,
+      backgroundColor: scheme.outline,
+      selectedColor: scheme.primary,
       labelStyle: AppTheme.labelSmall,
-      checkmarkColor: Colors.white,
+      checkmarkColor: scheme.onPrimary,
     );
   }
 }
@@ -226,11 +224,9 @@ class SourceChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final bg = isDark ? AppTheme.darkBorder : AppTheme.lightBorder;
-    final textColor = isDark
-        ? AppTheme.darkTextSecondary
-        : AppTheme.lightTextSecondary;
+    final scheme = theme.colorScheme;
+    final bg = scheme.outline;
+    final textColor = scheme.onSurfaceVariant;
 
     return InkWell(
       onTap: onTap,

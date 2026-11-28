@@ -7,41 +7,10 @@ class AppTheme {
 
   // Primary color
   static const Color primary = Color(0xFF4361EE);
-  static const Color primaryVariant = Color(0xFF3A56D4);
   static const Color secondary = Color(0xFF7209B7);
   static const Color accent = Color(0xFFF72585);
 
-  // Colors - Light
-  static const Color lightPrimary = Color(0xFF4361EE);
-  static const Color lightPrimaryVariant = Color(0xFF3A56D4);
-  static const Color lightSecondary = Color(0xFF7209B7);
-  static const Color lightAccent = Color(0xFFF72585);
-  static const Color lightBackground = Color(0xFFF8F9FA);
-  static const Color lightSurface = Color(0xFFFFFFFF);
-  static const Color lightCard = Color(0xFFFFFFFF);
-  static const Color lightText = Color(0xFF1A1A1A);
-  static const Color lightTextSecondary = Color(0xFF6C757D);
-  static const Color lightBorder = Color(0xFFE9ECEF);
-  static const Color lightSuccess = Color(0xFF2ECC71);
-  static const Color lightWarning = Color(0xFFF39C12);
-  static const Color lightError = Color(0xFFE74C3C);
-  static const Color lightInfo = Color(0xFF3498DB);
-
-  // Colors - Dark
-  static const Color darkPrimary = Color(0xFF7B93F4);
-  static const Color darkPrimaryVariant = Color(0xFF6B82E8);
-  static const Color darkSecondary = Color(0xFF9D4EDD);
-  static const Color darkAccent = Color(0xFFFF6EB4);
-  static const Color darkBackground = Color(0xFF121212);
-  static const Color darkSurface = Color(0xFF1E1E1E);
-  static const Color darkCard = Color(0xFF2A2A2A);
-  static const Color darkText = Color(0xFFF0F0F0);
-  static const Color darkTextSecondary = Color(0xFFA0A0A0);
-  static const Color darkBorder = Color(0xFF3A3A3A);
-  static const Color darkSuccess = Color(0xFF4CD964);
-  static const Color darkWarning = Color(0xFFFF9500);
-  static const Color darkError = Color(0xFFFF3B30);
-  static const Color darkInfo = Color(0xFF0A84FF);
+  // Success/Warning/Error/Info (used across light and dark)
   static const Color success = Color(0xFF2ECC71);
   static const Color info = Color(0xFF3498DB);
   static const Color warning = Color(0xFFF39C12);
@@ -136,31 +105,77 @@ class AppTheme {
     BoxShadow(color: Color(0x14000000), offset: Offset(0, 4), blurRadius: 16),
   ];
 
-  /// Build light theme
+  /// Light ColorScheme
+  static const ColorScheme lightScheme = ColorScheme(
+    brightness: Brightness.light,
+    primary: Color(0xFF4361EE),
+    onPrimary: Colors.white,
+    primaryContainer: Color(0xFFE8EDFF),
+    onPrimaryContainer: Color(0xFF1A34A8),
+    secondary: Color(0xFF7209B7),
+    onSecondary: Colors.white,
+    secondaryContainer: Color(0xFFF3E0FF),
+    onSecondaryContainer: Color(0xFF4C0080),
+    surface: Color(0xFFFFFFFF),
+    onSurface: Color(0xFF1A1A1A),
+    surfaceVariant: Color(0xFFF8F9FA),
+    onSurfaceVariant: Color(0xFF6C757D),
+    background: Color(0xFFF8F9FA),
+    onBackground: Color(0xFF1A1A1A),
+    error: Color(0xFFE74C3C),
+    onError: Colors.white,
+    outline: Color(0xFFE9ECEF),
+    outlineVariant: Color(0xFFE9ECEF),
+  );
+
+  /// Dark ColorScheme
+  static const ColorScheme darkScheme = ColorScheme(
+    brightness: Brightness.dark,
+    primary: Color(0xFF7B93F4),
+    onPrimary: Colors.black,
+    primaryContainer: Color(0xFF2A3A8A),
+    onPrimaryContainer: Color(0xFFB8C4FF),
+    secondary: Color(0xFF9D4EDD),
+    onSecondary: Colors.white,
+    secondaryContainer: Color(0xFF4C0080),
+    onSecondaryContainer: Color(0xFFD8A8FF),
+    surface: Color(0xFF1E1E1E),
+    onSurface: Color(0xFFF0F0F0),
+    surfaceVariant: Color(0xFF121212),
+    onSurfaceVariant: Color(0xFFA0A0A0),
+    background: Color(0xFF121212),
+    onBackground: Color(0xFFF0F0F0),
+    error: Color(0xFFFF3B30),
+    onError: Colors.white,
+    outline: Color(0xFF3A3A3A),
+    outlineVariant: Color(0xFF3A3A3A),
+  );
+
+  /// Build light theme using ColorScheme
   static flutter.ThemeData light() {
     return flutter.ThemeData(
+      colorScheme: lightScheme,
       brightness: flutter.Brightness.light,
-      primaryColor: lightPrimary,
-      scaffoldBackgroundColor: lightBackground,
+      scaffoldBackgroundColor: lightScheme.surfaceVariant,
       cardTheme: flutter.CardThemeData(
-        color: lightCard,
+        color: lightScheme.surface,
         elevation: 0,
         shape: flutter.RoundedRectangleBorder(
           borderRadius: flutter.BorderRadius.circular(radiusLg),
-          side: flutter.BorderSide(color: lightBorder, width: 1),
+          side: flutter.BorderSide(color: lightScheme.outline, width: 1),
         ),
       ),
       appBarTheme: flutter.AppBarTheme(
-        backgroundColor: lightSurface,
+        backgroundColor: lightScheme.surface,
         elevation: 0,
-        titleTextStyle: titleMedium.copyWith(color: lightText),
-        iconTheme: flutter.IconThemeData(color: lightText),
+        titleTextStyle: titleMedium.copyWith(color: lightScheme.onSurface),
+        iconTheme: flutter.IconThemeData(color: lightScheme.onSurface),
         centerTitle: true,
       ),
       elevatedButtonTheme: flutter.ElevatedButtonThemeData(
         style: flutter.ElevatedButton.styleFrom(
-          backgroundColor: lightPrimary,
-          foregroundColor: flutter.Colors.white,
+          backgroundColor: lightScheme.primary,
+          foregroundColor: lightScheme.onPrimary,
           padding: const flutter.EdgeInsets.symmetric(
             horizontal: spacingMd,
             vertical: spacingSm,
@@ -173,8 +188,8 @@ class AppTheme {
       ),
       outlinedButtonTheme: flutter.OutlinedButtonThemeData(
         style: flutter.OutlinedButton.styleFrom(
-          foregroundColor: lightPrimary,
-          side: flutter.BorderSide(color: lightPrimary),
+          foregroundColor: lightScheme.primary,
+          side: flutter.BorderSide(color: lightScheme.primary),
           padding: const flutter.EdgeInsets.symmetric(
             horizontal: spacingMd,
             vertical: spacingSm,
@@ -186,44 +201,44 @@ class AppTheme {
         ),
       ),
       chipTheme: flutter.ChipThemeData(
-        backgroundColor: lightBorder,
+        backgroundColor: lightScheme.outline,
         labelStyle: bodySmall,
         padding: const flutter.EdgeInsets.symmetric(horizontal: spacingSm, vertical: 2),
         shape: flutter.RoundedRectangleBorder(
           borderRadius: flutter.BorderRadius.circular(radiusFull),
         ),
       ),
-      iconTheme: flutter.IconThemeData(color: lightText, size: 20),
-      dividerTheme: flutter.DividerThemeData(color: lightBorder, thickness: 1),
+      iconTheme: flutter.IconThemeData(color: lightScheme.onSurface, size: 20),
+      dividerTheme: flutter.DividerThemeData(color: lightScheme.outline, thickness: 1),
       useMaterial3: true,
     );
   }
 
-  /// Build dark theme
+  /// Build dark theme using ColorScheme
   static flutter.ThemeData dark() {
     return flutter.ThemeData(
+      colorScheme: darkScheme,
       brightness: flutter.Brightness.dark,
-      primaryColor: darkPrimary,
-      scaffoldBackgroundColor: darkBackground,
+      scaffoldBackgroundColor: darkScheme.surfaceVariant,
       cardTheme: flutter.CardThemeData(
-        color: darkCard,
+        color: darkScheme.surface,
         elevation: 0,
         shape: flutter.RoundedRectangleBorder(
           borderRadius: flutter.BorderRadius.circular(radiusLg),
-          side: flutter.BorderSide(color: darkBorder, width: 1),
+          side: flutter.BorderSide(color: darkScheme.outline, width: 1),
         ),
       ),
       appBarTheme: flutter.AppBarTheme(
-        backgroundColor: darkSurface,
+        backgroundColor: darkScheme.surface,
         elevation: 0,
-        titleTextStyle: titleMedium.copyWith(color: darkText),
-        iconTheme: flutter.IconThemeData(color: darkText),
+        titleTextStyle: titleMedium.copyWith(color: darkScheme.onSurface),
+        iconTheme: flutter.IconThemeData(color: darkScheme.onSurface),
         centerTitle: true,
       ),
       elevatedButtonTheme: flutter.ElevatedButtonThemeData(
         style: flutter.ElevatedButton.styleFrom(
-          backgroundColor: darkPrimary,
-          foregroundColor: flutter.Colors.white,
+          backgroundColor: darkScheme.primary,
+          foregroundColor: darkScheme.onPrimary,
           padding: const flutter.EdgeInsets.symmetric(
             horizontal: spacingMd,
             vertical: spacingSm,
@@ -236,8 +251,8 @@ class AppTheme {
       ),
       outlinedButtonTheme: flutter.OutlinedButtonThemeData(
         style: flutter.OutlinedButton.styleFrom(
-          foregroundColor: darkPrimary,
-          side: flutter.BorderSide(color: darkPrimary),
+          foregroundColor: darkScheme.primary,
+          side: flutter.BorderSide(color: darkScheme.primary),
           padding: const flutter.EdgeInsets.symmetric(
             horizontal: spacingMd,
             vertical: spacingSm,
@@ -249,15 +264,15 @@ class AppTheme {
         ),
       ),
       chipTheme: flutter.ChipThemeData(
-        backgroundColor: darkBorder,
+        backgroundColor: darkScheme.outline,
         labelStyle: bodySmall,
         padding: const flutter.EdgeInsets.symmetric(horizontal: spacingSm, vertical: 2),
         shape: flutter.RoundedRectangleBorder(
           borderRadius: flutter.BorderRadius.circular(radiusFull),
         ),
       ),
-      iconTheme: flutter.IconThemeData(color: darkText, size: 20),
-      dividerTheme: flutter.DividerThemeData(color: darkBorder, thickness: 1),
+      iconTheme: flutter.IconThemeData(color: darkScheme.onSurface, size: 20),
+      dividerTheme: flutter.DividerThemeData(color: darkScheme.outline, thickness: 1),
       useMaterial3: true,
     );
   }

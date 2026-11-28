@@ -62,7 +62,7 @@ class BudgetWidget extends WidgetDefinition {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.error_outline, size: 32, color: AppTheme.lightError),
+          Icon(Icons.error_outline, size: 32, color: AppTheme.error),
           const SizedBox(height: 8),
           Text('Fehler beim Laden des Budgets', style: AppTheme.bodySmall),
         ],

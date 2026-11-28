@@ -117,7 +117,7 @@ class TasksWidget extends WidgetDefinition {
                                 decoration: isCompleted
                                     ? TextDecoration.lineThrough
                                     : null,
-                                color: isCompleted ? null : AppTheme.lightText,
+                                color: isCompleted ? null : Colors.black,
                               ),
                             ),
                             if (time.isNotEmpty)

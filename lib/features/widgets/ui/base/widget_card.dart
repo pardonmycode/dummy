@@ -43,12 +43,10 @@ class WidgetCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final bg = isDark ? AppTheme.darkCard : AppTheme.lightCard;
-    final border = isDark ? AppTheme.darkBorder : AppTheme.lightBorder;
-    final subColor = isDark
-        ? AppTheme.darkTextSecondary
-        : AppTheme.lightTextSecondary;
+    final scheme = theme.colorScheme;
+    final bg = scheme.surface;
+    final border = scheme.outline;
+    final subColor = scheme.onSurfaceVariant;
 
     return Container(
       decoration: BoxDecoration(

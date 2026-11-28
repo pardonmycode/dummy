@@ -62,7 +62,7 @@ class WeatherWidget extends WidgetDefinition {
         children: [
           Row(
             children: [
-              Icon(Icons.cloud_off, size: 16, color: AppTheme.lightTextSecondary),
+              Icon(Icons.cloud_off, size: 16, color: Colors.grey),
               const SizedBox(width: 4),
               Text('Offline - gecachte Daten', style: AppTheme.caption),
             ],
@@ -99,7 +99,7 @@ class WeatherWidget extends WidgetDefinition {
                   Icon(
                     _weatherIcon(current['condition'] as String),
                     size: 32,
-                    color: AppTheme.lightWarning,
+                    color: AppTheme.warning,
                   ),
                   const SizedBox(width: AppTheme.spacingSm),
                   Expanded(
@@ -133,7 +133,7 @@ class WeatherWidget extends WidgetDefinition {
               child: Container(
                 padding: const EdgeInsets.all(AppTheme.spacingXs),
                 decoration: BoxDecoration(
-                  color: AppTheme.lightInfo.withValues(alpha: 0.1),
+                  color: AppTheme.info.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(AppTheme.radiusSm),
                 ),
                 child: Row(
@@ -141,7 +141,7 @@ class WeatherWidget extends WidgetDefinition {
                     Icon(
                       Icons.auto_awesome,
                       size: 12,
-                      color: AppTheme.lightInfo,
+                      color: AppTheme.info,
                     ),
                     const SizedBox(width: 4),
                     Expanded(child: Text(summary, style: AppTheme.caption)),
@@ -187,12 +187,12 @@ class WeatherWidget extends WidgetDefinition {
             Container(
               padding: const EdgeInsets.all(AppTheme.spacingXs),
               decoration: BoxDecoration(
-                color: AppTheme.lightWarning.withValues(alpha: 0.1),
+                color: AppTheme.warning.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(AppTheme.radiusSm),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.warning, size: 12, color: AppTheme.lightWarning),
+                  Icon(Icons.warning, size: 12, color: AppTheme.warning),
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(

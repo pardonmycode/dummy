@@ -216,7 +216,8 @@ class DashboardView extends ConsumerWidget {
   Widget build(BuildContext context, ref) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final bg = isDark ? AppTheme.darkBackground : AppTheme.lightBackground;
+    final scheme = theme.colorScheme;
+    final bg = scheme.surfaceVariant;
     final widgets = ref.watch(dashboardWidgetsProvider);
     final registry = ref.watch(widgetRegistryProvider);
     final isEditing = ref.watch(isEditingProvider);
@@ -298,7 +299,7 @@ class DashboardView extends ConsumerWidget {
         child: LayoutBuilder(
           builder: (context, constraints) {
             return isEditing
-                ? _buildEditingView(context, ref, widgets, registry)
+                ? _buildEditingView(context, ref, widgets, registry, scheme)
                 : _buildView(
                     context,
                     ref,
@@ -379,6 +380,7 @@ class DashboardView extends ConsumerWidget {
     WidgetRef ref,
     List<WidgetInstance> widgets,
     WidgetRegistry registry,
+    ColorScheme scheme,
   ) {
     return ReorderableListView(
       padding: const EdgeInsets.all(AppTheme.spacingSm),
@@ -418,14 +420,14 @@ class DashboardView extends ConsumerWidget {
                 IconButton(
                   icon: Icon(
                     Icons.drag_handle,
-                    color: AppTheme.lightTextSecondary,
+                    color: scheme.onSurfaceVariant,
                   ),
                   onPressed: null,
                 ),
                 PopupMenuButton<WidgetSize>(
                   icon: Icon(
                     Icons.format_size,
-                    color: AppTheme.lightTextSecondary,
+                    color: scheme.onSurfaceVariant,
                   ),
                   onSelected: (size) {
                     ref
@@ -453,7 +455,7 @@ class DashboardView extends ConsumerWidget {
                   ],
                 ),
                 IconButton(
-                  icon: Icon(Icons.copy, color: AppTheme.lightTextSecondary),
+                  icon: Icon(Icons.copy, color: scheme.onSurfaceVariant),
                   onPressed: () {
                     ref
                         .read(undoHistoryProvider.notifier)

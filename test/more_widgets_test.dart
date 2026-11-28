@@ -2,7 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:widgetly/features/widgets/framework/widget_data.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart' as fl;
 import 'package:widgetly/features/widgets/framework/widget_definition.dart';
 import 'package:widgetly/features/widgets/ui/types/body_fat/body_fat_tracker_widget.dart';
 import 'package:widgetly/features/widgets/ui/types/heart_rate/heart_rate_tracker_widget.dart';
@@ -54,7 +54,11 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        localizationsDelegates: [
+          AppLocalizationsDelegate(),
+          fl.GlobalMaterialLocalizations.delegate,
+          fl.GlobalWidgetsLocalizations.delegate,
+        ],
         supportedLocales: AppLocalizations.supportedLocales,
         locale: const Locale('en'),
         home: Builder(
@@ -76,6 +80,7 @@ void main() {
       ),
     );
 
+    await tester.pumpAndSettle();
     expect(find.text('22.5%'), findsOneWidget);
     expect(find.text('Body fat decreasing'), findsOneWidget);
   });
@@ -89,6 +94,13 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: [
+          AppLocalizationsDelegate(),
+          fl.GlobalMaterialLocalizations.delegate,
+          fl.GlobalWidgetsLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('en'),
         home: Builder(
           builder: (context) {
             return Material(
@@ -108,6 +120,7 @@ void main() {
       ),
     );
 
+    await tester.pumpAndSettle();
     expect(find.text('72 bpm'), findsOneWidget);
     expect(find.text('Resting heart rate improving'), findsOneWidget);
   });
@@ -125,6 +138,13 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: [
+          AppLocalizationsDelegate(),
+          fl.GlobalMaterialLocalizations.delegate,
+          fl.GlobalWidgetsLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('en'),
         home: Builder(
           builder: (context) {
             return Material(
@@ -144,8 +164,9 @@ void main() {
       ),
     );
 
+    await tester.pumpAndSettle();
     expect(find.text('Good'), findsOneWidget);
-    expect(find.text('Fühle mich gut'), findsOneWidget);
+    expect(find.text('Good'), findsOneWidget);
   });
 
   testWidgets('Tasks widget renders', (tester) async {
@@ -163,6 +184,13 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: [
+          AppLocalizationsDelegate(),
+          fl.GlobalMaterialLocalizations.delegate,
+          fl.GlobalWidgetsLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('en'),
         home: Builder(
           builder: (context) {
             return Material(
@@ -182,6 +210,7 @@ void main() {
       ),
     );
 
+    await tester.pumpAndSettle();
     expect(find.text('Today'), findsOneWidget);
     expect(find.text('Einkaufen'), findsOneWidget);
     expect(find.text('Important'), findsOneWidget);

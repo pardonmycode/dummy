@@ -41,9 +41,21 @@ final dashboardWidgetsProvider =
 final isEditingProvider = StateProvider<bool>((ref) => false);
 final isSyncingProvider = StateProvider<bool>((ref) => false);
 
-// Undo/Redo history
+// Undo/Redo history — bounded to prevent unbounded growth
+final _maxUndoHistory = 50;
 final undoHistoryProvider = StateProvider<List<List<WidgetInstance>>>((ref) => []);
 final redoHistoryProvider = StateProvider<List<List<WidgetInstance>>>((ref) => []);
+
+/// Push current state to undo history (bounded).
+void _pushUndo(WidgetRef ref, List<WidgetInstance> state) {
+  ref.read(undoHistoryProvider.notifier).update((history) {
+    if (history.length >= _maxUndoHistory) {
+      return [history[0], ...history.sublist(1), state];
+    }
+    return [...history, state];
+  });
+  ref.read(redoHistoryProvider.notifier).state = [];
+}
 
 // Dashboard management
 final dashboardsProvider = NotifierProvider<DashboardsNotifier, List<Dashboard>>(
@@ -392,11 +404,8 @@ class DashboardView extends ConsumerWidget {
       padding: const EdgeInsets.all(AppTheme.spacingSm),
       onReorderItem: (oldIndex, newIndex) {
         final adjustedIndex = newIndex > oldIndex ? newIndex - 1 : newIndex;
-        ref
-            .read(undoHistoryProvider.notifier)
-            .update((s) => [...s, widgets]);
-        ref.read(redoHistoryProvider.notifier).update((s) => []);
-
+        final current = ref.read(dashboardWidgetsProvider);
+        _pushUndo(ref, current);
         ref
             .read(dashboardWidgetsProvider.notifier)
             .moveWidget(oldIndex, adjustedIndex);
@@ -436,11 +445,8 @@ class DashboardView extends ConsumerWidget {
                     color: scheme.onSurfaceVariant,
                   ),
                   onSelected: (size) {
-                    ref
-                        .read(undoHistoryProvider.notifier)
-                        .update((s) => [...s, widgets]);
-                    ref.read(redoHistoryProvider.notifier).update((s) => []);
-
+                    final current = ref.read(dashboardWidgetsProvider);
+                    _pushUndo(ref, current);
                     ref
                         .read(dashboardWidgetsProvider.notifier)
                         .resizeWidget(instance.id, size);
@@ -463,11 +469,8 @@ class DashboardView extends ConsumerWidget {
                 IconButton(
                   icon: Icon(Icons.copy, color: scheme.onSurfaceVariant),
                   onPressed: () {
-                    ref
-                        .read(undoHistoryProvider.notifier)
-                        .update((s) => [...s, widgets]);
-                    ref.read(redoHistoryProvider.notifier).update((s) => []);
-
+                    final current = ref.read(dashboardWidgetsProvider);
+                    _pushUndo(ref, current);
                     ref
                         .read(dashboardWidgetsProvider.notifier)
                         .duplicateWidget(instance.id);
@@ -476,11 +479,8 @@ class DashboardView extends ConsumerWidget {
                 IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red),
                   onPressed: () {
-                    ref
-                        .read(undoHistoryProvider.notifier)
-                        .update((s) => [...s, widgets]);
-                    ref.read(redoHistoryProvider.notifier).update((s) => []);
-
+                    final current = ref.read(dashboardWidgetsProvider);
+                    _pushUndo(ref, current);
                     ref
                         .read(dashboardWidgetsProvider.notifier)
                         .removeWidget(instance.id);
@@ -678,11 +678,8 @@ class DashboardView extends ConsumerWidget {
                   subtitle: Text(def.description),
                   trailing: const Icon(Icons.add, color: AppTheme.primary),
                   onTap: () {
-                    ref
-                        .read(undoHistoryProvider.notifier)
-                        .update((s) => [...s, currentWidgets]);
-                    ref.read(redoHistoryProvider.notifier).update((s) => []);
-
+                    final current = ref.read(dashboardWidgetsProvider);
+                    _pushUndo(ref, current);
                     ref
                         .read(dashboardWidgetsProvider.notifier)
                         .addWidget(def.id);

@@ -6,7 +6,7 @@ import '../../../framework/widget_data.dart';
 
 /// Generic nutrient/metric tracker widget that can be configured
 /// for any tracker type (protein, carbs, calories, water, etc.).
-class NutrientTrackerWidget extends WidgetDefinition {
+class NutrientTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
   final String nutrient;
   final String unit;
   final String defaultGoalKey;
@@ -69,18 +69,23 @@ class NutrientTrackerWidget extends WidgetDefinition {
       default: return nutrient;
     }
   }
+  @override
+  Map<String, dynamic> parseData(WidgetData? data) {
+    if (data == null) {
+      return {};
+    }
+    return data.data;
+  }
+
+
 
   @override
   Widget buildView(
-    WidgetData? data,
+    Map<String, dynamic> data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
-    if (data == null) {
-      return const SizedBox();
-    }
-
     final goalKey = config.get(defaultGoalKey);
     final tracker = TrackerBase(
       target: goalKey ?? defaultGoal,
@@ -89,7 +94,7 @@ class NutrientTrackerWidget extends WidgetDefinition {
     );
 
     // Parse entries from data
-    final rawEntries = data.data[entryKey] as List? ?? [];
+    final rawEntries = data[entryKey] as List? ?? [];
     for (final entry in rawEntries) {
       if (entry is Map && entry['value'] != null && entry['timestamp'] != null) {
         tracker.entries.add(TrackerEntry(
@@ -105,7 +110,7 @@ class NutrientTrackerWidget extends WidgetDefinition {
     final remaining = goal - consumed;
     final progress = tracker.calculateProgress();
     final streak = tracker.calculateStreak();
-    final meals = data.data['meals'] as List? ?? [];
+    final meals = data['meals'] as List? ?? [];
 
     return SingleChildScrollView(
       child: Column(

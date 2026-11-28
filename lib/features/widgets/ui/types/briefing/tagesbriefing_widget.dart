@@ -7,7 +7,7 @@ import '../../../ui/components/design_system.dart';
 
 /// Tagesbriefing widget - AI-generated daily briefing combining weather,
 /// calendar, tasks, and news.
-class TagesbriefingWidget extends WidgetDefinition {
+class TagesbriefingWidget extends WidgetDefinition<Map<String, dynamic>> {
   @override
   String get id => 'tagesbriefing';
 
@@ -34,21 +34,26 @@ class TagesbriefingWidget extends WidgetDefinition {
 
   @override
   @override
+  Map<String, dynamic> parseData(WidgetData? data) {
+    if (data == null) {
+      return {};
+    }
+    return data.data;
+  }
+
+
+  @override
   Widget buildView(
-    WidgetData? data,
+    Map<String, dynamic> data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
-    if (data == null) {
-      return const SizedBox();
-    }
-
-    final summary = data.data['summary'] as String? ?? '';
-    final weather = data.data['weather'] as String? ?? '';
-    final appointments = data.data['appointments'] as List<dynamic>? ?? [];
-    final tasks = data.data['tasks'] as List<dynamic>? ?? [];
-    final news = data.data['news'] as List<dynamic>? ?? [];
+    final summary = data['summary'] as String? ?? '';
+    final weather = data['weather'] as String? ?? '';
+    final appointments = data['appointments'] as List<dynamic>? ?? [];
+    final tasks = data['tasks'] as List<dynamic>? ?? [];
+    final news = data['news'] as List<dynamic>? ?? [];
 
     return SingleChildScrollView(
       child: Column(
@@ -117,7 +122,7 @@ class TagesbriefingWidget extends WidgetDefinition {
             ),
 
           // Source
-          SourceSection(sources: data.sources),
+          const SourceSection(sources: []),
         ],
       ),
     );

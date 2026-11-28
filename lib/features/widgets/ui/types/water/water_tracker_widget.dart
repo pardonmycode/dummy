@@ -8,7 +8,7 @@ import '../../../ui/components/design_system.dart';
 import '../../../water/data/water_data.dart';
 
 /// Water intake tracker widget using typed WaterData model.
-class WaterTrackerWidget extends WidgetDefinition {
+class WaterTrackerWidget extends WidgetDefinition<WaterData> {
   @override
   String get id => 'water_tracker';
 
@@ -30,8 +30,11 @@ class WaterTrackerWidget extends WidgetDefinition {
   @override
   WidgetSize get defaultSize => WidgetSize.medium;
 
-  /// Parse raw data into typed WaterData model.
-  WaterData _parseData(WidgetData data) {
+  @override
+  WaterData parseData(WidgetData? data) {
+    if (data == null) {
+      return WaterData(consumed: 0, goal: 2000, entries: []);
+    }
     try {
       final consumed = (data.data['consumed'] as num?) ?? 0;
       final goal = (data.data['goal'] as num?) ?? 2000;
@@ -49,43 +52,19 @@ class WaterTrackerWidget extends WidgetDefinition {
       
       return WaterData(consumed: consumed, goal: goal, entries: entries);
     } catch (e) {
-      // Fallback: compute from TrackerBase entries
-      final tracker = TrackerBase(
-        target: (data.data['goal'] as num?) ?? 2000,
-        unit: 'ml',
-        period: TimePeriod.day,
-      );
-      final rawEntries = data.data['entries'] as List? ?? [];
-      for (final entry in rawEntries) {
-        if (entry is Map && entry['value'] != null) {
-          tracker.entries.add(TrackerEntry(
-            value: entry['value'],
-            timestamp: DateTime.parse(entry['timestamp']?.toString() ?? ''),
-          ));
-        }
-      }
-      return WaterData(
-        consumed: tracker.getPeriodTotal(),
-        goal: tracker.target,
-      );
+      return WaterData.fromJson(data.data);
     }
   }
 
   @override
   Widget buildView(
-    WidgetData? data,
+    WaterData data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
-    if (data == null) {
-      return const SizedBox();
-    }
-
-    // Parse raw data into typed model
-    final typedData = _parseData(data);
-    final goal = typedData.goal;
-    final consumed = typedData.consumed;
+    final goal = data.goal;
+    final consumed = data.consumed;
     final progress = goal > 0 ? (consumed / goal).clamp(0.0, 1.0) : 0.0;
     final glasses = consumed ~/ 250;
 

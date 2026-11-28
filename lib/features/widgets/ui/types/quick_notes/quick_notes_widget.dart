@@ -5,7 +5,7 @@ import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
 
 /// Quick notes widget - text, voice, and photo notes.
-class QuickNotesWidget extends WidgetDefinition {
+class QuickNotesWidget extends WidgetDefinition<Map<String, dynamic>> {
   @override
   String get id => 'quick_notes';
 
@@ -32,17 +32,22 @@ class QuickNotesWidget extends WidgetDefinition {
 
   @override
   @override
+  Map<String, dynamic> parseData(WidgetData? data) {
+    if (data == null) {
+      return {};
+    }
+    return data.data;
+  }
+
+
+  @override
   Widget buildView(
-    WidgetData? data,
+    Map<String, dynamic> data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
-    if (data == null) {
-      return const SizedBox();
-    }
-
-    final notes = data.data['notes'] as List<dynamic>? ?? [];
+    final notes = data['notes'] as List<dynamic>? ?? [];
 
     return SingleChildScrollView(
       child: Column(

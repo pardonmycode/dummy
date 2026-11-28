@@ -5,7 +5,7 @@ import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
 
 /// Fiber tracker widget - shows daily fiber intake with goal progress.
-class FiberTrackerWidget extends WidgetDefinition {
+class FiberTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
   @override
   String get id => 'fiber_tracker';
 
@@ -29,21 +29,26 @@ class FiberTrackerWidget extends WidgetDefinition {
 
   @override
   @override
+  Map<String, dynamic> parseData(WidgetData? data) {
+    if (data == null) {
+      return {};
+    }
+    return data.data;
+  }
+
+
+  @override
   Widget buildView(
-    WidgetData? data,
+    Map<String, dynamic> data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
-    if (data == null) {
-      return const SizedBox();
-    }
-
-    final goal = (data.data['goal'] as num?)?.toInt() ?? 30;
-    final consumed = (data.data['consumed'] as num?)?.toInt() ?? 0;
+    final goal = (data['goal'] as num?)?.toInt() ?? 30;
+    final consumed = (data['consumed'] as num?)?.toInt() ?? 0;
     final remaining = goal - consumed;
     final progress = consumed / goal;
-    final meals = data.data['meals'] as List? ?? [];
+    final meals = data['meals'] as List? ?? [];
 
     return SingleChildScrollView(
       child: Column(

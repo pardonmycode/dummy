@@ -5,7 +5,7 @@ import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
 
 /// Screen time tracker widget - shows daily screen time by app.
-class ScreenTimeTrackerWidget extends WidgetDefinition {
+class ScreenTimeTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
   @override
   String get id => 'screen_time_tracker';
 
@@ -29,19 +29,24 @@ class ScreenTimeTrackerWidget extends WidgetDefinition {
 
   @override
   @override
+  Map<String, dynamic> parseData(WidgetData? data) {
+    if (data == null) {
+      return {};
+    }
+    return data.data;
+  }
+
+
+  @override
   Widget buildView(
-    WidgetData? data,
+    Map<String, dynamic> data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
-    if (data == null) {
-      return const SizedBox();
-    }
-
-    final totalMinutes = (data.data['total'] as num?)?.toInt() ?? 0;
-    final goalMinutes = (data.data['goal'] as num?)?.toInt() ?? 480;
-    final apps = data.data['apps'] as List<dynamic>? ?? [];
+    final totalMinutes = (data['total'] as num?)?.toInt() ?? 0;
+    final goalMinutes = (data['goal'] as num?)?.toInt() ?? 480;
+    final apps = data['apps'] as List<dynamic>? ?? [];
 
     final hours = totalMinutes ~/ 60;
     final minutes = totalMinutes % 60;

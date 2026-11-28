@@ -5,7 +5,7 @@ import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
 
 /// Body fat tracker widget - shows body fat percentage and progress.
-class BodyFatTrackerWidget extends WidgetDefinition {
+class BodyFatTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
   @override
   String get id => 'body_fat_tracker';
 
@@ -29,20 +29,25 @@ class BodyFatTrackerWidget extends WidgetDefinition {
 
   @override
   @override
+  Map<String, dynamic> parseData(WidgetData? data) {
+    if (data == null) {
+      return {};
+    }
+    return data.data;
+  }
+
+
+  @override
   Widget buildView(
-    WidgetData? data,
+    Map<String, dynamic> data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
-    if (data == null) {
-      return const SizedBox();
-    }
-
-    final current = (data.data['current'] as num?)?.toDouble() ?? 0.0;
-    final goal = (data.data['goal'] as num?)?.toDouble() ?? 0.0;
-    final start = (data.data['start'] as num?)?.toDouble() ?? current;
-    final trend = data.data['trend'] as String? ?? 'stable';
+    final current = (data['current'] as num?)?.toDouble() ?? 0.0;
+    final goal = (data['goal'] as num?)?.toDouble() ?? 0.0;
+    final start = (data['start'] as num?)?.toDouble() ?? current;
+    final trend = data['trend'] as String? ?? 'stable';
 
     final progress = (start - goal) != 0
         ? (current - start) / (start - goal)

@@ -6,7 +6,7 @@ import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
 
 /// Stock and crypto watchlist widget - tracks portfolio symbols.
-class StocksWidget extends WidgetDefinition {
+class StocksWidget extends WidgetDefinition<Map<String, dynamic>> {
   @override
   String get id => 'stocks';
 
@@ -36,8 +36,17 @@ class StocksWidget extends WidgetDefinition {
 
   @override
   @override
+  Map<String, dynamic> parseData(WidgetData? data) {
+    if (data == null) {
+      return {};
+    }
+    return data.data;
+  }
+
+
+  @override
   Widget buildView(
-    WidgetData? data,
+    Map<String, dynamic> data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
@@ -86,8 +95,8 @@ class StocksWidget extends WidgetDefinition {
   }
 
   Widget _buildContent(WidgetData data) {
-    final symbols = data.data['symbols'] as List<dynamic>? ?? [];
-    final lastUpdate = data.data['lastUpdate'] as String? ?? '';
+    final symbols = data['symbols'] as List<dynamic>? ?? [];
+    final lastUpdate = data['lastUpdate'] as String? ?? '';
 
     return SingleChildScrollView(
       child: Column(

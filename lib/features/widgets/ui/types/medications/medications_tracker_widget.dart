@@ -5,7 +5,7 @@ import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
 
 /// Medications and supplements tracker widget.
-class MedicationsTrackerWidget extends WidgetDefinition {
+class MedicationsTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
   @override
   String get id => 'medications_tracker';
 
@@ -29,18 +29,23 @@ class MedicationsTrackerWidget extends WidgetDefinition {
 
   @override
   @override
+  Map<String, dynamic> parseData(WidgetData? data) {
+    if (data == null) {
+      return {};
+    }
+    return data.data;
+  }
+
+
+  @override
   Widget buildView(
-    WidgetData? data,
+    Map<String, dynamic> data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
-    if (data == null) {
-      return const SizedBox();
-    }
-
-    final medications = data.data['medications'] as List<dynamic>? ?? [];
-    final upcoming = data.data['upcoming'] as List<dynamic>? ?? [];
+    final medications = data['medications'] as List<dynamic>? ?? [];
+    final upcoming = data['upcoming'] as List<dynamic>? ?? [];
 
     return SingleChildScrollView(
       child: Column(

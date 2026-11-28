@@ -5,7 +5,7 @@ import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
 
 /// Tasks widget - shows today's important tasks.
-class TasksWidget extends WidgetDefinition {
+class TasksWidget extends WidgetDefinition<Map<String, dynamic>> {
   @override
   String get id => 'tasks';
 
@@ -32,18 +32,23 @@ class TasksWidget extends WidgetDefinition {
 
   @override
   @override
+  Map<String, dynamic> parseData(WidgetData? data) {
+    if (data == null) {
+      return {};
+    }
+    return data.data;
+  }
+
+
+  @override
   Widget buildView(
-    WidgetData? data,
+    Map<String, dynamic> data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
-    if (data == null) {
-      return const SizedBox();
-    }
-
-    final tasks = data.data['tasks'] as List<dynamic>? ?? [];
-    final completed = (data.data['completed'] as num?)?.toInt() ?? 0;
+    final tasks = data['tasks'] as List<dynamic>? ?? [];
+    final completed = (data['completed'] as num?)?.toInt() ?? 0;
     final total = tasks.length;
 
     return SingleChildScrollView(

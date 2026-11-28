@@ -45,12 +45,10 @@ void main() {
 
   testWidgets('Body Fat widget renders', (WidgetTester tester) async {
     final bodyFat = BodyFatTrackerWidget();
-    final data = WidgetData.fromJson({
-      'schemaVersion': 1,
-      'data': {'current': 22.5, 'goal': 18.0, 'start': 25.0, 'trend': 'down'},
-      'sources': [{'name': 'Lokale Einträge'}],
-      'generatedAt': '2024-01-01T00:00:00Z',
-    });
+    final rawJson = {'current': 22.5, 'goal': 18.0, 'start': 25.0, 'trend': 'down'};
+    final typedData = bodyFat.parseData(
+      WidgetData(data: rawJson, generatedAt: DateTime.now()),
+    );
 
     await tester.pumpWidget(
       MaterialApp(
@@ -59,7 +57,7 @@ void main() {
             width: 300,
             height: 200,
             child: bodyFat.buildView(
-              data,
+              typedData,
               WidgetDataState.ready,
               WidgetConfig({}),
             ),
@@ -74,12 +72,10 @@ void main() {
 
   testWidgets('Heart Rate widget renders', (WidgetTester tester) async {
     final heartRate = HeartRateTrackerWidget();
-    final data = WidgetData.fromJson({
-      'schemaVersion': 1,
-      'data': {'current': 72, 'resting': 62, 'max': 145, 'trend': 'down'},
-      'sources': [{'name': 'Apple Health'}],
-      'generatedAt': '2024-01-01T00:00:00Z',
-    });
+    final rawJson = {'current': 72, 'resting': 62, 'max': 145, 'trend': 'down'};
+    final typedData = heartRate.parseData(
+      WidgetData(data: rawJson, generatedAt: DateTime.now()),
+    );
 
     await tester.pumpWidget(
       MaterialApp(
@@ -88,7 +84,7 @@ void main() {
             width: 300,
             height: 200,
             child: heartRate.buildView(
-              data,
+              typedData,
               WidgetDataState.ready,
               WidgetConfig({}),
             ),
@@ -103,16 +99,14 @@ void main() {
 
   testWidgets('Mood widget renders', (WidgetTester tester) async {
     final mood = MoodTrackerWidget();
-    final data = WidgetData.fromJson({
-      'schemaVersion': 1,
-      'data': {
-        'mood': 4,
-        'note': 'Fühle mich gut',
-        'week': [3, 4, 5, 4, 3, 4, 4],
-      },
-      'sources': [{'name': 'Lokale Einträge'}],
-      'generatedAt': '2024-01-01T00:00:00Z',
-    });
+    final rawJson = {
+      'mood': 4,
+      'note': 'Fühle mich gut',
+      'week': [3, 4, 5, 4, 3, 4, 4],
+    };
+    final typedData = mood.parseData(
+      WidgetData(data: rawJson, generatedAt: DateTime.now()),
+    );
 
     await tester.pumpWidget(
       MaterialApp(
@@ -121,7 +115,7 @@ void main() {
             width: 300,
             height: 200,
             child: mood.buildView(
-              data,
+              typedData,
               WidgetDataState.ready,
               WidgetConfig({}),
             ),
@@ -136,18 +130,16 @@ void main() {
 
   testWidgets('Tasks widget renders', (WidgetTester tester) async {
     final tasks = TasksWidget();
-    final data = WidgetData.fromJson({
-      'schemaVersion': 1,
-      'data': {
-        'tasks': [
-          {'title': 'Einkaufen', 'time': '10:00', 'priority': 'high'},
-          {'title': 'Bericht', 'time': '12:00'},
-        ],
-        'completed': 1,
-      },
-      'sources': [{'name': 'Todo App'}],
-      'generatedAt': '2024-01-01T00:00:00Z',
-    });
+    final rawJson = {
+      'tasks': [
+        {'title': 'Einkaufen', 'time': '10:00', 'priority': 'high'},
+        {'title': 'Bericht', 'time': '12:00'},
+      ],
+      'completed': 1,
+    };
+    final typedData = tasks.parseData(
+      WidgetData(data: rawJson, generatedAt: DateTime.now()),
+    );
 
     await tester.pumpWidget(
       MaterialApp(
@@ -156,7 +148,7 @@ void main() {
             width: 300,
             height: 300,
             child: tasks.buildView(
-              data,
+              typedData,
               WidgetDataState.ready,
               WidgetConfig({}),
             ),

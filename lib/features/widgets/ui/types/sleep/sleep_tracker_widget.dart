@@ -5,7 +5,7 @@ import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
 
 /// Sleep tracker widget - shows sleep duration and quality.
-class SleepTrackerWidget extends WidgetDefinition {
+class SleepTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
   @override
   String get id => 'sleep_tracker';
 
@@ -43,19 +43,24 @@ class SleepTrackerWidget extends WidgetDefinition {
 
   @override
   @override
+  Map<String, dynamic> parseData(WidgetData? data) {
+    if (data == null) {
+      return {};
+    }
+    return data.data;
+  }
+
+
+  @override
   Widget buildView(
-    WidgetData? data,
+    Map<String, dynamic> data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
-    if (data == null) {
-      return const SizedBox();
-    }
-
-    final goal = (data.data['goal'] as num?)?.toInt() ?? 8;
-    final slept = (data.data['slept'] as num?)?.toDouble() ?? 0.0;
-    final quality = (data.data['quality'] as num?)?.toInt() ?? 0;
+    final goal = (data['goal'] as num?)?.toInt() ?? 8;
+    final slept = (data['slept'] as num?)?.toDouble() ?? 0.0;
+    final quality = (data['quality'] as num?)?.toInt() ?? 0;
     final progress = slept / goal;
     final remaining = (goal - slept).round();
 

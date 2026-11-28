@@ -7,7 +7,7 @@ import '../../../framework/widget_data.dart';
 import '../../../protein/data/protein_data.dart';
 
 /// Protein tracker widget using typed ProteinData model.
-class ProteinTrackerWidget extends WidgetDefinition {
+class ProteinTrackerWidget extends WidgetDefinition<ProteinData> {
   @override
   String get id => 'protein_tracker';
 
@@ -43,8 +43,11 @@ class ProteinTrackerWidget extends WidgetDefinition {
     ),
   ];
 
-  /// Parse raw data into typed ProteinData model.
-  ProteinData _parseData(WidgetData data) {
+  @override
+  ProteinData parseData(WidgetData? data) {
+    if (data == null) {
+      return ProteinData(consumed: 0, goal: 150, meals: []);
+    }
     try {
       final consumed = (data.data['consumed'] as num?) ?? 0;
       final goal = (data.data['goal'] as num?) ?? 150;
@@ -63,44 +66,20 @@ class ProteinTrackerWidget extends WidgetDefinition {
       
       return ProteinData(consumed: consumed, goal: goal, meals: meals);
     } catch (e) {
-      // Fallback: compute from entries using TrackerBase
-      final tracker = TrackerBase(
-        target: (data.data['goal'] as num?) ?? 150,
-        unit: 'g',
-        period: TimePeriod.day,
-      );
-      final rawEntries = data.data['entries'] as List? ?? [];
-      for (final entry in rawEntries) {
-        if (entry is Map && entry['value'] != null) {
-          tracker.entries.add(TrackerEntry(
-            value: entry['value'],
-            timestamp: DateTime.parse(entry['timestamp']?.toString() ?? ''),
-          ));
-        }
-      }
-      return ProteinData(
-        consumed: tracker.getPeriodTotal(),
-        goal: tracker.target,
-      );
+      return ProteinData.fromJson(data.data);
     }
   }
 
   @override
   Widget buildView(
-    WidgetData? data,
+    ProteinData data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
-    if (data == null) {
-      return const SizedBox();
-    }
-
-    // Parse raw data into typed model
-    final typedData = _parseData(data);
-    final goal = typedData.goal;
-    final consumed = typedData.consumed;
-    final meals = typedData.meals;
+    final goal = data.goal;
+    final consumed = data.consumed;
+    final meals = data.meals;
     final remaining = goal - consumed;
     final progress = goal > 0 ? (consumed / goal).clamp(0.0, 1.0) : 0.0;
 

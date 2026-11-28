@@ -5,7 +5,7 @@ import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
 
 /// Active minutes tracker widget - shows daily activity time.
-class ActiveMinutesTrackerWidget extends WidgetDefinition {
+class ActiveMinutesTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
   @override
   String get id => 'active_minutes_tracker';
 
@@ -29,21 +29,26 @@ class ActiveMinutesTrackerWidget extends WidgetDefinition {
 
   @override
   @override
+  Map<String, dynamic> parseData(WidgetData? data) {
+    if (data == null) {
+      return {};
+    }
+    return data.data;
+  }
+
+
+  @override
   Widget buildView(
-    WidgetData? data,
+    Map<String, dynamic> data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
-    if (data == null) {
-      return const SizedBox();
-    }
-
-    final goal = (data.data['goal'] as num?)?.toInt() ?? 60;
-    final minutes = (data.data['minutes'] as num?)?.toInt() ?? 0;
+    final goal = (data['goal'] as num?)?.toInt() ?? 60;
+    final minutes = (data['minutes'] as num?)?.toInt() ?? 0;
     final remaining = goal - minutes;
     final progress = minutes / goal;
-    final activities = data.data['activities'] as List? ?? [];
+    final activities = data['activities'] as List? ?? [];
 
     return SingleChildScrollView(
       child: Column(

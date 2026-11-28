@@ -1,13 +1,12 @@
 import 'package:material_ui/material_ui.dart';
 
-import '../../../../../../core/models/tracker_base.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
 import '../../../steps/data/steps_data.dart';
 
 /// Steps tracker widget using typed StepsData model.
-class StepsTrackerWidget extends WidgetDefinition {
+class StepsTrackerWidget extends WidgetDefinition<StepsData> {
   @override
   String get id => 'steps_tracker';
 
@@ -30,7 +29,11 @@ class StepsTrackerWidget extends WidgetDefinition {
   WidgetSize get defaultSize => WidgetSize.medium;
 
   /// Parse raw data into typed StepsData model.
-  StepsData _parseData(WidgetData data) {
+  @override
+  StepsData parseData(WidgetData? data) {
+    if (data == null) {
+      return StepsData.fromJson({});
+    }
     try {
       return StepsData(
         steps: (data.data['steps'] as num?) ?? 0,
@@ -40,50 +43,23 @@ class StepsTrackerWidget extends WidgetDefinition {
         streak: (data.data['streak'] as int?) ?? 0,
       );
     } catch (e) {
-      // Fallback: compute from entries
-      final tracker = TrackerBase(
-        target: (data.data['goal'] as num?) ?? 10000,
-        unit: 'Schritte',
-        period: TimePeriod.day,
-      );
-      final rawEntries = data.data['entries'] as List? ?? [];
-      for (final entry in rawEntries) {
-        if (entry is Map && entry['value'] != null) {
-          tracker.entries.add(TrackerEntry(
-            value: entry['value'],
-            timestamp: DateTime.parse(entry['timestamp']?.toString() ?? ''),
-          ));
-        }
-      }
-      final steps = tracker.getPeriodTotal();
-      return StepsData(
-        steps: steps,
-        goal: tracker.target,
-        distanceKm: steps * 0.00076,
-        calories: steps * 0.04,
-        streak: tracker.calculateStreak(),
-      );
+      // Fallback to fromJson
+      return StepsData.fromJson(data.data);
     }
   }
 
   @override
   Widget buildView(
-    WidgetData? data,
+    StepsData data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
-    if (data == null) {
-      return const SizedBox();
-    }
-
-    // Parse raw data into typed model
-    final typedData = _parseData(data);
-    final steps = typedData.steps;
-    final goal = typedData.goal;
-    final distance = typedData.distanceKm;
-    final calories = typedData.calories;
-    final streak = typedData.streak;
+    final steps = data.steps;
+    final goal = data.goal;
+    final distance = data.distanceKm;
+    final calories = data.calories;
+    final streak = data.streak;
 
     final progress = goal > 0 ? (steps / goal).clamp(0.0, 1.0) : 0.0;
 

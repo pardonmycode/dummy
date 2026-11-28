@@ -5,7 +5,7 @@ import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
 
 /// Mood tracker widget - shows current mood and weekly trend.
-class MoodTrackerWidget extends WidgetDefinition {
+class MoodTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
   @override
   String get id => 'mood_tracker';
 
@@ -29,19 +29,24 @@ class MoodTrackerWidget extends WidgetDefinition {
 
   @override
   @override
+  Map<String, dynamic> parseData(WidgetData? data) {
+    if (data == null) {
+      return {};
+    }
+    return data.data;
+  }
+
+
+  @override
   Widget buildView(
-    WidgetData? data,
+    Map<String, dynamic> data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
-    if (data == null) {
-      return const SizedBox();
-    }
-
-    final mood = (data.data['mood'] as num?)?.toInt() ?? 3;
-    final note = data.data['note'] as String? ?? '';
-    final week = data.data['week'] as List<dynamic>? ?? [];
+    final mood = (data['mood'] as num?)?.toInt() ?? 3;
+    final note = data['note'] as String? ?? '';
+    final week = data['week'] as List<dynamic>? ?? [];
 
     final moodIcons = [
       Icons.sentiment_very_dissatisfied,

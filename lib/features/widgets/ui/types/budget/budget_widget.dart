@@ -5,7 +5,7 @@ import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
 
 /// Budget and expenses widget - tracks spending vs budget.
-class BudgetWidget extends WidgetDefinition {
+class BudgetWidget extends WidgetDefinition<Map<String, dynamic>> {
   @override
   String get id => 'budget';
 
@@ -35,8 +35,17 @@ class BudgetWidget extends WidgetDefinition {
 
   @override
   @override
+  Map<String, dynamic> parseData(WidgetData? data) {
+    if (data == null) {
+      return {};
+    }
+    return data.data;
+  }
+
+
+  @override
   Widget buildView(
-    WidgetData? data,
+    Map<String, dynamic> data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
@@ -85,12 +94,12 @@ class BudgetWidget extends WidgetDefinition {
   }
 
   Widget _buildContent(WidgetData data) {
-    final budget = (data.data['budget'] as num?)?.toDouble() ?? 0;
-    final spent = (data.data['spent'] as num?)?.toDouble() ?? 0;
+    final budget = (data['budget'] as num?)?.toDouble() ?? 0;
+    final spent = (data['spent'] as num?)?.toDouble() ?? 0;
     final remaining = budget - spent;
-    final period = data.data['period'] as String? ?? 'Monat';
-    final categories = data.data['categories'] as List<dynamic>? ?? [];
-    final recent = data.data['recent'] as List<dynamic>? ?? [];
+    final period = data['period'] as String? ?? 'Monat';
+    final categories = data['categories'] as List<dynamic>? ?? [];
+    final recent = data['recent'] as List<dynamic>? ?? [];
 
     final progress = budget > 0 ? (spent / budget).clamp(0.0, 1.0) : 0.0;
     final isOver = spent > budget;

@@ -5,7 +5,7 @@ import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
 
 /// Heart rate tracker widget - shows current and resting heart rate.
-class HeartRateTrackerWidget extends WidgetDefinition {
+class HeartRateTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
   @override
   String get id => 'heart_rate_tracker';
 
@@ -29,20 +29,25 @@ class HeartRateTrackerWidget extends WidgetDefinition {
 
   @override
   @override
+  Map<String, dynamic> parseData(WidgetData? data) {
+    if (data == null) {
+      return {};
+    }
+    return data.data;
+  }
+
+
+  @override
   Widget buildView(
-    WidgetData? data,
+    Map<String, dynamic> data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
-    if (data == null) {
-      return const SizedBox();
-    }
-
-    final current = (data.data['current'] as num?)?.toInt() ?? 0;
-    final resting = (data.data['resting'] as num?)?.toInt() ?? 0;
-    final max = (data.data['max'] as num?)?.toInt() ?? 0;
-    final trend = data.data['trend'] as String? ?? 'stable';
+    final current = (data['current'] as num?)?.toInt() ?? 0;
+    final resting = (data['resting'] as num?)?.toInt() ?? 0;
+    final max = (data['max'] as num?)?.toInt() ?? 0;
+    final trend = data['trend'] as String? ?? 'stable';
 
     return SingleChildScrollView(
       child: Column(

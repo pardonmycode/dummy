@@ -33,7 +33,13 @@ void main() {
       );
       final definition = registry.get('weather')!;
       final data = WidgetData.fromJson({
-        'current': {'temperature': 25, 'condition': 'sunny'},
+        'data': {
+          'temperature': 25.0,
+          'condition': 'sunny',
+          'icon': 'sunny',
+          'hourly': [],
+          'daily': [],
+        },
       });
 
       await tester.pumpWidget(

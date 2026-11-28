@@ -43,7 +43,8 @@ class WidgetConfig {
 }
 
 /// Definition for a widget type.
-abstract class WidgetDefinition {
+/// Generic parameter [T] is the typed data model for this widget.
+abstract class WidgetDefinition<T> {
   /// Unique identifier for this widget type.
   String get id;
 
@@ -79,10 +80,13 @@ abstract class WidgetDefinition {
   /// Returns a list of config field definitions.
   List<WidgetConfigField> get configFields => [];
 
-  /// Build the widget UI from data and state.
+  /// Parse raw WidgetData into the typed data model [T].
+  T parseData(WidgetData? data);
+
+  /// Build the widget UI from typed data and state.
   /// [onQuickAdd] is an optional callback for tracker widgets to report quick-add actions.
   Widget buildView(
-    WidgetData? data,
+    T data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,

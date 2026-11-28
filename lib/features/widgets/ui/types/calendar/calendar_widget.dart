@@ -5,7 +5,7 @@ import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
 
 /// Calendar widget - shows upcoming events and next appointments.
-class CalendarWidget extends WidgetDefinition {
+class CalendarWidget extends WidgetDefinition<Map<String, dynamic>> {
   @override
   String get id => 'calendar';
 
@@ -32,19 +32,24 @@ class CalendarWidget extends WidgetDefinition {
 
   @override
   @override
+  Map<String, dynamic> parseData(WidgetData? data) {
+    if (data == null) {
+      return {};
+    }
+    return data.data;
+  }
+
+
+  @override
   Widget buildView(
-    WidgetData? data,
+    Map<String, dynamic> data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
-    if (data == null) {
-      return const SizedBox();
-    }
-
-    final today = data.data['today'] as String? ?? '';
-    final events = data.data['events'] as List<dynamic>? ?? [];
-    final freeSlots = data.data['freeSlots'] as List<dynamic>? ?? [];
+    final today = data['today'] as String? ?? '';
+    final events = data['events'] as List<dynamic>? ?? [];
+    final freeSlots = data['freeSlots'] as List<dynamic>? ?? [];
 
     return SingleChildScrollView(
       child: Column(

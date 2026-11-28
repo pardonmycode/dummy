@@ -5,7 +5,7 @@ import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
 
 /// Distance tracker widget - shows daily distance walked/run.
-class DistanceTrackerWidget extends WidgetDefinition {
+class DistanceTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
   @override
   String get id => 'distance_tracker';
 
@@ -29,21 +29,26 @@ class DistanceTrackerWidget extends WidgetDefinition {
 
   @override
   @override
+  Map<String, dynamic> parseData(WidgetData? data) {
+    if (data == null) {
+      return {};
+    }
+    return data.data;
+  }
+
+
+  @override
   Widget buildView(
-    WidgetData? data,
+    Map<String, dynamic> data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
-    if (data == null) {
-      return const SizedBox();
-    }
-
-    final goal = (data.data['goal'] as num?)?.toInt() ?? 10000;
-    final distance = (data.data['distance'] as num?)?.toInt() ?? 0;
+    final goal = (data['goal'] as num?)?.toInt() ?? 10000;
+    final distance = (data['distance'] as num?)?.toInt() ?? 0;
     final remaining = goal - distance;
     final progress = distance / goal;
-    final activities = data.data['activities'] as List? ?? [];
+    final activities = data['activities'] as List? ?? [];
 
     return SingleChildScrollView(
       child: Column(

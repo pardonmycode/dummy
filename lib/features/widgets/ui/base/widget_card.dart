@@ -11,7 +11,7 @@ import '../components/widget_action_menu.dart';
 
 /// Base card wrapper for all widgets with header, states, and actions.
 class WidgetCard extends ConsumerWidget {
-  final WidgetDefinition definition;
+  final WidgetDefinition<Object> definition;
   final WidgetInstance instance;
   final WidgetData? data;
   final WidgetDataState state;
@@ -149,19 +149,23 @@ class WidgetCard extends ConsumerWidget {
         body = _buildEmpty();
         break;
       case WidgetDataState.offline:
+        // Parse typed data for offline state too
+        final typedOfflineData = definition.parseData(data);
         body = Column(
           children: [
             Icon(Icons.cloud_off, size: 32, color: Colors.grey),
             const SizedBox(height: 8),
             Text('Offline', style: AppTheme.bodySmall),
             const SizedBox(height: 8),
-            definition.buildView(data, state, config),
+            definition.buildView(typedOfflineData, state, config),
           ],
         );
         break;
       default:
+        // Parse typed data before building view
+        final typedData = definition.parseData(data);
         body = definition.buildView(
-          data,
+          typedData,
           state,
           config,
           onQuickAdd: (type, entry) {

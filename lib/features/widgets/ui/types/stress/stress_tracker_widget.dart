@@ -5,7 +5,7 @@ import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
 
 /// Stress tracker widget - shows stress level and trend.
-class StressTrackerWidget extends WidgetDefinition {
+class StressTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
   @override
   String get id => 'stress_tracker';
 
@@ -29,18 +29,23 @@ class StressTrackerWidget extends WidgetDefinition {
 
   @override
   @override
+  Map<String, dynamic> parseData(WidgetData? data) {
+    if (data == null) {
+      return {};
+    }
+    return data.data;
+  }
+
+
+  @override
   Widget buildView(
-    WidgetData? data,
+    Map<String, dynamic> data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
-    if (data == null) {
-      return const SizedBox();
-    }
-
-    final level = (data.data['level'] as num?)?.toInt() ?? 50;
-    final advice = data.data['advice'] as String? ?? '';
+    final level = (data['level'] as num?)?.toInt() ?? 50;
+    final advice = data['advice'] as String? ?? '';
 
     final levelColor = level < 30
         ? Colors.green

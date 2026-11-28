@@ -5,7 +5,7 @@ import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
 
 /// Custom tracker widget - user can define name, unit, and goal.
-class CustomTrackerWidget extends WidgetDefinition {
+class CustomTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
   @override
   String get id => 'custom_tracker';
 
@@ -30,23 +30,28 @@ class CustomTrackerWidget extends WidgetDefinition {
 
   @override
   @override
+  Map<String, dynamic> parseData(WidgetData? data) {
+    if (data == null) {
+      return {};
+    }
+    return data.data;
+  }
+
+
+  @override
   Widget buildView(
-    WidgetData? data,
+    Map<String, dynamic> data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
-    if (data == null) {
-      return const SizedBox();
-    }
-
-    final trackerName = data.data['name'] ?? 'Mein Tracker';
-    final unit = data.data['unit'] ?? 'Einheiten';
-    final goal = (data.data['goal'] as num?)?.toInt() ?? 100;
-    final current = (data.data['current'] as num?)?.toInt() ?? 0;
+    final trackerName = data['name'] ?? 'Mein Tracker';
+    final unit = data['unit'] ?? 'Einheiten';
+    final goal = (data['goal'] as num?)?.toInt() ?? 100;
+    final current = (data['current'] as num?)?.toInt() ?? 0;
     final remaining = goal - current;
     final progress = current / goal;
-    final entries = data.data['entries'] as List? ?? [];
+    final entries = data['entries'] as List? ?? [];
 
     return SingleChildScrollView(
       child: Column(

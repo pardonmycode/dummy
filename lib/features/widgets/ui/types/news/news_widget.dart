@@ -5,7 +5,7 @@ import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
 
 /// Personal News widget - shows curated news headlines.
-class NewsWidget extends WidgetDefinition {
+class NewsWidget extends WidgetDefinition<Map<String, dynamic>> {
   @override
   String get id => 'news';
 
@@ -35,8 +35,17 @@ class NewsWidget extends WidgetDefinition {
 
   @override
   @override
+  Map<String, dynamic> parseData(WidgetData? data) {
+    if (data == null) {
+      return {};
+    }
+    return data.data;
+  }
+
+
+  @override
   Widget buildView(
-    WidgetData? data,
+    Map<String, dynamic> data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
@@ -85,8 +94,8 @@ class NewsWidget extends WidgetDefinition {
   }
 
   Widget _buildContent(WidgetData data) {
-    final headlines = data.data['headlines'] as List<dynamic>? ?? [];
-    final section = data.data['section'] as String? ?? 'Für dich';
+    final headlines = data['headlines'] as List<dynamic>? ?? [];
+    final section = data['section'] as String? ?? 'Für dich';
 
     if (headlines.isEmpty) {
       return Column(

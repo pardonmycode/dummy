@@ -5,7 +5,7 @@ import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
 
 /// Public transit departures widget - shows upcoming departures.
-class OpnvWidget extends WidgetDefinition {
+class OpnvWidget extends WidgetDefinition<Map<String, dynamic>> {
   @override
   String get id => 'opnv';
 
@@ -46,8 +46,17 @@ class OpnvWidget extends WidgetDefinition {
 
   @override
   @override
+  Map<String, dynamic> parseData(WidgetData? data) {
+    if (data == null) {
+      return {};
+    }
+    return data.data;
+  }
+
+
+  @override
   Widget buildView(
-    WidgetData? data,
+    Map<String, dynamic> data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
@@ -96,8 +105,8 @@ class OpnvWidget extends WidgetDefinition {
   }
 
   Widget _buildContent(WidgetData data) {
-    final stop = data.data['stop'] as String? ?? 'Haltestelle';
-    final departures = data.data['departures'] as List<dynamic>? ?? [];
+    final stop = data['stop'] as String? ?? 'Haltestelle';
+    final departures = data['departures'] as List<dynamic>? ?? [];
 
     return SingleChildScrollView(
       child: Column(

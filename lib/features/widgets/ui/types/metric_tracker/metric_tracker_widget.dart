@@ -5,7 +5,7 @@ import '../../../framework/widget_data.dart';
 
 /// Generic metric tracker widget for goal-based metrics
 /// (sleep, active minutes, distance, body fat, etc.).
-class MetricTrackerWidget extends WidgetDefinition {
+class MetricTrackerWidget extends WidgetDefinition<Map<String, dynamic>> {
   final String _id;
   final String _name;
   final String _description;
@@ -67,23 +67,28 @@ class MetricTrackerWidget extends WidgetDefinition {
       unit: _unit,
     ),
   ];
+  @override
+  Map<String, dynamic> parseData(WidgetData? data) {
+    if (data == null) {
+      return {};
+    }
+    return data.data;
+  }
+
+
 
   @override
   Widget buildView(
-    WidgetData? data,
+    Map<String, dynamic> data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
-    if (data == null) {
-      return const SizedBox();
-    }
-
-    final goal = (data.data[goalKey] as num?)?.toDouble() ?? defaultGoal;
-    final value = (data.data[valueKey] as num?)?.toDouble() ?? 0.0;
+    final goal = (data[goalKey] as num?)?.toDouble() ?? defaultGoal;
+    final value = (data[valueKey] as num?)?.toDouble() ?? 0.0;
     final remaining = goal - value;
     final progress = (value / goal).clamp(0.0, 1.0);
-    final activities = data.data['activities'] as List? ?? [];
+    final activities = data['activities'] as List? ?? [];
 
     return SingleChildScrollView(
       child: Column(

@@ -54,12 +54,14 @@ void main() {
 
   testWidgets('Sleep widget renders with data', (WidgetTester tester) async {
     final sleep = SleepTrackerWidget();
-    final data = WidgetData.fromJson({
-      'schemaVersion': 1,
-      'data': {'goal': 8, 'slept': 7.5, 'quality': 8},
-      'sources': [{'name': 'Apple Health'}],
-      'generatedAt': '2024-01-01T00:00:00Z',
-    });
+    final rawJson = {
+      'goal': 8,
+      'slept': 7.5,
+      'quality': 8,
+    };
+    final typedData = sleep.parseData(
+      WidgetData(data: rawJson, generatedAt: DateTime.now()),
+    );
 
     await tester.pumpWidget(
       MaterialApp(
@@ -68,7 +70,7 @@ void main() {
             width: 300,
             height: 200,
             child: sleep.buildView(
-              data,
+              typedData,
               WidgetDataState.ready,
               WidgetConfig({}),
             ),
@@ -83,18 +85,16 @@ void main() {
 
   testWidgets('Weight widget renders with data', (WidgetTester tester) async {
     final weight = WeightTrackerWidget();
-    final data = WidgetData.fromJson({
-      'schemaVersion': 1,
-      'data': {
-        'current': 82.5,
-        'goal': 75.0,
-        'start': 85.0,
-        'trend': 'down',
-        'lastChange': '-0.5 kg letzte Woche',
-      },
-      'sources': [{'name': 'Lokale Einträge'}],
-      'generatedAt': '2024-01-01T00:00:00Z',
-    });
+    final rawJson = {
+      'current': 82.5,
+      'goal': 75.0,
+      'start': 85.0,
+      'trend': 'down',
+      'lastChange': '-0.5 kg letzte Woche',
+    };
+    final typedData = weight.parseData(
+      WidgetData(data: rawJson, generatedAt: DateTime.now()),
+    );
 
     await tester.pumpWidget(
       MaterialApp(
@@ -103,7 +103,7 @@ void main() {
             width: 300,
             height: 200,
             child: weight.buildView(
-              data,
+              typedData,
               WidgetDataState.ready,
               WidgetConfig({}),
             ),
@@ -120,22 +120,20 @@ void main() {
     WidgetTester tester,
   ) async {
     final briefing = TagesbriefingWidget();
-    final data = WidgetData.fromJson({
-      'schemaVersion': 1,
-      'data': {
-        'summary': 'Guter Tag!',
-        'weather': 'Sonnig, 22°C',
-        'appointments': [
-          {'title': '10:00 - Meeting'},
-        ],
-        'tasks': [
-          {'title': 'Einkaufen'},
-        ],
-        'news': [],
-      },
-      'sources': [{'name': 'OpenWeatherMap'}],
-      'generatedAt': '2024-01-01T00:00:00Z',
-    });
+    final rawJson = {
+      'summary': 'Guter Tag!',
+      'weather': 'Sonnig, 22°C',
+      'appointments': [
+        {'title': '10:00 - Meeting'},
+      ],
+      'tasks': [
+        {'title': 'Einkaufen'},
+      ],
+      'news': [],
+    };
+    final typedData = briefing.parseData(
+      WidgetData(data: rawJson, generatedAt: DateTime.now()),
+    );
 
     await tester.pumpWidget(
       MaterialApp(
@@ -144,7 +142,7 @@ void main() {
             width: 300,
             height: 400,
             child: briefing.buildView(
-              data,
+              typedData,
               WidgetDataState.ready,
               WidgetConfig({}),
             ),

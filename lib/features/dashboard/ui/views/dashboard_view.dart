@@ -492,7 +492,7 @@ class DashboardView extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     WidgetInstance instance,
-    WidgetDefinition definition,
+    WidgetDefinition<Object> definition,
   ) {
     // Watch the provider directly instead of using FutureBuilder
     // so that invalidation triggers a refresh

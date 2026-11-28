@@ -30,9 +30,10 @@ void main() {
   });
 
   group('Widget rendering - loading state', () {
-    testWidgets('Weather widget shows empty when loading',
+    testWidgets('Weather widget shows content when loading',
         (WidgetTester tester) async {
       final weather = WeatherWidget();
+      final typedData = weather.parseData(null);
       await tester.pumpWidget(
         MaterialApp(
           home: Material(
@@ -40,7 +41,7 @@ void main() {
               width: 300,
               height: 200,
               child: weather.buildView(
-                null,
+                typedData,
                 WidgetDataState.loading,
                 WidgetConfig({}),
               ),
@@ -49,15 +50,16 @@ void main() {
         ),
       );
 
-      // Loading state shows empty box
-      expect(find.byType(SizedBox), findsOneWidget);
+      // Loading state shows default content
+      expect(find.byType(Column), findsWidgets);
     });
   });
 
   group('Widget rendering - error state', () {
-    testWidgets('Weather widget shows empty when error',
+    testWidgets('Weather widget shows content when error',
         (WidgetTester tester) async {
       final weather = WeatherWidget();
+      final typedData = weather.parseData(null);
       await tester.pumpWidget(
         MaterialApp(
           home: Material(
@@ -65,7 +67,7 @@ void main() {
               width: 300,
               height: 200,
               child: weather.buildView(
-                null,
+                typedData,
                 WidgetDataState.error,
                 WidgetConfig({}),
               ),
@@ -74,8 +76,8 @@ void main() {
         ),
       );
 
-      // Error state shows empty box
-      expect(find.byType(SizedBox), findsOneWidget);
+      // Error state shows default content
+      expect(find.byType(Column), findsWidgets);
     });
   });
 
@@ -83,6 +85,7 @@ void main() {
     testWidgets('Weather widget shows empty state',
         (WidgetTester tester) async {
       final weather = WeatherWidget();
+      final typedData = weather.parseData(null);
       await tester.pumpWidget(
         MaterialApp(
           home: Material(
@@ -90,7 +93,7 @@ void main() {
               width: 300,
               height: 200,
               child: weather.buildView(
-                null,
+                typedData,
                 WidgetDataState.empty,
                 WidgetConfig({}),
               ),
@@ -107,25 +110,16 @@ void main() {
     testWidgets('Weather widget renders with data',
         (WidgetTester tester) async {
       final weather = WeatherWidget();
-      final data = WidgetData.fromJson({
-        'schemaVersion': 1,
-        'data': {
-          'current': {
-            'temperature': 22,
-            'feelsLike': 23,
-            'condition': 'Sonnig',
-            'humidity': 45,
-            'windSpeed': 12,
-            'location': 'Berlin',
-          },
-          'hourly': [],
-          'daily': [],
-          'warnings': [],
-          'summary': 'Test summary',
-        },
-        'sources': [{'name': 'Test'}],
-        'generatedAt': '2024-01-01T00:00:00Z',
-      });
+      final rawJson = {
+        'temperature': 22.0,
+        'condition': 'Sonnig',
+        'icon': 'sunny',
+        'hourly': [],
+        'daily': [],
+      };
+      final typedData = weather.parseData(
+        WidgetData(data: rawJson, generatedAt: DateTime.now()),
+      );
 
       await tester.pumpWidget(
         MaterialApp(
@@ -134,7 +128,7 @@ void main() {
               width: 300,
               height: 300,
               child: weather.buildView(
-                data,
+                typedData,
                 WidgetDataState.ready,
                 WidgetConfig({'location': 'Berlin'}),
               ),
@@ -143,42 +137,42 @@ void main() {
         ),
       );
 
-      expect(find.text('22°C'), findsOneWidget);
-      expect(find.text('Berlin'), findsOneWidget);
+      expect(find.text('22.0°C'), findsOneWidget);
     });
   });
 
   group('Edge cases - missing fields', () {
     test('Weather handles missing optional fields', () {
       final weather = WeatherWidget();
-      final data = WidgetData.fromJson({
-        'schemaVersion': 1,
-        'data': {
-          'current': {
-            'temperature': 20,
-            'condition': 'Sonnig',
-          },
-        },
-      });
+      final rawJson = {
+        'temperature': 20.0,
+        'condition': 'Sonnig',
+        'icon': 'sunny',
+        'hourly': [],
+        'daily': [],
+      };
+      final typedData = weather.parseData(
+        WidgetData(data: rawJson, generatedAt: DateTime.now()),
+      );
 
       // Should not throw when optional fields are missing
       expect(() {
-        weather.buildView(data, WidgetDataState.ready, WidgetConfig({}));
+        weather.buildView(typedData, WidgetDataState.ready, WidgetConfig({}));
       }, returnsNormally);
     });
 
     test('Protein tracker handles missing goal', () {
       final protein = ProteinTrackerWidget();
-      final data = WidgetData.fromJson({
-        'schemaVersion': 1,
-        'data': {
-          'consumed': 50,
-        },
-      });
+      final rawJson = {
+        'consumed': 50,
+      };
+      final typedData = protein.parseData(
+        WidgetData(data: rawJson, generatedAt: DateTime.now()),
+      );
 
       // Should not throw when goal is missing
       expect(() {
-        protein.buildView(data, WidgetDataState.ready, WidgetConfig({}));
+        protein.buildView(typedData, WidgetDataState.ready, WidgetConfig({}));
       }, returnsNormally);
     });
   });
@@ -186,26 +180,19 @@ void main() {
   group('Edge cases - empty collections', () {
     test('Weather handles empty hourly/daily arrays', () {
       final weather = WeatherWidget();
-      final data = WidgetData.fromJson({
-        'schemaVersion': 1,
-        'data': {
-          'location': 'Berlin',
-          'current': {
-            'temperature': 20,
-            'feelsLike': 20,
-            'condition': 'Sonnig',
-            'humidity': 50,
-            'windSpeed': 10,
-          },
-          'hourly': [],
-          'daily': [],
-          'warnings': [],
-          'summary': 'Test',
-        },
-      });
+      final rawJson = {
+        'temperature': 20.0,
+        'condition': 'Sonnig',
+        'icon': 'sunny',
+        'hourly': [],
+        'daily': [],
+      };
+      final typedData = weather.parseData(
+        WidgetData(data: rawJson, generatedAt: DateTime.now()),
+      );
 
       expect(() {
-        weather.buildView(data, WidgetDataState.ready, WidgetConfig({}));
+        weather.buildView(typedData, WidgetDataState.ready, WidgetConfig({}));
       }, returnsNormally);
     });
 

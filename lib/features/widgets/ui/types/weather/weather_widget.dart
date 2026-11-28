@@ -3,9 +3,10 @@ import 'package:material_ui/material_ui.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
+import '../../../weather/data/weather_data.dart';
 
 /// Weather widget - shows current weather, hourly, and 7-day forecast.
-class WeatherWidget extends WidgetDefinition {
+class WeatherWidget extends WidgetDefinition<WeatherData> {
   @override
   String get id => 'weather';
 
@@ -36,9 +37,22 @@ class WeatherWidget extends WidgetDefinition {
   ];
 
   @override
+  WeatherData parseData(WidgetData? data) {
+    if (data == null) {
+      return WeatherData(
+        temperature: 0,
+        condition: 'unknown',
+        icon: 'unknown',
+        hourly: [],
+        daily: [],
+      );
+    }
+    return WeatherData.fromJson(data.data);
+  }
+
   @override
   Widget buildView(
-    WidgetData? data,
+    WeatherData data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
@@ -68,90 +82,57 @@ class WeatherWidget extends WidgetDefinition {
             ],
           ),
           const SizedBox(height: 8),
-          if (data != null) _buildContent(data),
+          _buildContent(data),
         ],
       );
-    }
-
-    if (data == null) {
-      return const SizedBox();
     }
 
     return _buildContent(data);
   }
 
-  Widget _buildContent(WidgetData data) {
-    final current = data.data['current'] as Map<String, dynamic>?;
-    final hourly = data.data['hourly'] as List<dynamic>?;
-    final warnings = data.data['warnings'] as List<dynamic>?;
-    final summary = data.data['summary'] as String?;
+  Widget _buildContent(WeatherData data) {
+    final current = data.temperature;
+    final condition = data.condition;
+    final icon = data.icon;
+    final hourly = data.hourly;
+    final daily = data.daily;
 
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Current weather
-          if (current != null)
-            Padding(
-              padding: const EdgeInsets.only(bottom: AppTheme.spacingSm),
-              child: Row(
-                children: [
-                  Icon(
-                    _weatherIcon(current['condition'] as String),
-                    size: 32,
-                    color: AppTheme.warning,
-                  ),
-                  const SizedBox(width: AppTheme.spacingSm),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${current['temperature'] ?? 0}°C',
-                          style: AppTheme.titleMedium,
-                        ),
-                        Text(
-                          current['condition'] as String,
-                          style: AppTheme.bodySmall,
-                        ),
-                        if (current['location'] != null)
-                          Text(
-                            current['location'] as String,
-                            style: AppTheme.caption,
-                          ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-          // AI Summary
-          if (summary != null && summary.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(bottom: AppTheme.spacingSm),
-              child: Container(
-                padding: const EdgeInsets.all(AppTheme.spacingXs),
-                decoration: BoxDecoration(
-                  color: AppTheme.info.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+          Padding(
+            padding: const EdgeInsets.only(bottom: AppTheme.spacingSm),
+            child: Row(
+              children: [
+                Icon(
+                  _weatherIcon(icon),
+                  size: 32,
+                  color: AppTheme.warning,
                 ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.auto_awesome,
-                      size: 12,
-                      color: AppTheme.info,
-                    ),
-                    const SizedBox(width: 4),
-                    Expanded(child: Text(summary, style: AppTheme.caption)),
-                  ],
+                const SizedBox(width: AppTheme.spacingSm),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${current}°C',
+                        style: AppTheme.titleMedium,
+                      ),
+                      Text(
+                        condition,
+                        style: AppTheme.bodySmall,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ),
+          ),
 
           // Hourly forecast (simplified)
-          if (hourly != null && hourly.isNotEmpty)
+          if (hourly.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(bottom: AppTheme.spacingSm),
               child: SizedBox(
@@ -159,21 +140,18 @@ class WeatherWidget extends WidgetDefinition {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: hourly.take(6).map((h) {
-                    final hour = h['time'] as String;
-                    final temp = h['temp'] as int;
-                    final condition = h['condition'] as String;
                     return Flexible(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            hour,
+                            h.time,
                             style: AppTheme.caption,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          Icon(_weatherIcon(condition), size: 16),
-                          Text('$temp°', style: AppTheme.caption),
+                          Icon(_weatherIcon(h.icon), size: 16),
+                          Text('${h.temp}°', style: AppTheme.caption),
                         ],
                       ),
                     );
@@ -182,27 +160,35 @@ class WeatherWidget extends WidgetDefinition {
               ),
             ),
 
-          // Warnings
-          if (warnings != null && warnings.isNotEmpty)
-            Container(
-              padding: const EdgeInsets.all(AppTheme.spacingXs),
-              decoration: BoxDecoration(
-                color: AppTheme.warning.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(AppTheme.radiusSm),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.warning, size: 12, color: AppTheme.warning),
-                  const SizedBox(width: 4),
-                  Expanded(
-                    child: Text(
-                      warnings.first['message'] as String,
-                      style: AppTheme.caption,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
+          // Daily forecast (simplified)
+          if (daily.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppTheme.spacingSm),
+              child: SizedBox(
+                height: 60,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: daily.take(5).map((d) {
+                    return Flexible(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            d.date,
+                            style: AppTheme.caption,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Icon(_weatherIcon(d.icon), size: 16),
+                          Text(
+                            '${d.high.toInt()}°/${d.low.toInt()}°',
+                            style: AppTheme.caption,
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
               ),
             ),
         ],

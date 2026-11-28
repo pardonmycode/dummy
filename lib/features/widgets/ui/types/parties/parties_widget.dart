@@ -10,7 +10,7 @@ import '../../../parties/data/party_event.dart';
 
 /// Parties widget - shows nearby events/parties on a map.
 /// Uses typed PartiesData model for event data.
-class PartiesWidget extends WidgetDefinition {
+class PartiesWidget extends WidgetDefinition<PartiesData> {
   @override
   String get id => 'parties';
 
@@ -35,8 +35,11 @@ class PartiesWidget extends WidgetDefinition {
   @override
   Set<WidgetSize> get supportedSizes => {WidgetSize.medium, WidgetSize.large};
 
-  /// Parse raw data into typed PartiesData model.
-  PartiesData _parseData(WidgetData data) {
+  @override
+  PartiesData parseData(WidgetData? data) {
+    if (data == null) {
+      return PartiesData(events: []);
+    }
     try {
       final rawEvents = data.data['events'] as List? ?? [];
       final events = <PartyEvent>[];
@@ -66,18 +69,12 @@ class PartiesWidget extends WidgetDefinition {
 
   @override
   Widget buildView(
-    WidgetData? data,
+    PartiesData data,
     WidgetDataState state,
     WidgetConfig config, {
     void Function(String type, Map<String, dynamic> entry)? onQuickAdd,
   }) {
-    if (data == null) {
-      return const SizedBox();
-    }
-
-    // Parse raw data into typed model
-    final typedData = _parseData(data);
-    final events = typedData.events;
+    final events = data.events;
 
     if (events.isEmpty) {
       return Column(
@@ -185,7 +182,7 @@ class PartiesWidget extends WidgetDefinition {
           ),
         ),
         // Source
-        SourceSection(sources: data.sources),
+        const SourceSection(sources: []),
       ],
     );
   }

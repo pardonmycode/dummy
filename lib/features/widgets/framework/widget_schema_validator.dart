@@ -187,13 +187,26 @@ Map<String, dynamic> getSchemaForWidget(String widgetType) {
   }
 }
 
+/// Caches compiled validators per widget type to avoid recompiling on every validation.
+final _validatorCache = <String, WidgetSchemaValidator>{};
+
+/// Get or create a cached validator for the given widget type.
+WidgetSchemaValidator _getValidator(String widgetType) {
+  if (_validatorCache.containsKey(widgetType)) {
+    return _validatorCache[widgetType]!;
+  }
+  final schema = getSchemaForWidget(widgetType);
+  final validator = WidgetSchemaValidator(schema);
+  _validatorCache[widgetType] = validator;
+  return validator;
+}
+
 /// Validate widget data against its schema.
 /// Returns null if valid, or a list of error messages if invalid.
 List<String>? validateWidgetData(
   String widgetType,
   Map<String, dynamic> data,
 ) {
-  final schema = getSchemaForWidget(widgetType);
-  final validator = WidgetSchemaValidator(schema);
+  final validator = _getValidator(widgetType);
   return validator.validate(data);
 }

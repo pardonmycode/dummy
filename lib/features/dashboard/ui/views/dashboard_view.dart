@@ -574,7 +574,7 @@ class DashboardView extends ConsumerWidget {
         definition: definition,
         instance: instance,
         data: null,
-        state: WidgetDataState.ready,
+        state: WidgetDataState.error,
         config: WidgetConfig(instance.config),
         validationErrors: validationErrors,
         onRefresh: () {

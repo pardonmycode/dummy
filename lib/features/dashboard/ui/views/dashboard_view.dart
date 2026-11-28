@@ -57,11 +57,18 @@ final mockDataProviderProvider = Provider<MockWidgetDataProvider>(
 );
 
 /// Memoized data provider — caches the Future per widget instance
-/// so rebuilds don't trigger new fetches.
-final widgetDataProvider = FutureProvider.family<Map<String, dynamic>, String>(
+/// so rebuilds don't trigger new fetches. Uses select to only watch
+/// the specific instance by ID to avoid reloading all widgets on changes.
+final widgetDataProvider = FutureProvider.family<Map<String, dynamic>?, String>(
   (ref, instanceId) async {
-    final dashboardWidgets = ref.watch(dashboardWidgetsProvider);
-    final instance = dashboardWidgets.firstWhere((w) => w.id == instanceId);
+    final instance = ref.watch(
+      dashboardWidgetsProvider.select(
+        (widgets) => widgets.firstWhere(
+          (w) => w.id == instanceId,
+          orElse: () => throw StateError('Widget $instanceId not found'),
+        ),
+      ),
+    );
     final provider = ref.watch(mockDataProviderProvider);
     var data = await provider.getData(instance.widgetType, instance.config);
 

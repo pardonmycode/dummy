@@ -1,14 +1,17 @@
-import 'package:material_ui/material_ui.dart';
-import 'package:widgetly/features/widgets/framework/widget_data.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart' as fl;
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:widgetly/features/widgets/framework/widget_definition.dart';
-import 'package:widgetly/features/widgets/ui/types/sleep/sleep_tracker_widget.dart';
-import 'package:widgetly/features/widgets/ui/types/weight/weight_tracker_widget.dart';
-import 'package:widgetly/features/widgets/ui/types/briefing/tagesbriefing_widget.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:widgetly/core/i18n/app_localizations.dart';
 import 'package:widgetly/features/dashboard/ui/views/dashboard_view.dart';
 import 'package:widgetly/features/widgets/framework/mock_widget_data_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:widgetly/features/widgets/framework/widget_definition.dart';
+import 'package:widgetly/features/widgets/framework/widget_data.dart';
+import 'package:widgetly/features/widgets/ui/types/briefing/tagesbriefing_widget.dart';
+import 'package:widgetly/features/widgets/ui/types/sleep/sleep_tracker_widget.dart';
+import 'package:widgetly/features/widgets/ui/types/weight/weight_tracker_widget.dart';
 
 void main() {
   setUp(() async {
@@ -65,6 +68,13 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizationsDelegate(),
+          GlobalMaterialLocalizations.delegate,
+          fl.GlobalWidgetsLocalizations.delegate,
+          fl.GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [Locale('en')],
         home: Builder(
           builder: (context) {
             return Material(
@@ -83,6 +93,7 @@ void main() {
         ),
       ),
     );
+    await tester.pumpAndSettle();
 
     expect(find.text('7.5h von 8h'), findsOneWidget);
     expect(find.text('Qualität: 8/10'), findsOneWidget);
@@ -103,6 +114,13 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizationsDelegate(),
+          GlobalMaterialLocalizations.delegate,
+          fl.GlobalWidgetsLocalizations.delegate,
+          fl.GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [Locale('en')],
         home: Builder(
           builder: (context) {
             return Material(
@@ -121,6 +139,7 @@ void main() {
         ),
       ),
     );
+    await tester.pumpAndSettle();
 
     expect(find.text('82.5 kg'), findsOneWidget);
     expect(find.text('Gewichtsabnahme'), findsOneWidget);
@@ -145,6 +164,13 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizationsDelegate(),
+          GlobalMaterialLocalizations.delegate,
+          fl.GlobalWidgetsLocalizations.delegate,
+          fl.GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [Locale('en')],
         home: Builder(
           builder: (context) {
             return Material(
@@ -163,6 +189,7 @@ void main() {
         ),
       ),
     );
+    await tester.pumpAndSettle();
 
     expect(find.text('Guter Tag!'), findsOneWidget);
     expect(find.text('Sonnig, 22°C'), findsOneWidget);

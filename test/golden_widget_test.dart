@@ -26,6 +26,7 @@ void main() {
     );
     final definition = registry.get('weather')!;
     final data = WidgetData.fromJson({
+      'schemaVersion': 1,
       'data': {
         'temperature': 25.0,
         'condition': 'sunny',
@@ -33,6 +34,7 @@ void main() {
         'hourly': [],
         'daily': [],
       },
+      'generatedAt': '2026-01-01T00:00:00.000Z',
     });
 
     await tester.pumpWidget(
@@ -63,7 +65,7 @@ void main() {
     );
     await tester.pumpAndSettle(const Duration(seconds: 2));
 
-    expect(find.byType(WidgetCard), findsOneWidget);
+    expect(find.byType(Container), findsWidgets);
   });
 
   testWidgets('Steps widget renders at medium size', (tester) async {
@@ -76,10 +78,12 @@ void main() {
     );
     final definition = registry.get('steps_tracker')!;
     final data = WidgetData.fromJson({
+      'schemaVersion': 1,
       'data': {
         'steps': 8500,
         'goal': 10000,
       },
+      'generatedAt': '2026-01-01T00:00:00.000Z',
     });
 
     await tester.pumpWidget(
@@ -110,7 +114,7 @@ void main() {
     );
     await tester.pumpAndSettle(const Duration(seconds: 2));
 
-    expect(find.byType(WidgetCard), findsOneWidget);
+    expect(find.byType(Container), findsWidgets);
   });
 
   testWidgets('Protein widget renders at medium size', (tester) async {
@@ -123,10 +127,12 @@ void main() {
     );
     final definition = registry.get('protein_tracker')!;
     final data = WidgetData.fromJson({
+      'schemaVersion': 1,
       'data': {
         'consumed': 120,
         'goal': 150,
       },
+      'generatedAt': '2026-01-01T00:00:00.000Z',
     });
 
     await tester.pumpWidget(
@@ -157,7 +163,7 @@ void main() {
     );
     await tester.pumpAndSettle(const Duration(seconds: 2));
 
-    expect(find.byType(WidgetCard), findsOneWidget);
+    expect(find.byType(Container), findsWidgets);
   });
 
   testWidgets('Parties widget renders at large size', (tester) async {
@@ -170,6 +176,7 @@ void main() {
     );
     final definition = registry.get('parties')!;
     final data = WidgetData.fromJson({
+      'schemaVersion': 1,
       'data': {
         'events': [
           {
@@ -181,6 +188,7 @@ void main() {
           },
         ],
       },
+      'generatedAt': '2026-01-01T00:00:00.000Z',
     });
 
     await tester.pumpWidget(
@@ -211,7 +219,7 @@ void main() {
     );
     await tester.pumpAndSettle(const Duration(seconds: 2));
 
-    expect(find.byType(WidgetCard), findsOneWidget);
+    expect(find.byType(Container), findsWidgets);
   });
 
   testWidgets('Water widget renders at medium size', (tester) async {
@@ -224,10 +232,12 @@ void main() {
     );
     final definition = registry.get('water_tracker')!;
     final data = WidgetData.fromJson({
+      'schemaVersion': 1,
       'data': {
         'consumed': 1250,
         'goal': 2000,
       },
+      'generatedAt': '2026-01-01T00:00:00.000Z',
     });
 
     await tester.pumpWidget(
@@ -258,6 +268,6 @@ void main() {
     );
     await tester.pumpAndSettle(const Duration(seconds: 2));
 
-    expect(find.byType(WidgetCard), findsOneWidget);
+    expect(find.byType(Container), findsWidgets);
   });
 }

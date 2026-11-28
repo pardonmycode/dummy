@@ -1,12 +1,15 @@
-import 'package:material_ui/material_ui.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart' as fl;
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:widgetly/core/i18n/app_localizations.dart';
+import 'package:widgetly/features/dashboard/ui/views/dashboard_view.dart';
 import 'package:widgetly/features/widgets/framework/widget_definition.dart';
 import 'package:widgetly/features/widgets/framework/widget_data.dart';
-import 'package:widgetly/features/widgets/ui/types/weather/weather_widget.dart';
 import 'package:widgetly/features/widgets/ui/types/protein/protein_tracker_widget.dart';
-import 'package:widgetly/features/dashboard/ui/views/dashboard_view.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:widgetly/features/widgets/ui/types/weather/weather_widget.dart';
 import 'test_helpers.dart';
 
 void main() {
@@ -35,6 +38,13 @@ void main() {
       final typedData = weather.parseData(null);
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizationsDelegate(),
+            GlobalMaterialLocalizations.delegate,
+            fl.GlobalWidgetsLocalizations.delegate,
+            fl.GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
           home: Builder(
             builder: (context) {
               return Material(
@@ -53,6 +63,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Loading state shows default content
       expect(find.byType(Column), findsWidgets);
@@ -65,6 +76,13 @@ void main() {
       final typedData = weather.parseData(null);
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizationsDelegate(),
+            GlobalMaterialLocalizations.delegate,
+            fl.GlobalWidgetsLocalizations.delegate,
+            fl.GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
           home: Builder(
             builder: (context) {
               return Material(
@@ -83,6 +101,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Error state shows default content
       expect(find.byType(Column), findsWidgets);
@@ -95,6 +114,13 @@ void main() {
       final typedData = weather.parseData(null);
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizationsDelegate(),
+            GlobalMaterialLocalizations.delegate,
+            fl.GlobalWidgetsLocalizations.delegate,
+            fl.GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
           home: Builder(
             builder: (context) {
               return Material(
@@ -113,6 +139,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.byType(Text), findsOneWidget);
     });
@@ -134,6 +161,13 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizationsDelegate(),
+            GlobalMaterialLocalizations.delegate,
+            fl.GlobalWidgetsLocalizations.delegate,
+            fl.GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
           home: Builder(
             builder: (context) {
               return Material(
@@ -152,6 +186,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.text('22.0°C'), findsOneWidget);
     });
@@ -174,6 +209,13 @@ void main() {
       // Should not throw when optional fields are missing
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizationsDelegate(),
+            GlobalMaterialLocalizations.delegate,
+            fl.GlobalWidgetsLocalizations.delegate,
+            fl.GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
           home: Builder(
             builder: (context) {
               return Material(
@@ -188,6 +230,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
       expect(find.byType(Material), findsOneWidget);
     });
 
@@ -203,6 +246,13 @@ void main() {
       // Should not throw when goal is missing
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizationsDelegate(),
+            GlobalMaterialLocalizations.delegate,
+            fl.GlobalWidgetsLocalizations.delegate,
+            fl.GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
           home: Builder(
             builder: (context) {
               return Material(
@@ -217,6 +267,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
       expect(find.byType(Material), findsOneWidget);
     });
   });
@@ -237,6 +288,13 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizationsDelegate(),
+            GlobalMaterialLocalizations.delegate,
+            fl.GlobalWidgetsLocalizations.delegate,
+            fl.GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
           home: Builder(
             builder: (context) {
               return Material(
@@ -251,6 +309,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
       expect(find.byType(Material), findsOneWidget);
     });
 

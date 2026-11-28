@@ -114,7 +114,10 @@ class DashboardWidgetsNotifier extends StateNotifier<List<WidgetInstance>> {
   }
 
   void addWidget(String widgetType, {Map<String, dynamic>? config}) {
-    final widget = WidgetInstance(widgetType: widgetType, config: config ?? {});
+    final widget = WidgetInstance.create(
+      widgetType: widgetType,
+      config: config,
+    );
     state = [...state, widget];
     _saveWidgets();
   }

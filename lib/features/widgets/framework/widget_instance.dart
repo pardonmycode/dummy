@@ -36,6 +36,20 @@ abstract class WidgetInstance with _$WidgetInstance {
 
   factory WidgetInstance.fromJson(Map<String, dynamic> json) =>
       _$WidgetInstanceFromJson(json);
+
+  /// Create a new instance with a generated UUID.
+  factory WidgetInstance.create({
+    required String widgetType,
+    WidgetSize size = WidgetSize.medium,
+    Map<String, dynamic>? config,
+  }) {
+    return WidgetInstance(
+      id: _uuid.v4(),
+      widgetType: widgetType,
+      size: size,
+      config: config ?? {},
+    );
+  }
 }
 
 extension WidgetInstanceClone on WidgetInstance {

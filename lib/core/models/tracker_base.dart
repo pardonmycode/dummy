@@ -1,81 +1,49 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'tracker_base.freezed.dart';
+part 'tracker_base.g.dart';
 
 /// Time period for tracking.
 enum TimePeriod { day, week, month }
 
 /// A single tracking entry with timestamp.
-class TrackerEntry {
-  final DateTime timestamp;
-  final num value;
-  final String? note;
+@freezed
+abstract class TrackerEntry with _$TrackerEntry {
+  const factory TrackerEntry({
+    required num value,
+    required DateTime timestamp,
+    String? note,
+  }) = _TrackerEntry;
 
-  TrackerEntry({
-    required this.value,
-    required this.timestamp,
-    this.note,
-  });
-
-  Map<String, dynamic> toJson() {
-    return {
-      'timestamp': timestamp.toIso8601String(),
-      'value': value,
-      if (note != null) 'note': note,
-    };
-  }
-
-  factory TrackerEntry.fromJson(Map<String, dynamic> json) {
-    return TrackerEntry(
-      value: json['value'],
-      timestamp: DateTime.parse(json['timestamp']),
-      note: json['note'],
-    );
-  }
+  factory TrackerEntry.fromJson(Map<String, dynamic> json) =>
+      _$TrackerEntryFromJson(json);
 }
 
 /// Shared base model for all tracker widgets (20+ types).
 /// Provides goal tracking, streak calculation, entry management, and CSV export.
-class TrackerBase {
-  /// Tracking target/goal value.
-  num target;
+@freezed
+abstract class TrackerBase with _$TrackerBase {
+  const factory TrackerBase({
+    required num target,
+    required String unit,
+    @Default(TimePeriod.day) TimePeriod period,
+    @Default([]) List<TrackerEntry> entries,
+  }) = _TrackerBase;
 
-  /// Unit of measurement (e.g., 'steps', 'g', 'ml').
-  String unit;
+  factory TrackerBase.fromJson(Map<String, dynamic> json) =>
+      _$TrackerBaseFromJson(json);
+}
 
-  /// Time period for the goal.
-  TimePeriod period;
-
-  /// All tracking entries.
-  final List<TrackerEntry> entries = [];
-
-  TrackerBase({
-    required this.target,
-    required this.unit,
-    this.period = TimePeriod.day,
-    List<TrackerEntry>? entries,
-  }) {
-    if (entries != null) {
-      this.entries.addAll(entries);
-    }
-  }
-
+/// Methods that operate on TrackerBase data.
+extension TrackerBaseMethods on TrackerBase {
   /// Quick add an entry with current timestamp.
-  void addEntry(num value, {String? note}) {
-    entries.add(TrackerEntry(value: value, timestamp: DateTime.now(), note: note));
-  }
-
-  /// Edit an existing entry by index.
-  void editEntry(int index, num value, {String? note}) {
-    if (index < 0 || index >= entries.length) return;
-    entries[index] = TrackerEntry(
-      value: value,
-      timestamp: entries[index].timestamp,
-      note: note ?? entries[index].note,
+  TrackerBase addEntry(num value, {String? note}) {
+    return copyWith(
+      entries: [
+        ...entries,
+        TrackerEntry(value: value, timestamp: DateTime.now(), note: note),
+      ],
     );
-  }
-
-  /// Delete an entry by index.
-  void deleteEntry(int index) {
-    if (index < 0 || index >= entries.length) return;
-    entries.removeAt(index);
   }
 
   /// Calculate current streak (consecutive days with at least one entry).
@@ -98,7 +66,6 @@ class TrackerBase {
     int streak = 0;
     DateTime currentDate = DateTime.now();
 
-    // Walk back from today
     for (int i = 0; i < 365; i++) {
       final checkDate = currentDate.subtract(Duration(days: i));
       final dayKey = checkDate.toIso8601String().substring(0, 10);
@@ -183,34 +150,9 @@ class TrackerBase {
     buffer.writeln('timestamp,value,note');
     for (final entry in entries) {
       final note = entry.note ?? '';
-      buffer.writeln('${entry.timestamp.toIso8601String()},${entry.value},"$note"');
+      buffer.writeln(
+          '${entry.timestamp.toIso8601String()},${entry.value},"$note"');
     }
     return buffer.toString();
-  }
-
-  /// Serialize to JSON.
-  Map<String, dynamic> toJson() {
-    return {
-      'target': target,
-      'unit': unit,
-      'period': period.name,
-      'entries': entries.map((e) => e.toJson()).toList(),
-    };
-  }
-
-  /// Deserialize from JSON.
-  factory TrackerBase.fromJson(Map<String, dynamic> json) {
-    final entries = (json['entries'] as List?)
-        ?.map((e) => TrackerEntry.fromJson(e))
-        .toList();
-    return TrackerBase(
-      target: json['target'],
-      unit: json['unit'],
-      period: TimePeriod.values.firstWhere(
-        (p) => p.name == json['period'],
-        orElse: () => TimePeriod.day,
-      ),
-      entries: entries,
-    );
   }
 }

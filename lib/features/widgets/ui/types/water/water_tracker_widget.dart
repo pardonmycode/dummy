@@ -5,8 +5,9 @@ import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
 import '../../../ui/components/design_system.dart';
+import '../../../water/data/water_data.dart';
 
-/// Water intake tracker widget using shared TrackerBase model.
+/// Water intake tracker widget using typed WaterData model.
 class WaterTrackerWidget extends WidgetDefinition {
   @override
   String get id => 'water_tracker';
@@ -29,7 +30,47 @@ class WaterTrackerWidget extends WidgetDefinition {
   @override
   WidgetSize get defaultSize => WidgetSize.medium;
 
-  @override
+  /// Parse raw data into typed WaterData model.
+  WaterData _parseData(WidgetData data) {
+    try {
+      final consumed = (data.data['consumed'] as num?) ?? 0;
+      final goal = (data.data['goal'] as num?) ?? 2000;
+      
+      final rawEntries = data.data['entries'] as List? ?? [];
+      final entries = <WaterEntry>[];
+      for (final entry in rawEntries) {
+        if (entry is Map && entry['amountMl'] != null) {
+          entries.add(WaterEntry(
+            amountMl: entry['amountMl'] as num,
+            timestamp: DateTime.parse(entry['timestamp']?.toString() ?? ''),
+          ));
+        }
+      }
+      
+      return WaterData(consumed: consumed, goal: goal, entries: entries);
+    } catch (e) {
+      // Fallback: compute from TrackerBase entries
+      final tracker = TrackerBase(
+        target: (data.data['goal'] as num?) ?? 2000,
+        unit: 'ml',
+        period: TimePeriod.day,
+      );
+      final rawEntries = data.data['entries'] as List? ?? [];
+      for (final entry in rawEntries) {
+        if (entry is Map && entry['value'] != null) {
+          tracker.entries.add(TrackerEntry(
+            value: entry['value'],
+            timestamp: DateTime.parse(entry['timestamp']?.toString() ?? ''),
+          ));
+        }
+      }
+      return WaterData(
+        consumed: tracker.getPeriodTotal(),
+        goal: tracker.target,
+      );
+    }
+  }
+
   @override
   Widget buildView(
     WidgetData? data,
@@ -41,29 +82,11 @@ class WaterTrackerWidget extends WidgetDefinition {
       return const SizedBox();
     }
 
-    // Use shared TrackerBase model
-    final tracker = TrackerBase(
-      target: (data.data['goal'] as num?) ?? 2000,
-      unit: 'ml',
-      period: TimePeriod.day,
-    );
-
-    // Parse entries from data
-    final rawEntries = data.data['entries'] as List? ?? [];
-    for (final entry in rawEntries) {
-      if (entry is Map && entry['value'] != null && entry['timestamp'] != null) {
-        tracker.entries.add(TrackerEntry(
-          value: entry['value'],
-          timestamp: DateTime.parse(entry['timestamp']),
-          note: entry['note'],
-        ));
-      }
-    }
-
-    final goal = tracker.target;
-    final consumed = tracker.getPeriodTotal();
-    final progress = tracker.calculateProgress();
-    final streak = tracker.calculateStreak();
+    // Parse raw data into typed model
+    final typedData = _parseData(data);
+    final goal = typedData.goal;
+    final consumed = typedData.consumed;
+    final progress = goal > 0 ? (consumed / goal).clamp(0.0, 1.0) : 0.0;
     final glasses = consumed ~/ 250;
 
     return Column(
@@ -100,17 +123,6 @@ class WaterTrackerWidget extends WidgetDefinition {
         ),
         const SizedBox(height: 8),
 
-        // Streak
-        if (streak > 0)
-          Row(
-            children: [
-              Icon(Icons.local_fire_department, size: 16, color: Colors.orange),
-              const SizedBox(width: 4),
-              Text('$streak Tage Streak', style: AppTheme.labelMedium),
-            ],
-          ),
-        const SizedBox(height: 4),
-
         // Add water button
         ActionButton(
           label: '+ 250ml',
@@ -118,8 +130,6 @@ class WaterTrackerWidget extends WidgetDefinition {
           primary: true,
           width: 120,
           onPressed: () {
-            // Quick add using TrackerBase
-            tracker.addEntry(250, note: 'Wasser');
             // Report the entry so it can be persisted
             if (onQuickAdd != null) {
               onQuickAdd('water', {

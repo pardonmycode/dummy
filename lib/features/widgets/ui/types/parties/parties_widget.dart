@@ -6,8 +6,10 @@ import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
 import '../../../ui/components/design_system.dart';
+import '../../../parties/data/party_event.dart';
 
 /// Parties widget - shows nearby events/parties on a map.
+/// Uses typed PartiesData model for event data.
 class PartiesWidget extends WidgetDefinition {
   @override
   String get id => 'parties';
@@ -33,7 +35,35 @@ class PartiesWidget extends WidgetDefinition {
   @override
   Set<WidgetSize> get supportedSizes => {WidgetSize.medium, WidgetSize.large};
 
-  @override
+  /// Parse raw data into typed PartiesData model.
+  PartiesData _parseData(WidgetData data) {
+    try {
+      final rawEvents = data.data['events'] as List? ?? [];
+      final events = <PartyEvent>[];
+      
+      for (final e in rawEvents) {
+        if (e is Map) {
+          final lat = (e['lat'] ?? e['y'] ?? 0.0) as num;
+          final lng = (e['lng'] ?? e['x'] ?? 0.0) as num;
+          if (lat == 0.0 && lng == 0.0) continue;
+          
+          events.add(PartyEvent(
+            name: e['name']?.toString() ?? 'Event',
+            venue: e['venue']?.toString() ?? '',
+            time: e['time']?.toString() ?? '',
+            lat: lat.toDouble(),
+            lng: lng.toDouble(),
+            genre: e['genre']?.toString(),
+          ));
+        }
+      }
+      
+      return PartiesData(events: events);
+    } catch (e) {
+      return PartiesData(events: []);
+    }
+  }
+
   @override
   Widget buildView(
     WidgetData? data,
@@ -45,9 +75,11 @@ class PartiesWidget extends WidgetDefinition {
       return const SizedBox();
     }
 
-    final events = data.data['events'] as List<dynamic>?;
+    // Parse raw data into typed model
+    final typedData = _parseData(data);
+    final events = typedData.events;
 
-    if (events == null || events.isEmpty) {
+    if (events.isEmpty) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -64,10 +96,7 @@ class PartiesWidget extends WidgetDefinition {
     final markers = <Marker>[];
     final locations = <LatLng>[];
     for (final e in events) {
-      final lat = (e['lat'] ?? e['y'] ?? 0.0) as num;
-      final lng = (e['lng'] ?? e['x'] ?? 0.0) as num;
-      if (lat == 0.0 && lng == 0.0) continue;
-      final point = LatLng(lat.toDouble(), lng.toDouble());
+      final point = LatLng(e.lat, e.lng);
       locations.add(point);
       markers.add(
         Marker(
@@ -81,7 +110,7 @@ class PartiesWidget extends WidgetDefinition {
               boxShadow: AppTheme.shadowSm,
             ),
             child: Icon(
-              _eventIcon(e['genre']?.toString()),
+              _eventIcon(e.genre),
               size: 14,
               color: Colors.white,
             ),
@@ -133,9 +162,8 @@ class PartiesWidget extends WidgetDefinition {
             itemBuilder: (context, index) {
               final e = events[index];
               return ListTileItem(
-                title: e['name']?.toString() ?? 'Event',
-                subtitle:
-                    '${e['venue']?.toString()} · ${e['time']?.toString()}',
+                title: e.name,
+                subtitle: '${e.venue} · ${e.time}',
                 leading: Container(
                   width: 32,
                   height: 32,
@@ -144,7 +172,7 @@ class PartiesWidget extends WidgetDefinition {
                     borderRadius: BorderRadius.circular(AppTheme.radiusSm),
                   ),
                   child: Icon(
-                    _eventIcon(e['genre']?.toString()),
+                    _eventIcon(e.genre),
                     size: 16,
                     color: AppTheme.accent,
                   ),

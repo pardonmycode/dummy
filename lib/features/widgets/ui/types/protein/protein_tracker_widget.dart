@@ -4,8 +4,9 @@ import '../../../../../../core/models/tracker_base.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
+import '../../../protein/data/protein_data.dart';
 
-/// Protein tracker widget using shared TrackerBase model.
+/// Protein tracker widget using typed ProteinData model.
 class ProteinTrackerWidget extends WidgetDefinition {
   @override
   String get id => 'protein_tracker';
@@ -42,7 +43,48 @@ class ProteinTrackerWidget extends WidgetDefinition {
     ),
   ];
 
-  @override
+  /// Parse raw data into typed ProteinData model.
+  ProteinData _parseData(WidgetData data) {
+    try {
+      final consumed = (data.data['consumed'] as num?) ?? 0;
+      final goal = (data.data['goal'] as num?) ?? 150;
+      final rawMeals = data.data['meals'] as List? ?? [];
+      
+      final meals = <ProteinMeal>[];
+      for (final meal in rawMeals) {
+        if (meal is Map) {
+          meals.add(ProteinMeal(
+            name: meal['name']?.toString() ?? 'Mahlzeit',
+            protein: (meal['protein'] as num?) ?? 0,
+            time: meal['time']?.toString(),
+          ));
+        }
+      }
+      
+      return ProteinData(consumed: consumed, goal: goal, meals: meals);
+    } catch (e) {
+      // Fallback: compute from entries using TrackerBase
+      final tracker = TrackerBase(
+        target: (data.data['goal'] as num?) ?? 150,
+        unit: 'g',
+        period: TimePeriod.day,
+      );
+      final rawEntries = data.data['entries'] as List? ?? [];
+      for (final entry in rawEntries) {
+        if (entry is Map && entry['value'] != null) {
+          tracker.entries.add(TrackerEntry(
+            value: entry['value'],
+            timestamp: DateTime.parse(entry['timestamp']?.toString() ?? ''),
+          ));
+        }
+      }
+      return ProteinData(
+        consumed: tracker.getPeriodTotal(),
+        goal: tracker.target,
+      );
+    }
+  }
+
   @override
   Widget buildView(
     WidgetData? data,
@@ -54,31 +96,13 @@ class ProteinTrackerWidget extends WidgetDefinition {
       return const SizedBox();
     }
 
-    // Use shared TrackerBase model
-    final tracker = TrackerBase(
-      target: (data.data['goal'] as num?) ?? 150,
-      unit: 'g',
-      period: TimePeriod.day,
-    );
-
-    // Parse entries from data
-    final rawEntries = data.data['entries'] as List? ?? [];
-    for (final entry in rawEntries) {
-      if (entry is Map && entry['value'] != null && entry['timestamp'] != null) {
-        tracker.entries.add(TrackerEntry(
-          value: entry['value'],
-          timestamp: DateTime.parse(entry['timestamp']),
-          note: entry['note'],
-        ));
-      }
-    }
-
-    final goal = tracker.target;
-    final consumed = tracker.getPeriodTotal();
+    // Parse raw data into typed model
+    final typedData = _parseData(data);
+    final goal = typedData.goal;
+    final consumed = typedData.consumed;
+    final meals = typedData.meals;
     final remaining = goal - consumed;
-    final progress = tracker.calculateProgress();
-    final streak = tracker.calculateStreak();
-    final meals = data.data['meals'] as List? ?? [];
+    final progress = goal > 0 ? (consumed / goal).clamp(0.0, 1.0) : 0.0;
 
     return SingleChildScrollView(
       child: Column(
@@ -147,17 +171,6 @@ class ProteinTrackerWidget extends WidgetDefinition {
                             color: Colors.green,
                           ),
                         ),
-                      if (streak > 0)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 4),
-                          child: Row(
-                            children: [
-                              Icon(Icons.local_fire_department, size: 14, color: Colors.orange),
-                              const SizedBox(width: 4),
-                              Text('$streak Tage Streak', style: AppTheme.labelSmall),
-                            ],
-                          ),
-                        ),
                     ],
                   ),
                 ),
@@ -174,10 +187,6 @@ class ProteinTrackerWidget extends WidgetDefinition {
               itemCount: meals.length,
               itemBuilder: (context, index) {
                 final meal = meals[index];
-                final mealName = meal['name'] ?? 'Mahlzeit';
-                final mealProtein = (meal['protein'] as num?)?.toInt() ?? 0;
-                final mealTime = meal['time'] ?? '';
-
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Row(
@@ -188,13 +197,13 @@ class ProteinTrackerWidget extends WidgetDefinition {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(mealName, style: AppTheme.bodyMedium),
-                            if (mealTime.isNotEmpty)
-                              Text(mealTime, style: AppTheme.labelSmall),
+                            Text(meal.name, style: AppTheme.bodyMedium),
+                            if (meal.time != null && meal.time!.isNotEmpty)
+                              Text(meal.time!, style: AppTheme.labelSmall),
                           ],
                         ),
                       ),
-                      Text('+${mealProtein}g', style: AppTheme.labelMedium),
+                      Text('+${meal.protein}g', style: AppTheme.labelMedium),
                     ],
                   ),
                 );

@@ -4,8 +4,9 @@ import '../../../../../../core/models/tracker_base.dart';
 import '../../../../../../core/theme/theme.dart';
 import '../../../framework/widget_definition.dart';
 import '../../../framework/widget_data.dart';
+import '../../../steps/data/steps_data.dart';
 
-/// Steps tracker widget using shared TrackerBase model.
+/// Steps tracker widget using typed StepsData model.
 class StepsTrackerWidget extends WidgetDefinition {
   @override
   String get id => 'steps_tracker';
@@ -28,7 +29,43 @@ class StepsTrackerWidget extends WidgetDefinition {
   @override
   WidgetSize get defaultSize => WidgetSize.medium;
 
-  @override
+  /// Parse raw data into typed StepsData model.
+  StepsData _parseData(WidgetData data) {
+    try {
+      return StepsData(
+        steps: (data.data['steps'] as num?) ?? 0,
+        goal: (data.data['goal'] as num?) ?? 10000,
+        distanceKm: (data.data['distanceKm'] as num?) ?? 0,
+        calories: (data.data['calories'] as num?) ?? 0,
+        streak: (data.data['streak'] as int?) ?? 0,
+      );
+    } catch (e) {
+      // Fallback: compute from entries
+      final tracker = TrackerBase(
+        target: (data.data['goal'] as num?) ?? 10000,
+        unit: 'Schritte',
+        period: TimePeriod.day,
+      );
+      final rawEntries = data.data['entries'] as List? ?? [];
+      for (final entry in rawEntries) {
+        if (entry is Map && entry['value'] != null) {
+          tracker.entries.add(TrackerEntry(
+            value: entry['value'],
+            timestamp: DateTime.parse(entry['timestamp']?.toString() ?? ''),
+          ));
+        }
+      }
+      final steps = tracker.getPeriodTotal();
+      return StepsData(
+        steps: steps,
+        goal: tracker.target,
+        distanceKm: steps * 0.00076,
+        calories: steps * 0.04,
+        streak: tracker.calculateStreak(),
+      );
+    }
+  }
+
   @override
   Widget buildView(
     WidgetData? data,
@@ -40,29 +77,15 @@ class StepsTrackerWidget extends WidgetDefinition {
       return const SizedBox();
     }
 
-    // Use shared TrackerBase model
-    final tracker = TrackerBase(
-      target: (data.data['goal'] as num?) ?? 10000,
-      unit: 'Schritte',
-      period: TimePeriod.day,
-    );
+    // Parse raw data into typed model
+    final typedData = _parseData(data);
+    final steps = typedData.steps;
+    final goal = typedData.goal;
+    final distance = typedData.distanceKm;
+    final calories = typedData.calories;
+    final streak = typedData.streak;
 
-    // Parse entries from data
-    final rawEntries = data.data['entries'] as List? ?? [];
-    for (final entry in rawEntries) {
-      if (entry is Map && entry['value'] != null && entry['timestamp'] != null) {
-        tracker.entries.add(TrackerEntry(
-          value: entry['value'],
-          timestamp: DateTime.parse(entry['timestamp']),
-          note: entry['note'],
-        ));
-      }
-    }
-
-    final steps = tracker.getPeriodTotal();
-    final progress = tracker.calculateProgress();
-    final streak = tracker.calculateStreak();
-    final distance = steps * 0.00076; // Average step length in km
+    final progress = goal > 0 ? (steps / goal).clamp(0.0, 1.0) : 0.0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,19 +146,13 @@ class StepsTrackerWidget extends WidgetDefinition {
           children: [
             Column(
               children: [
-                Text(
-                  '${distance.toStringAsFixed(1)} km',
-                  style: AppTheme.bodyMedium,
-                ),
+                Text('${distance.toStringAsFixed(1)} km', style: AppTheme.bodyMedium),
                 Text('Distanz', style: AppTheme.labelSmall),
               ],
             ),
             Column(
               children: [
-                Text(
-                  '${(distance * 60).toInt()} kcal',
-                  style: AppTheme.bodyMedium,
-                ),
+                Text('${calories.toInt()} kcal', style: AppTheme.bodyMedium),
                 Text('Kalorien', style: AppTheme.labelSmall),
               ],
             ),

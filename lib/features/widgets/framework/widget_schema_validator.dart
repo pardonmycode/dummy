@@ -67,32 +67,36 @@ Map<String, dynamic> getSchemaForWidget(String widgetType) {
           ...getBaseSchema()['properties'],
           'data': {
             'type': 'object',
-            'required': ['location', 'current'],
+            'required': ['temperature', 'condition'],
             'properties': {
+              'temperature': {'type': 'number'},
+              'condition': {'type': 'string'},
+              'icon': {'type': 'string'},
               'location': {'type': 'string'},
-              'current': {
-                'type': 'object',
-                'required': ['temperature', 'condition'],
-                'properties': {
-                  'temperature': {'type': 'number'},
-                  'condition': {'type': 'string'},
-                },
-              },
+              'current': {'type': 'object'},
             },
           },
         },
       };
     case 'protein_tracker':
+    case 'carbs_tracker':
+    case 'fat_tracker':
+    case 'calories_tracker':
+    case 'fiber_tracker':
+    case 'sugar_tracker':
+    case 'caffeine_tracker':
+    case 'water_tracker':
       return {
         ...getBaseSchema(),
         'properties': {
           ...getBaseSchema()['properties'],
           'data': {
             'type': 'object',
-            'required': ['goal', 'consumed'],
             'properties': {
-              'goal': {'type': 'number'},
               'consumed': {'type': 'number'},
+              'goal': {'type': 'number'},
+              'entries': {'type': 'array'},
+              'meals': {'type': 'array'},
             },
           },
         },
@@ -104,10 +108,10 @@ Map<String, dynamic> getSchemaForWidget(String widgetType) {
           ...getBaseSchema()['properties'],
           'data': {
             'type': 'object',
-            'required': ['goal', 'slept'],
             'properties': {
               'goal': {'type': 'number'},
               'slept': {'type': 'number'},
+              'quality': {'type': 'number'},
             },
           },
         },
@@ -119,9 +123,24 @@ Map<String, dynamic> getSchemaForWidget(String widgetType) {
           ...getBaseSchema()['properties'],
           'data': {
             'type': 'object',
-            'required': ['current', 'goal'],
             'properties': {
               'current': {'type': 'number'},
+              'goal': {'type': 'number'},
+              'start': {'type': 'number'},
+              'trend': {'type': 'string'},
+            },
+          },
+        },
+      };
+    case 'steps_tracker':
+      return {
+        ...getBaseSchema(),
+        'properties': {
+          ...getBaseSchema()['properties'],
+          'data': {
+            'type': 'object',
+            'properties': {
+              'steps': {'type': 'number'},
               'goal': {'type': 'number'},
             },
           },
@@ -134,15 +153,9 @@ Map<String, dynamic> getSchemaForWidget(String widgetType) {
           ...getBaseSchema()['properties'],
           'data': {
             'type': 'object',
-            'required': ['tasks'],
             'properties': {
-              'tasks': {
-                'type': 'array',
-                'items': {
-                  'type': 'object',
-                  'required': ['title'],
-                },
-              },
+              'tasks': {'type': 'array'},
+              'completed': {'type': 'number'},
             },
           },
         },
@@ -154,13 +167,9 @@ Map<String, dynamic> getSchemaForWidget(String widgetType) {
           ...getBaseSchema()['properties'],
           'data': {
             'type': 'object',
-            'required': ['today'],
             'properties': {
               'today': {'type': 'string'},
-              'events': {
-                'type': 'array',
-                'items': {'type': 'object'},
-              },
+              'events': {'type': 'array'},
             },
           },
         },
@@ -172,12 +181,21 @@ Map<String, dynamic> getSchemaForWidget(String widgetType) {
           ...getBaseSchema()['properties'],
           'data': {
             'type': 'object',
-            'required': ['notes'],
             'properties': {
-              'notes': {
-                'type': 'array',
-                'items': {'type': 'object'},
-              },
+              'notes': {'type': 'array'},
+            },
+          },
+        },
+      };
+    case 'parties':
+      return {
+        ...getBaseSchema(),
+        'properties': {
+          ...getBaseSchema()['properties'],
+          'data': {
+            'type': 'object',
+            'properties': {
+              'events': {'type': 'array'},
             },
           },
         },

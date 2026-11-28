@@ -147,14 +147,14 @@ class DashboardWidgetsNotifier extends StateNotifier<List<WidgetInstance>> {
 
   void resizeWidget(String id, WidgetSize newSize) {
     state = state
-        .map((w) => w.id == id ? w.clone(newSize: newSize) : w)
+        .map((w) => w.id == id ? w.copyWith(size: newSize) : w)
         .toList();
     _saveWidgets();
   }
 
   void updateConfig(String id, Map<String, dynamic> newConfig) {
     state = state
-        .map((w) => w.id == id ? w.clone(newConfig: newConfig) : w)
+        .map((w) => w.id == id ? w.copyWith(config: newConfig) : w)
         .toList();
     _saveWidgets();
   }

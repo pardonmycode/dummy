@@ -4,7 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../../core/i18n/app_localizations.dart';
 import '../../../../core/theme/theme.dart';
@@ -27,6 +29,9 @@ import 'sync_options_sheet.dart';
 import 'template_sheet.dart';
 
 export 'widget_catalog.dart' show widgetRegistryProvider;
+
+// Singleton Uuid instance
+final _uuid = Uuid();
 
 // Providers
 
@@ -94,11 +99,13 @@ class DashboardWidgetsNotifier extends StateNotifier<List<WidgetInstance>> {
   static List<WidgetInstance> _defaultWidgets() {
     return [
       WidgetInstance(
+        id: _uuid.v4(),
         widgetType: 'weather',
         size: WidgetSize.medium,
         config: {'location': 'Berlin'},
       ),
       WidgetInstance(
+        id: _uuid.v4(),
         widgetType: 'protein_tracker',
         size: WidgetSize.medium,
         config: {'goal': 150},
@@ -314,28 +321,56 @@ class DashboardView extends ConsumerWidget {
   ) {
     final columns = ResponsiveGridConfig.getColumns(screenWidth);
 
-    return GridView.builder(
-      padding: const EdgeInsets.all(AppTheme.spacingSm),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+    return SingleChildScrollView(
+      child: StaggeredGrid.count(
         crossAxisCount: columns,
-        crossAxisSpacing: AppTheme.spacingSm,
         mainAxisSpacing: AppTheme.spacingSm,
-        childAspectRatio: ResponsiveGridConfig.getAspectRatio(
-          widgets.isNotEmpty ? widgets.first.size : WidgetSize.medium,
-          screenWidth,
-        ),
+        crossAxisSpacing: AppTheme.spacingSm,
+        children: widgets.map((instance) {
+          final definition = registry.get(instance.widgetType);
+          if (definition == null) {
+            return _buildStaggeredTile(
+              instance.widgetType,
+              instance.size,
+              columns,
+              _buildPlaceholder(instance.widgetType),
+            );
+          }
+          return _buildStaggeredTile(
+            instance.id,
+            instance.size,
+            columns,
+            _buildWidgetCard(context, ref, instance, definition),
+          );
+        }).toList(),
       ),
-      itemCount: widgets.length,
-      itemBuilder: (context, index) {
-        final instance = widgets[index];
-        final definition = registry.get(instance.widgetType);
+    );
+  }
 
-        if (definition == null) {
-          return _buildPlaceholder(instance.widgetType);
-        }
+  /// Build a staggered grid tile with size-appropriate span.
+  /// S = 1x1 cell, M = 2x1 cell, L = 2x2 cells.
+  StaggeredGridTile _buildStaggeredTile(
+    String id,
+    WidgetSize size,
+    int columns,
+    Widget child,
+  ) {
+    // Determine span based on size and column count
+    int crossAxisCellCount = 1;
+    int mainAxisCellCount = 1;
 
-        return _buildWidgetCard(context, ref, instance, definition);
-      },
+    if (size == WidgetSize.medium && columns >= 2) {
+      crossAxisCellCount = 2;
+    } else if (size == WidgetSize.large) {
+      crossAxisCellCount = columns >= 4 ? 4 : columns;
+      mainAxisCellCount = 2;
+    }
+
+    return StaggeredGridTile.count(
+      key: Key(id),
+      crossAxisCellCount: crossAxisCellCount,
+      mainAxisCellCount: mainAxisCellCount,
+      child: child,
     );
   }
 
